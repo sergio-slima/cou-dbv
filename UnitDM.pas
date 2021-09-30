@@ -37,36 +37,39 @@ implementation
 
 procedure Tdm.connAfterConnect(Sender: TObject);
 begin
-    // Cria tabela de Clientes...
-    conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_CLIENTE(' +
-                 'COD_CLIENTE VARCHAR(20) PRIMARY KEY,' +
-                 'NOME VARCHAR(100),' +
-                 'ENDERECO VARCHAR(100),' +
-                 'CIDADE VARCHAR(100),' +
-                 'UF VARCHAR(2),' +
-                 'FONE VARCHAR(20),' +
-                 'EMAIL VARCHAR(100)' +
-                 ')');
-
-    // Cria tabela de OS...
-    conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_OS(' +
-                 'COD_OS VARCHAR(20) PRIMARY KEY,' +
-                 'COD_CLIENTE VARCHAR(20),' +
-                 'ENDERECO VARCHAR(100),' +
-                 'DT_OS DATETIME,' +
-                 'ASSUNTO VARCHAR(100),' +
-                 'PROBLEMA VARCHAR(1000),' +
-                 'STATUS CHAR(1),' +
-                 'ASSINATURA BLOB' +
+    // Cria tabela de Usuario...
+    conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_USUARIO(' +
+                 'COD_USUARIO VARCHAR(20) PRIMARY KEY,' +
+                 'NOME_USUARIO VARCHAR(50)' +
                  ')' );
 
-    // Cria tabela de Fotos...
-    conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_OS_FOTO(' +
-                 'COD_FOTO VARCHAR(20) PRIMARY KEY,' +
-                 'COD_OS VARCHAR(20),' +
-                 'FOTO BLOB,' +
-                 'DESCRICAO VARCHAR(50),' +
-                 'DT_FOTO DATETIME' +
+    // Cria tabela de Clubes...
+    conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_CLUBE(' +
+                 'COD_CLUBE VARCHAR(20) PRIMARY KEY,' +
+                 'NOME VARCHAR(50),' +
+                 'DISTRITO VARCHAR(20),' +
+                 'REGIAO VARCHAR(20),' +
+                 'ASSOCIACAO VARCHAR(20),' +
+                 'DIRETOR VARCHAR(50),' +
+                 'COR INTEGER' +
+                 ')');
+
+    // Cria tabela de Pontuação...
+    conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_PONTUACAO(' +
+                 'COD_PONTUACAO VARCHAR(20) PRIMARY KEY,' +
+                 'DESCRICAO VARCHAR(100),' +
+                 'PONTO_MAX INTEGER' +
+                 ')' );
+
+    // Cria tabela de Avaliação...
+    conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_AVAL(' +
+                 'COD_AVAL VARCHAR(20) PRIMARY KEY,' +
+                 'COD_CLUBE VARCHAR(20),' +
+                 'COD_PONTUACAO VARCHAR(20),' +
+                 'PONTOS INTEGER,' +
+                 'DT_AVAL DATETIME,' +
+                 'ASSUNTO VARCHAR(100),' +
+                 'STATUS CHAR(1)' +
                  ')' );
 
 end;
@@ -76,9 +79,9 @@ begin
     conn.DriverName := 'SQLite';
 
     {$IFDEF MSWINDOWS}
-    conn.Params.Values['Database'] := System.SysUtils.GetCurrentDir + '\GestorOS.db';
+    conn.Params.Values['Database'] := System.SysUtils.GetCurrentDir + '\ACOUDBV.db';
     {$ELSE}
-    conn.Params.Values['Database'] := TPath.Combine(TPath.GetDocumentsPath, 'GestorOS.db');
+    conn.Params.Values['Database'] := TPath.Combine(TPath.GetDocumentsPath, 'ACOUDBV.db');
     {$ENDIF}
 end;
 
