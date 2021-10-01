@@ -18,8 +18,8 @@ type
     imgAdd: TImage;
     imgAbaCliente: TImage;
     TabControl: TTabControl;
-    TabOS: TTabItem;
-    TabCliente: TTabItem;
+    TabPontuacoes: TTabItem;
+    TabClubes: TTabItem;
     rectOSToolbar: TRectangle;
     Label1: TLabel;
     rectOSBusca: TRectangle;
@@ -29,9 +29,7 @@ type
     Rectangle1: TRectangle;
     Label3: TLabel;
     Rectangle2: TRectangle;
-    edtBuscaCliente: TEdit;
     rectBuscaCliente: TRectangle;
-    Label4: TLabel;
     lvCliente: TListView;
     lvOS: TListView;
     imgData: TImage;
@@ -72,6 +70,7 @@ type
     { Private declarations }
   public
     { Public declarations }
+    Nome_Usuario: String;
     procedure EditarCampo(objeto: TObject;
                           tipo_campo, titulo, textprompt, ind_obrigatorio,
                           texto_padrao: string; tam_maximo: integer;

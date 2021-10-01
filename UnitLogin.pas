@@ -33,7 +33,7 @@ implementation
 
 {$R *.fmx}
 
-uses UnitPrincipal;
+uses UnitPrincipal, UnitDM, UnitFunctions;
 
 procedure TFrmLogin.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -53,11 +53,22 @@ begin
     Exit;
   end;
 
+  with DM.qryConsCliente do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Add('INSERT INTO TAB_USUARIO (COD_USUARIO, NOME_USUARIO)');
+    SQL.Add('VALUES (:COD_USUARIO, :NOME_USUARIO)');
+    ParamByName('COD_USUARIO').AsString:=GeraCodUsuario;
+    ParamByName('NOME_USUAIRO').AsString:=EdtUsuario.Text;
+    Execute;
+  end;
+
   if Assigned(FrmPrincipal) then
       Application.CreateForm(TFrmPrincipal, FrmPrincipal);
 
   Application.MainForm := FrmPrincipal;
-
+  FrmPrincipal.Nome_Usuario:= EdtUsuario.Text;
   FrmPrincipal.Show;
   FrmLogin.Close;
 end;
