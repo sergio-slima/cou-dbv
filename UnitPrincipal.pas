@@ -46,6 +46,17 @@ type
     Rectangle3: TRectangle;
     LblNome_Clube_Pontos: TLabel;
     ImgSalvar: TImage;
+    lytCadClube: TLayout;
+    RtgCadClubes: TRectangle;
+    Rectangle5: TRectangle;
+    Label2: TLabel;
+    Rectangle6: TRectangle;
+    Rectangle7: TRectangle;
+    edtBuscaCliente: TEdit;
+    Rectangle4: TRectangle;
+    Edit1: TEdit;
+    Rectangle8: TRectangle;
+    Edit2: TEdit;
     procedure imgAbaOSClick(Sender: TObject);
     procedure rectBuscaOSClick(Sender: TObject);
     procedure rectBuscaClienteClick(Sender: TObject);
@@ -65,8 +76,6 @@ type
     procedure ConsultarCliente(filtro: string);
     procedure AddCliente(codCliente, nome, endereco, cidade, uf: string);
     procedure AlterarStatusOS(codOS, status: string);
-    procedure OpenCadOS(OS: string);
-    procedure RefreshListaOS;
     { Private declarations }
   public
     { Public declarations }
@@ -91,29 +100,9 @@ begin
     MudarAba(TImage(Sender));
 end;
 
-procedure TFrmPrincipal.RefreshListaOS;
-begin
-//    ConsultarOS(edtBuscaOS.Text);
-end;
-
-procedure TFrmPrincipal.OpenCadOS(OS: string);
-begin
-    if NOT Assigned(FrmOS) then
-        Application.CreateForm(TFrmOS, FrmOS);
-
-    if OS.IsEmpty then
-        FrmOS.lblTitulo.Text := 'Nova OS'
-    else
-        FrmOS.lblTitulo.Text := 'Editar OS';
-
-    FrmOS.codOS := OS;
-    FrmOS.executeOnClose := RefreshListaOS;
-    FrmOS.Show;
-end;
-
 procedure TFrmPrincipal.imgAddClick(Sender: TObject);
 begin
-    OpenCadOS('');
+    RtgCadClubes.Visible:=True;
 end;
 
 procedure TFrmPrincipal.lblMenuFecharClick(Sender: TObject);
