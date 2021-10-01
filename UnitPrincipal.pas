@@ -13,19 +13,12 @@ type
   TExecutaClick = procedure(Sender: TObject) of Object;
 
   TFrmPrincipal = class(TForm)
-    rectAbas: TRectangle;
-    imgAbaOS: TImage;
-    imgAdd: TImage;
-    imgAbaCliente: TImage;
     TabControl: TTabControl;
     TabPontuacoes: TTabItem;
     TabClubes: TTabItem;
     rectOSToolbar: TRectangle;
     Label1: TLabel;
     rectOSBusca: TRectangle;
-    edtBuscaOS: TEdit;
-    rectBuscaOS: TRectangle;
-    Label2: TLabel;
     Rectangle1: TRectangle;
     Label3: TLabel;
     Rectangle2: TRectangle;
@@ -46,6 +39,13 @@ type
     lblMenuExcluir: TLabel;
     lblMenuAssinatura: TLabel;
     lblMenuReabrir: TLabel;
+    Label4: TLabel;
+    imgAdd: TImage;
+    Image1: TImage;
+    Image2: TImage;
+    Rectangle3: TRectangle;
+    LblNome_Clube_Pontos: TLabel;
+    ImgSalvar: TImage;
     procedure imgAbaOSClick(Sender: TObject);
     procedure rectBuscaOSClick(Sender: TObject);
     procedure rectBuscaClienteClick(Sender: TObject);
@@ -93,7 +93,7 @@ end;
 
 procedure TFrmPrincipal.RefreshListaOS;
 begin
-    ConsultarOS(edtBuscaOS.Text);
+//    ConsultarOS(edtBuscaOS.Text);
 end;
 
 procedure TFrmPrincipal.OpenCadOS(OS: string);
