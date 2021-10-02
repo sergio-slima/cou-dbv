@@ -51,7 +51,7 @@ begin
                  'REGIAO VARCHAR(20),' +
                  'ASSOCIACAO VARCHAR(20),' +
                  'DIRETOR VARCHAR(50),' +
-                 'COR INTEGER' +
+                 'PONTOS VARCHAR(10)' +
                  ')');
 
     // Cria tabela de Pontuação...

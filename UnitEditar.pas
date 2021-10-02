@@ -146,6 +146,8 @@ begin
     layout_memo.Visible := tipo = 'MEMO';
     layout_data.Visible := tipo = 'DATA';
     layout_valor.Visible := tipo = 'VALOR';
+    Edt_Texto.SetFocus;
+    Edt_Texto.SelectAll;
 end;
 
 procedure TFrmEditar.img_backspaceClick(Sender: TObject);

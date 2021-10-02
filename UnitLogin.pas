@@ -60,7 +60,7 @@ begin
     SQL.Add('INSERT INTO TAB_USUARIO (COD_USUARIO, NOME_USUARIO)');
     SQL.Add('VALUES (:COD_USUARIO, :NOME_USUARIO)');
     ParamByName('COD_USUARIO').AsString:=GeraCodUsuario;
-    ParamByName('NOME_USUAIRO').AsString:=EdtUsuario.Text;
+    ParamByName('NOME_USUARIO').AsString:=EdtUsuario.Text;
     Execute;
   end;
 
