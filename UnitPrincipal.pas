@@ -39,7 +39,6 @@ type
     lblMenuApagar: TLabel;
     lblMenuAlterar: TLabel;
     lblTitulo: TLabel;
-    imgAdd: TImage;
     Image1: TImage;
     Image2: TImage;
     Rectangle3: TRectangle;
@@ -58,163 +57,168 @@ type
     EdtDiretor: TEdit;
     VertScrollBox1: TVertScrollBox;
     rect_nome: TRectangle;
-    Label4: TLabel;
+    LblBt1: TLabel;
     Image3: TImage;
     LblB1: TLabel;
     rect_email: TRectangle;
-    Label5: TLabel;
+    LblBt3: TLabel;
     Image4: TImage;
     LblB3: TLabel;
     rect_cidade: TRectangle;
-    Label6: TLabel;
+    LblBt8: TLabel;
     Image5: TImage;
     LblB8: TLabel;
     rect_endereco: TRectangle;
-    Label10: TLabel;
+    LblBt4: TLabel;
     Image6: TImage;
     LblB4: TLabel;
     rect_fone: TRectangle;
-    Label12: TLabel;
+    LblBt2: TLabel;
     Image7: TImage;
     LblB2: TLabel;
     TabControlRequisitos: TTabControl;
     TabBasico: TTabItem;
     TabAvançado: TTabItem;
     TabInstrutor: TTabItem;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
-    Label11: TLabel;
-    Label13: TLabel;
+    LblBs1: TLabel;
+    LblBs2: TLabel;
+    LblBs4: TLabel;
+    LblBs3: TLabel;
+    LblBs8: TLabel;
     Rectangle15: TRectangle;
-    Label35: TLabel;
+    LblBt7: TLabel;
     Image15: TImage;
     LblB7: TLabel;
-    Label37: TLabel;
+    LblBs7: TLabel;
     Rectangle16: TRectangle;
-    Label38: TLabel;
+    LblBt6: TLabel;
     Image16: TImage;
     LblB6: TLabel;
-    Label40: TLabel;
+    LblBs6: TLabel;
     Rectangle17: TRectangle;
-    Label41: TLabel;
+    LblBt5: TLabel;
     Image17: TImage;
     LblB5: TLabel;
-    Label43: TLabel;
+    LblBs5: TLabel;
     TabMovimento: TTabItem;
     VertScrollBox2: TVertScrollBox;
     Rectangle5: TRectangle;
-    Label14: TLabel;
+    LblMt1: TLabel;
     Image8: TImage;
     LblM1: TLabel;
-    Label16: TLabel;
+    LblMs1: TLabel;
     Rectangle9: TRectangle;
-    Label17: TLabel;
+    LblMt3: TLabel;
     Image9: TImage;
     LblM3: TLabel;
-    Label19: TLabel;
+    LblMs3: TLabel;
     Rectangle10: TRectangle;
-    Label20: TLabel;
+    LblMt9: TLabel;
     Image10: TImage;
     LblM9: TLabel;
-    Label22: TLabel;
+    LblMs9: TLabel;
     Rectangle11: TRectangle;
-    Label23: TLabel;
+    LblMt4: TLabel;
     Image11: TImage;
     LblM4: TLabel;
-    Label25: TLabel;
+    LblMs4: TLabel;
     Rectangle12: TRectangle;
-    Label26: TLabel;
+    LblMt2: TLabel;
     Image12: TImage;
     LblM2: TLabel;
-    Label28: TLabel;
+    LblMs2: TLabel;
     Rectangle13: TRectangle;
-    Label29: TLabel;
+    LblMt7: TLabel;
     Image13: TImage;
     LblM7: TLabel;
-    Label31: TLabel;
+    LblMs7: TLabel;
     Rectangle14: TRectangle;
-    Label32: TLabel;
+    LblMt6: TLabel;
     Image14: TImage;
     LblM6: TLabel;
-    Label34: TLabel;
+    LblMs6: TLabel;
     Rectangle18: TRectangle;
-    Label44: TLabel;
+    LblMt5: TLabel;
     Image18: TImage;
     LblM5: TLabel;
-    Label46: TLabel;
+    LblMs5: TLabel;
     Rectangle19: TRectangle;
-    Label47: TLabel;
+    LblMt8: TLabel;
     Image19: TImage;
     LblM8: TLabel;
-    Label49: TLabel;
+    LblMs8: TLabel;
     VertScrollBox3: TVertScrollBox;
     Rectangle20: TRectangle;
-    Label50: TLabel;
+    LblAt1: TLabel;
     Image20: TImage;
     LblA1: TLabel;
-    Label52: TLabel;
+    LblAs1: TLabel;
     Rectangle21: TRectangle;
-    Label53: TLabel;
+    LblAt3: TLabel;
     Image21: TImage;
     LblA3: TLabel;
-    Label55: TLabel;
+    LblAs3: TLabel;
     Rectangle22: TRectangle;
-    Label56: TLabel;
+    LblAt8: TLabel;
     Image22: TImage;
     LblA8: TLabel;
-    Label58: TLabel;
+    LblAs8: TLabel;
     Rectangle23: TRectangle;
-    Label59: TLabel;
+    LblAt4: TLabel;
     Image23: TImage;
     LblA4: TLabel;
-    Label61: TLabel;
+    LblAs4: TLabel;
     Rectangle24: TRectangle;
-    Label62: TLabel;
+    LblAt2: TLabel;
     Image24: TImage;
     LblA2: TLabel;
-    Label64: TLabel;
+    LblAs2: TLabel;
     Rectangle25: TRectangle;
-    Label65: TLabel;
+    LblAt7: TLabel;
     Image25: TImage;
     LblA7: TLabel;
-    Label67: TLabel;
+    LblAs7: TLabel;
     Rectangle26: TRectangle;
-    Label68: TLabel;
+    LblAt6: TLabel;
     Image26: TImage;
     LblA6: TLabel;
-    Label70: TLabel;
+    LblAs6: TLabel;
     Rectangle27: TRectangle;
-    Label71: TLabel;
+    LblAt5: TLabel;
     Image27: TImage;
     LblA5: TLabel;
-    Label73: TLabel;
+    LblAs5: TLabel;
     Rectangle28: TRectangle;
-    Label74: TLabel;
+    LblAt9: TLabel;
     Image28: TImage;
     LblA9: TLabel;
-    Label76: TLabel;
+    LblAs9: TLabel;
     VertScrollBox4: TVertScrollBox;
     Rectangle29: TRectangle;
-    Label77: TLabel;
+    LblTt1: TLabel;
     Image29: TImage;
     LblT1: TLabel;
-    Label79: TLabel;
+    LblTs1: TLabel;
     Rectangle30: TRectangle;
-    Label80: TLabel;
+    LblTt3: TLabel;
     Image30: TImage;
     LblT3: TLabel;
-    Label82: TLabel;
+    LblTs3: TLabel;
     Rectangle32: TRectangle;
-    Label86: TLabel;
+    LblTt4: TLabel;
     Image32: TImage;
     LblT4: TLabel;
-    Label88: TLabel;
+    LblTs4: TLabel;
     Rectangle33: TRectangle;
-    Label89: TLabel;
+    LblTt2: TLabel;
     Image33: TImage;
     LblT2: TLabel;
-    Label91: TLabel;
+    LblTs2: TLabel;
+    LblNomeAvaliador: TLabel;
+    ImgVoltar: TImage;
+    imgAdd: TImage;
+    Image31: TImage;
+    Image34: TImage;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -294,7 +298,7 @@ type
     fancy : TFancyDialog;
     procedure MudarAba(Image: TImage);
     procedure ConsultarClube;
-    procedure AddClube(codClube, Nome, Regiao, Pontos: String);
+    procedure AddClube(codClube, Nome, Regiao, Diretor, Pontos: String);
     procedure ConsultarCliente(filtro: string);
     procedure AddCliente(codCliente, nome, endereco, cidade, uf: string);
     procedure AlterarStatusOS(codOS, status: string);
@@ -305,7 +309,7 @@ type
     Nome_Usuario: String;
     Status_Clube: String;
     procedure EditarCampo(objeto: TObject;
-                          tipo_campo, titulo, textprompt, ind_obrigatorio,
+                          tipo_campo, titulo, subtitulo, textprompt, ind_obrigatorio,
                           texto_padrao: string; tam_maximo: integer;
                           ProcCallBack : TExecutaClick = nil);
   end;
@@ -336,23 +340,93 @@ end;
 procedure TFrmPrincipal.ImgSalvarClick(Sender: TObject);
 var
   pontos: double;
+  cod_ponto: String;
 begin
     pontos:= StrToFloat(LblB1.text)+StrToFloat(LblB2.text)+StrToFloat(LblB3.text)+StrToFloat(LblB4.text)+StrToFloat(LblB5.text)+StrToFloat(LblB6.text)+StrToFloat(LblB7.text)+StrToFloat(LblB8.text)+
              StrToFloat(LblM1.text)+StrToFloat(LblM2.text)+StrToFloat(LblM3.text)+StrToFloat(LblM4.text)+StrToFloat(LblM5.text)+StrToFloat(LblM6.text)+StrToFloat(LblM7.text)+StrToFloat(LblM8.text)+StrToFloat(LblM9.text)+
              StrToFloat(LblA1.text)+StrToFloat(LblA2.text)+StrToFloat(LblA3.text)+StrToFloat(LblA4.text)+StrToFloat(LblA5.text)+StrToFloat(LblA6.text)+StrToFloat(LblA7.text)+StrToFloat(LblA8.text)+StrToFloat(LblA9.text)+
              StrToFloat(LblT1.text)+StrToFloat(LblT2.text)+StrToFloat(LblT3.text)+StrToFloat(LblT4.text);
 
+    dm.qryGeral.Active := false;
+    dm.qryGeral.SQL.Clear;
+    dm.qryGeral.SQL.Add('SELECT * FROM TAB_PONTOS WHERE COD_CLUBE = :COD_CLUBE');
+    dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+    dm.qryGeral.Active := true;
+    cod_ponto:= dm.qryGeral.FieldByName('COD_PONTO').Value;
+
     try
+      if cod_ponto = '' then
+      begin
+      //Grava os pontos
         dm.qryGeral.Active := false;
         dm.qryGeral.SQL.Clear;
-        dm.qryGeral.SQL.Add('UPDATE TAB_CLUBE SET PONTOS=:PONTOS');
-        dm.qryGeral.SQL.Add('WHERE COD_CLUBE=:COD_CLUBE');
-        dm.qryGeral.ParamByName('PONTOS').Value := FloatToStr(pontos);
+        dm.qryGeral.SQL.Add('INSERT INTO TAB_PONTOS (COD_PONTO, COD_CLUBE,');
+        dm.qryGeral.SQL.Add('PTS_B1,PTS_B2,PTS_B3,PTS_B4,PTS_B5,PTS_B6,PTS_B7,PTS_B8,');
+        dm.qryGeral.SQL.Add('PTS_M1,PTS_M2,PTS_M3,PTS_M4,PTS_M5,PTS_M6,PTS_M7,PTS_M8,PTS_M9,');
+        dm.qryGeral.SQL.Add('PTS_A1,PTS_A2,PTS_A3,PTS_A4,PTS_A5,PTS_A6,PTS_A7,PTS_A8,PTS_A9,');
+        dm.qryGeral.SQL.Add('PTS_T1,PTS_T2,PTS_T3,PTS_T4)');
+        dm.qryGeral.SQL.Add('VALUES (:COD_PONTO, :COD_CLUBE,');
+        dm.qryGeral.SQL.Add(':PTS_B1,:PTS_B2,:PTS_B3,:PTS_B4,:PTS_B5,:PTS_B6,:PTS_B7,:PTS_B8,');
+        dm.qryGeral.SQL.Add(':PTS_M1,:PTS_M2,:PTS_M3,:PTS_M4,:PTS_M5,:PTS_M6,:PTS_M7,:PTS_M8,:PTS_M9,');
+        dm.qryGeral.SQL.Add(':PTS_A1,:PTS_A2,:PTS_A3,:PTS_A4,:PTS_A5,:PTS_A6,:PTS_A7,:PTS_A8,:PTS_A9,');
+        dm.qryGeral.SQL.Add(':PTS_T1,:PTS_T2,:PTS_T3,:PTS_T4)');
+        dm.qryGeral.ParamByName('COD_PONTO').Value := GeraCodPontos;
         dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+        dm.qryGeral.ParamByName('PTS_B1').Value := LblB1.Text;
+        dm.qryGeral.ParamByName('PTS_B2').Value := LblB2.Text;
+        dm.qryGeral.ParamByName('PTS_B3').Value := LblB3.Text;
+        dm.qryGeral.ParamByName('PTS_B4').Value := LblB4.Text;
+        dm.qryGeral.ParamByName('PTS_B5').Value := LblB5.Text;
+        dm.qryGeral.ParamByName('PTS_B6').Value := LblB6.Text;
+        dm.qryGeral.ParamByName('PTS_B7').Value := LblB7.Text;
+        dm.qryGeral.ParamByName('PTS_B8').Value := LblB8.Text;
+        dm.qryGeral.ParamByName('PTS_M1').Value := LblM1.Text;
+        dm.qryGeral.ParamByName('PTS_M2').Value := LblM2.Text;
+        dm.qryGeral.ParamByName('PTS_M3').Value := LblM3.Text;
+        dm.qryGeral.ParamByName('PTS_M4').Value := LblM4.Text;
+        dm.qryGeral.ParamByName('PTS_M5').Value := LblM5.Text;
+        dm.qryGeral.ParamByName('PTS_M6').Value := LblM6.Text;
+        dm.qryGeral.ParamByName('PTS_M7').Value := LblM7.Text;
+        dm.qryGeral.ParamByName('PTS_M8').Value := LblM8.Text;
+        dm.qryGeral.ParamByName('PTS_M9').Value := LblM9.Text;
+        dm.qryGeral.ParamByName('PTS_A1').Value := LblA1.Text;
+        dm.qryGeral.ParamByName('PTS_A2').Value := LblA2.Text;
+        dm.qryGeral.ParamByName('PTS_A3').Value := LblA3.Text;
+        dm.qryGeral.ParamByName('PTS_A4').Value := LblA4.Text;
+        dm.qryGeral.ParamByName('PTS_A5').Value := LblA5.Text;
+        dm.qryGeral.ParamByName('PTS_A6').Value := LblA6.Text;
+        dm.qryGeral.ParamByName('PTS_A7').Value := LblA7.Text;
+        dm.qryGeral.ParamByName('PTS_A8').Value := LblA8.Text;
+        dm.qryGeral.ParamByName('PTS_A9').Value := LblA9.Text;
+        dm.qryGeral.ParamByName('PTS_T1').Value := LblT1.Text;
+        dm.qryGeral.ParamByName('PTS_T2').Value := LblT2.Text;
+        dm.qryGeral.ParamByName('PTS_T3').Value := LblT3.Text;
+        dm.qryGeral.ParamByName('PTS_T4').Value := LblT4.Text;
         dm.qryGeral.ExecSQL;
+      end else
+      begin
+        //Atualiza pontos
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('UPDATE TAB_PONTOS SET PTS_B1=:PTS_B1,PTS_B2=:PTS_B2,PTS_B3=:PTS_B3,PTS_B4=:PTS_B4,PTS_B5=:PTS_B5,PTS_B6=:PTS_B6,PTS_B7=:PTS_B7,PTS_B8=:PTS_B8,');
+        dm.qryGeral.SQL.Add('PTS_M1=:PTS_M1,PTS_M2=:PTS_M2,PTS_M3=:PTS_M3,PTS_M4=:PTS_M4,PTS_M5=:PTS_M5,PTS_M6=:PTS_M6,PTS_M7=:PTS_M7,PTS_M8=:PTS_M8,PTS_M9=:PTS_M9,');
+        dm.qryGeral.SQL.Add('WHERE COD_CLUBE=:COD_PONTO');
+        dm.qryGeral.ParamByName('PTS_B1').Value := LblB1.Text;
+        dm.qryGeral.ParamByName('COD_PONTO').Value := cod_ponto;
+        dm.qryGeral.ExecSQL;
+      end;
 
-        ConsultarClube;
-        TabControl.GotoVisibleTab(0);
+      //Atualiza o total de pontos
+      dm.qryGeral.Active := false;
+      dm.qryGeral.SQL.Clear;
+      dm.qryGeral.SQL.Add('UPDATE TAB_CLUBES SET PONTOS=:PONTOS');
+      dm.qryGeral.SQL.Add('WHERE COD_CLUBE=:COD_CLUBE');
+      dm.qryGeral.ParamByName('PONTOS').Value := FloatToStr(pontos);
+      dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+      dm.qryGeral.ExecSQL;
+
+      ConsultarClube;
+      TabControl.GotoVisibleTab(0);
 
     except on ex:exception do
         fancy.Show(TIconDialog.Error, '', 'Erro ao gravar avaliação!', 'OK');
@@ -454,161 +528,161 @@ end;
 procedure TFrmPrincipal.Rectangle10Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblM9, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM9, 'EDIT', LblMt9.Text, LblMs9.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle10Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblM9, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM9, 'EDIT', LblMt9.Text, LblMs9.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle11Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblM4, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM4, 'EDIT', LblMt4.Text, LblMs4.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle11Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblM4, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM4, 'EDIT', LblMt4.Text, LblMs4.Text,
                              '0,0', 'N','', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle12Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblM2, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM2, 'EDIT', LblMt2.Text, LblMs2.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle12Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblM2, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM2, 'EDIT', LblMt2.Text, LblMs2.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle13Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblM7, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM7, 'EDIT', LblMt7.Text, LblMs7.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle13Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblM7, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM7, 'EDIT', LblMt7.Text, LblMs7.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle14Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblM6, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM6, 'EDIT', LblMt6.Text, LblMs6.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle14Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblM6, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM6, 'EDIT', LblMt6.Text, LblMs6.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle15Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblB7, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB7, 'EDIT', LblBt7.Text, LblBs7.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle15Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblB7, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB7, 'EDIT', LblBt7.Text, LblBs7.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle16Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblB6, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB6, 'EDIT', LblBt6.Text, LblBs6.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle16Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblB6, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB6, 'EDIT', LblBt6.Text, LblBs6.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle17Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblB5, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB5, 'EDIT', LblBt5.Text, LblBs5.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle17Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblB5, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB5, 'EDIT', LblBt5.Text, LblBs5.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle18Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblM5, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM5, 'EDIT', LblMt5.Text, LblMs5.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle18Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblM5, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM5, 'EDIT', LblMt5.Text, LblMs5.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle19Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblM8, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM8, 'EDIT', LblMt8.Text, LblMs8.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle19Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblM8, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM8, 'EDIT', LblMt8.Text, LblMs8.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle20Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblA1, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA1, 'EDIT', LblAt1.Text, LblAs1.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle20Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblA1, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA1, 'EDIT', LblAt1.Text, LblAs1.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle21Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblA3, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA3, 'EDIT', LblAt3.Text, LblAs3.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
@@ -616,7 +690,7 @@ end;
 procedure TFrmPrincipal.Rectangle21Tap(Sender: TObject; const Point: TPointF);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblA3, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA3, 'EDIT', LblAt3.Text, LblAs3.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
@@ -624,186 +698,186 @@ end;
 procedure TFrmPrincipal.Rectangle22Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblA8, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA8, 'EDIT', LblAt8.Text, LblAs8.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle22Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblA8, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA8, 'EDIT', LblAt8.Text, LblAs8.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle23Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblA4, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA4, 'EDIT', LblAt4.Text, LblAs4.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle23Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblA4, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA4, 'EDIT', LblAt4.Text, LblAs4.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle24Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblA2, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA2, 'EDIT', LblAt2.Text, LblAs2.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle24Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblA2, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA2, 'EDIT', LblAt2.Text, LblAs2.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle25Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblA7, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA7, 'EDIT', LblAt7.Text, LblAs7.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle25Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblA7, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA7, 'EDIT', LblAt7.Text, LblAs7.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle26Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblA6, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA6, 'EDIT', LblAt6.Text, LblAs6.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle26Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblA6, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA6, 'EDIT', LblAt6.Text, LblAs6.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle27Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblA5, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA5, 'EDIT', LblAt5.Text, LblAs5.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle27Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblA5, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA5, 'EDIT', LblAt5.Text, LblAs5.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle28Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblA9, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA9, 'EDIT', LblAt9.Text, LblAs9.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle28Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblA9, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblA9, 'EDIT', LblAt9.Text, LblAs9.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle29Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblT1, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblT1, 'EDIT', LblTt1.Text, LblTs1.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle29Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblT1, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblT1, 'EDIT', LblTt1.Text, LblTs1.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle30Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblT3, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblT3, 'EDIT', LblTt3.Text, LblTs3.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle30Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblT3, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblT3, 'EDIT', LblTt3.Text, LblTs3.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle32Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblT4, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblT4, 'EDIT', LblTt4.Text, LblTs4.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle32Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblT4, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblT4, 'EDIT', LblTt4.Text, LblTs4.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle33Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblT2, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblT2, 'EDIT', LblTt2.Text, LblTs2.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle33Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblT2, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblT2, 'EDIT', LblTt2.Text, LblTs2.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle5Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblM1, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM1, 'EDIT', LblMt1.Text, LblMs1.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle5Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblM1, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM1, 'EDIT', LblMt1.Text, LblMs1.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.Rectangle9Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblM3, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM3, 'EDIT', LblMt3.Text, LblMs3.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle9Tap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblM3, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblM3, 'EDIT', LblMt3.Text, LblMs3.Text,
                              '0,0', 'N', '', 10);
 end;
 
-procedure TFrmPrincipal.AddClube(codClube, Nome, Regiao, Pontos: String);
+procedure TFrmPrincipal.AddClube(codClube, Nome, Regiao, Diretor, Pontos: String);
 var
     item : TListViewItem;
 begin
@@ -817,6 +891,7 @@ begin
 
         TListItemText(Objects.FindDrawable('txtNome')).Text := Nome;
         TListItemText(Objects.FindDrawable('txtRegiao')).Text := Regiao+' Região';
+        TListItemText(Objects.FindDrawable('txtDiretor')).Text := 'Diretor: '+Diretor;
         TListItemText(Objects.FindDrawable('txtPontos')).Text := Pontos;
         TListItemImage(Objects.FindDrawable('ImageMenu')).Bitmap := imgOpcao.Bitmap
     end;
@@ -837,6 +912,7 @@ begin
         AddClube(dm.qryConsOS.FieldByName('COD_CLUBE').AsString,
               dm.qryConsOS.FieldByName('NOME').AsString,
               dm.qryConsOS.FieldByName('REGIAO').AsString,
+              dm.qryConsOS.FieldByName('DIRETOR').AsString,
               dm.qryConsOS.FieldByName('PONTOS').AsString);
 
         dm.qryConsOS.Next;
@@ -844,7 +920,7 @@ begin
 
 end;
 
-procedure TFrmPrincipal.EditarCampo(objeto: TObject; tipo_campo, titulo,
+procedure TFrmPrincipal.EditarCampo(objeto: TObject; tipo_campo, titulo, subtitulo,
   textprompt, ind_obrigatorio, texto_padrao: string; tam_maximo: integer;
   ProcCallBack: TExecutaClick);
 var
@@ -854,6 +930,7 @@ begin
         Application.CreateForm(TFrmEditar, FrmEditar);
 
     FrmEditar.lbl_titulo.Text := titulo;
+    FrmEditar.lbl_subtitulo.Text := subtitulo;
     FrmEditar.tipo := tipo_campo;
     FrmEditar.ind_campo_obrigatorio := ind_obrigatorio;
     FrmEditar.obj := objeto;
@@ -918,6 +995,7 @@ end;
 
 procedure TFrmPrincipal.FormShow(Sender: TObject);
 begin
+    LblNomeAvaliador.Text:= 'Avaliador: '+Nome_Usuario;
     TabControl.GotoVisibleTab(0);
     ConsultarClube;
 end;
@@ -973,70 +1051,70 @@ end;
 procedure TFrmPrincipal.rect_cidadeClick(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblB8, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB8, 'EDIT', LblBt8.Text, LblBs8.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.rect_cidadeTap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblB8, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB8, 'EDIT', LblBt8.Text, LblBs8.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.rect_emailClick(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblB3, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB3, 'EDIT', LblBt3.Text, LblBs3.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.rect_emailTap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblB3, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB3, 'EDIT', LblBt3.Text, LblBs3.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.rect_enderecoClick(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblB4, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB4, 'EDIT', LblBt4.Text, LblBs4.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.rect_enderecoTap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblB4, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB4, 'EDIT', LblBt4.Text, LblBs4.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.rect_foneClick(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblB2, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB2, 'EDIT', LblBt2.Text, LblBs2.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.rect_foneTap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblB2, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB2, 'EDIT', LblBt2.Text, LblBs2.Text,
                              '0,0', 'N', '', 10);
 end;
 
 procedure TFrmPrincipal.rect_nomeClick(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
-    FrmPrincipal.EditarCampo(LblB1, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB1, 'EDIT', LblBt1.Text, LblBs1.Text,
                              '0,0', 'N', '', 10);
     {$ENDIF}
 end;
 
 procedure TFrmPrincipal.rect_nomeTap(Sender: TObject; const Point: TPointF);
 begin
-    FrmPrincipal.EditarCampo(LblB1, 'EDIT', 'Pontuação',
+    FrmPrincipal.EditarCampo(LblB1, 'EDIT', LblBt1.Text, LblBs1.Text,
                              '0,0', 'N', '', 10);
 end;
 

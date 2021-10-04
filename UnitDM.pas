@@ -43,32 +43,70 @@ begin
                  'NOME_USUARIO VARCHAR(50)' +
                  ')' );
 
+    // Cria tabela de Pontuação...
+    conn.ExecSQL('DROP TABLE IF EXISTS TAB_CLUBE');
+
     // Cria tabela de Clubes...
-    conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_CLUBE(' +
+    conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_CLUBES(' +
                  'COD_CLUBE VARCHAR(20) PRIMARY KEY,' +
                  'NOME VARCHAR(50),' +
                  'DISTRITO VARCHAR(20),' +
                  'REGIAO VARCHAR(20),' +
                  'ASSOCIACAO VARCHAR(20),' +
                  'DIRETOR VARCHAR(50),' +
+                 'PONTOS VARCHAR(10),' +
+                 'TOTAL VARCHAR(10)' +
+                 ')');
+
+    // Cria tabela de Clubes...
+    conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_RESULTADO(' +
+                 'COD_RESULTADO VARCHAR(20) PRIMARY KEY,' +
+                 'COD_CLUBE VARCHAR(20),' +
+                 'AVALIADOR VARCHAR(50),' +
+                 'OBSERVACAO VARCHAR(100),' +
                  'PONTOS VARCHAR(10)' +
                  ')');
 
     // Cria tabela de Pontuação...
-    conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_PONTUACAO(' +
-                 'COD_PONTUACAO VARCHAR(20) PRIMARY KEY,' +
-                 'DESCRICAO VARCHAR(100),' +
-                 'PONTO_MAX INTEGER' +
-                 ')' );
+    conn.ExecSQL('DROP TABLE IF EXISTS TAB_PONTUACAO');
 
     // Cria tabela de Avaliação...
-    conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_AVAL(' +
-                 'COD_AVAL VARCHAR(20) PRIMARY KEY,' +
+    conn.ExecSQL('DROP TABLE IF EXISTS TAB_AVAL)' );
+
+    // Cria tabela de Pontos...
+    conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_PONTOS(' +
+                 'COD_PONTO VARCHAR(20) PRIMARY KEY,' +
                  'COD_CLUBE VARCHAR(20),' +
-                 'COD_PONTUACAO VARCHAR(20),' +
-                 'PONTOS INTEGER,' +
-                 'DT_AVAL DATETIME,' +
-                 'ASSUNTO VARCHAR(100),' +
+                 'PTS_B1 VARCHAR(10),' +
+                 'PTS_B2 VARCHAR(10),' +
+                 'PTS_B3 VARCHAR(10),' +
+                 'PTS_B4 VARCHAR(10),' +
+                 'PTS_B5 VARCHAR(10),' +
+                 'PTS_B6 VARCHAR(10),' +
+                 'PTS_B7 VARCHAR(10),' +
+                 'PTS_B8 VARCHAR(10),' +
+                 'PTS_M1 VARCHAR(10),' +
+                 'PTS_M2 VARCHAR(10),' +
+                 'PTS_M3 VARCHAR(10),' +
+                 'PTS_M4 VARCHAR(10),' +
+                 'PTS_M5 VARCHAR(10),' +
+                 'PTS_M6 VARCHAR(10),' +
+                 'PTS_M7 VARCHAR(10),' +
+                 'PTS_M8 VARCHAR(10),' +
+                 'PTS_M9 VARCHAR(10),' +
+                 'PTS_A1 VARCHAR(10),' +
+                 'PTS_A2 VARCHAR(10),' +
+                 'PTS_A3 VARCHAR(10),' +
+                 'PTS_A4 VARCHAR(10),' +
+                 'PTS_A5 VARCHAR(10),' +
+                 'PTS_A6 VARCHAR(10),' +
+                 'PTS_A7 VARCHAR(10),' +
+                 'PTS_A8 VARCHAR(10),' +
+                 'PTS_A9 VARCHAR(10),' +
+                 'PTS_T1 VARCHAR(10),' +
+                 'PTS_T2 VARCHAR(10),' +
+                 'PTS_T3 VARCHAR(10),' +
+                 'PTS_T4 VARCHAR(10),' +
                  'STATUS CHAR(1)' +
                  ')' );
 

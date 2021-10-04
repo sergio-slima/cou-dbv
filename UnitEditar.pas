@@ -57,6 +57,7 @@ type
     Label10: TLabel;
     Label11: TLabel;
     img_backspace: TImage;
+    lbl_subtitulo: TLabel;
     procedure FormShow(Sender: TObject);
     procedure img_voltar_cadClick(Sender: TObject);
     procedure img_salvarClick(Sender: TObject);
@@ -159,6 +160,8 @@ procedure TFrmEditar.img_salvarClick(Sender: TObject);
 var
     ret : string;
 begin
+    edt_Texto.Text:= StringReplace(edt_Texto.Text, '.', ',', []);
+
     if tipo = 'EDIT' then
         ret := edt_texto.Text;
     if tipo = 'MEMO' then
