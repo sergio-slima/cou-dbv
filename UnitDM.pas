@@ -71,7 +71,7 @@ begin
     conn.ExecSQL('DROP TABLE IF EXISTS TAB_PONTUACAO');
 
     // Cria tabela de Avaliação...
-    conn.ExecSQL('DROP TABLE IF EXISTS TAB_AVAL)' );
+    conn.ExecSQL('DROP TABLE IF EXISTS TAB_AVAL' );
 
     // Cria tabela de Pontos...
     conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_PONTOS(' +

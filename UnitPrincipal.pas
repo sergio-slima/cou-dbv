@@ -24,11 +24,7 @@ type
     Rectangle2: TRectangle;
     rectBuscaCliente: TRectangle;
     lvClube: TListView;
-    imgData: TImage;
-    imgHora: TImage;
     imgOpcao: TImage;
-    imgAberta: TImage;
-    imgFechada: TImage;
     lytMenuClube: TLayout;
     rectFundoMenu: TRectangle;
     rectMenuFechar: TRectangle;
@@ -39,7 +35,7 @@ type
     lblMenuApagar: TLabel;
     lblMenuAlterar: TLabel;
     lblTitulo: TLabel;
-    Image1: TImage;
+    ImgCalcular: TImage;
     Image2: TImage;
     Rectangle3: TRectangle;
     LblNome_Clube_Pontos: TLabel;
@@ -217,8 +213,18 @@ type
     LblNomeAvaliador: TLabel;
     ImgVoltar: TImage;
     imgAdd: TImage;
-    Image31: TImage;
-    Image34: TImage;
+    ImgUpload: TImage;
+    ImgDownload: TImage;
+    TabCalcular: TTabItem;
+    Rectangle31: TRectangle;
+    Label4: TLabel;
+    ImgRefresh: TImage;
+    ImgVotar: TImage;
+    Rectangle34: TRectangle;
+    Rectangle35: TRectangle;
+    Label6: TLabel;
+    Image37: TImage;
+    Image38: TImage;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -294,9 +300,12 @@ type
     procedure Rectangle32Click(Sender: TObject);
     procedure Rectangle32Tap(Sender: TObject; const Point: TPointF);
     procedure ImgSalvarClick(Sender: TObject);
+    procedure ImgVotarClick(Sender: TObject);
+    procedure ImgCalcularClick(Sender: TObject);
   private
     fancy : TFancyDialog;
     procedure MudarAba(Image: TImage);
+    procedure LimparEdits;
     procedure ConsultarClube;
     procedure AddClube(codClube, Nome, Regiao, Diretor, Pontos: String);
     procedure ConsultarCliente(filtro: string);
@@ -347,74 +356,54 @@ begin
              StrToFloat(LblA1.text)+StrToFloat(LblA2.text)+StrToFloat(LblA3.text)+StrToFloat(LblA4.text)+StrToFloat(LblA5.text)+StrToFloat(LblA6.text)+StrToFloat(LblA7.text)+StrToFloat(LblA8.text)+StrToFloat(LblA9.text)+
              StrToFloat(LblT1.text)+StrToFloat(LblT2.text)+StrToFloat(LblT3.text)+StrToFloat(LblT4.text);
 
-    dm.qryGeral.Active := false;
-    dm.qryGeral.SQL.Clear;
-    dm.qryGeral.SQL.Add('SELECT * FROM TAB_PONTOS WHERE COD_CLUBE = :COD_CLUBE');
-    dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
-    dm.qryGeral.Active := true;
-    cod_ponto:= dm.qryGeral.FieldByName('COD_PONTO').Value;
-
     try
-      if cod_ponto = '' then
-      begin
       //Grava os pontos
-        dm.qryGeral.Active := false;
-        dm.qryGeral.SQL.Clear;
-        dm.qryGeral.SQL.Add('INSERT INTO TAB_PONTOS (COD_PONTO, COD_CLUBE,');
-        dm.qryGeral.SQL.Add('PTS_B1,PTS_B2,PTS_B3,PTS_B4,PTS_B5,PTS_B6,PTS_B7,PTS_B8,');
-        dm.qryGeral.SQL.Add('PTS_M1,PTS_M2,PTS_M3,PTS_M4,PTS_M5,PTS_M6,PTS_M7,PTS_M8,PTS_M9,');
-        dm.qryGeral.SQL.Add('PTS_A1,PTS_A2,PTS_A3,PTS_A4,PTS_A5,PTS_A6,PTS_A7,PTS_A8,PTS_A9,');
-        dm.qryGeral.SQL.Add('PTS_T1,PTS_T2,PTS_T3,PTS_T4)');
-        dm.qryGeral.SQL.Add('VALUES (:COD_PONTO, :COD_CLUBE,');
-        dm.qryGeral.SQL.Add(':PTS_B1,:PTS_B2,:PTS_B3,:PTS_B4,:PTS_B5,:PTS_B6,:PTS_B7,:PTS_B8,');
-        dm.qryGeral.SQL.Add(':PTS_M1,:PTS_M2,:PTS_M3,:PTS_M4,:PTS_M5,:PTS_M6,:PTS_M7,:PTS_M8,:PTS_M9,');
-        dm.qryGeral.SQL.Add(':PTS_A1,:PTS_A2,:PTS_A3,:PTS_A4,:PTS_A5,:PTS_A6,:PTS_A7,:PTS_A8,:PTS_A9,');
-        dm.qryGeral.SQL.Add(':PTS_T1,:PTS_T2,:PTS_T3,:PTS_T4)');
-        dm.qryGeral.ParamByName('COD_PONTO').Value := GeraCodPontos;
-        dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
-        dm.qryGeral.ParamByName('PTS_B1').Value := LblB1.Text;
-        dm.qryGeral.ParamByName('PTS_B2').Value := LblB2.Text;
-        dm.qryGeral.ParamByName('PTS_B3').Value := LblB3.Text;
-        dm.qryGeral.ParamByName('PTS_B4').Value := LblB4.Text;
-        dm.qryGeral.ParamByName('PTS_B5').Value := LblB5.Text;
-        dm.qryGeral.ParamByName('PTS_B6').Value := LblB6.Text;
-        dm.qryGeral.ParamByName('PTS_B7').Value := LblB7.Text;
-        dm.qryGeral.ParamByName('PTS_B8').Value := LblB8.Text;
-        dm.qryGeral.ParamByName('PTS_M1').Value := LblM1.Text;
-        dm.qryGeral.ParamByName('PTS_M2').Value := LblM2.Text;
-        dm.qryGeral.ParamByName('PTS_M3').Value := LblM3.Text;
-        dm.qryGeral.ParamByName('PTS_M4').Value := LblM4.Text;
-        dm.qryGeral.ParamByName('PTS_M5').Value := LblM5.Text;
-        dm.qryGeral.ParamByName('PTS_M6').Value := LblM6.Text;
-        dm.qryGeral.ParamByName('PTS_M7').Value := LblM7.Text;
-        dm.qryGeral.ParamByName('PTS_M8').Value := LblM8.Text;
-        dm.qryGeral.ParamByName('PTS_M9').Value := LblM9.Text;
-        dm.qryGeral.ParamByName('PTS_A1').Value := LblA1.Text;
-        dm.qryGeral.ParamByName('PTS_A2').Value := LblA2.Text;
-        dm.qryGeral.ParamByName('PTS_A3').Value := LblA3.Text;
-        dm.qryGeral.ParamByName('PTS_A4').Value := LblA4.Text;
-        dm.qryGeral.ParamByName('PTS_A5').Value := LblA5.Text;
-        dm.qryGeral.ParamByName('PTS_A6').Value := LblA6.Text;
-        dm.qryGeral.ParamByName('PTS_A7').Value := LblA7.Text;
-        dm.qryGeral.ParamByName('PTS_A8').Value := LblA8.Text;
-        dm.qryGeral.ParamByName('PTS_A9').Value := LblA9.Text;
-        dm.qryGeral.ParamByName('PTS_T1').Value := LblT1.Text;
-        dm.qryGeral.ParamByName('PTS_T2').Value := LblT2.Text;
-        dm.qryGeral.ParamByName('PTS_T3').Value := LblT3.Text;
-        dm.qryGeral.ParamByName('PTS_T4').Value := LblT4.Text;
-        dm.qryGeral.ExecSQL;
-      end else
-      begin
-        //Atualiza pontos
-        dm.qryGeral.Active := false;
-        dm.qryGeral.SQL.Clear;
-        dm.qryGeral.SQL.Add('UPDATE TAB_PONTOS SET PTS_B1=:PTS_B1,PTS_B2=:PTS_B2,PTS_B3=:PTS_B3,PTS_B4=:PTS_B4,PTS_B5=:PTS_B5,PTS_B6=:PTS_B6,PTS_B7=:PTS_B7,PTS_B8=:PTS_B8,');
-        dm.qryGeral.SQL.Add('PTS_M1=:PTS_M1,PTS_M2=:PTS_M2,PTS_M3=:PTS_M3,PTS_M4=:PTS_M4,PTS_M5=:PTS_M5,PTS_M6=:PTS_M6,PTS_M7=:PTS_M7,PTS_M8=:PTS_M8,PTS_M9=:PTS_M9,');
-        dm.qryGeral.SQL.Add('WHERE COD_CLUBE=:COD_PONTO');
-        dm.qryGeral.ParamByName('PTS_B1').Value := LblB1.Text;
-        dm.qryGeral.ParamByName('COD_PONTO').Value := cod_ponto;
-        dm.qryGeral.ExecSQL;
-      end;
+      dm.qryGeral.Active := false;
+      dm.qryGeral.SQL.Clear;
+      dm.qryGeral.SQL.Add('INSERT INTO TAB_PONTOS (COD_PONTO, COD_CLUBE,');
+      dm.qryGeral.SQL.Add('PTS_B1,PTS_B2,PTS_B3,PTS_B4,PTS_B5,PTS_B6,PTS_B7,PTS_B8,');
+      dm.qryGeral.SQL.Add('PTS_M1,PTS_M2,PTS_M3,PTS_M4,PTS_M5,PTS_M6,PTS_M7,PTS_M8,PTS_M9,');
+      dm.qryGeral.SQL.Add('PTS_A1,PTS_A2,PTS_A3,PTS_A4,PTS_A5,PTS_A6,PTS_A7,PTS_A8,PTS_A9,');
+      dm.qryGeral.SQL.Add('PTS_T1,PTS_T2,PTS_T3,PTS_T4)');
+      dm.qryGeral.SQL.Add('VALUES (:COD_PONTO, :COD_CLUBE,');
+      dm.qryGeral.SQL.Add(':PTS_B1,:PTS_B2,:PTS_B3,:PTS_B4,:PTS_B5,:PTS_B6,:PTS_B7,:PTS_B8,');
+      dm.qryGeral.SQL.Add(':PTS_M1,:PTS_M2,:PTS_M3,:PTS_M4,:PTS_M5,:PTS_M6,:PTS_M7,:PTS_M8,:PTS_M9,');
+      dm.qryGeral.SQL.Add(':PTS_A1,:PTS_A2,:PTS_A3,:PTS_A4,:PTS_A5,:PTS_A6,:PTS_A7,:PTS_A8,:PTS_A9,');
+      dm.qryGeral.SQL.Add(':PTS_T1,:PTS_T2,:PTS_T3,:PTS_T4)');
+      dm.qryGeral.ParamByName('COD_PONTO').Value := GeraCodPontos;
+      dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+      dm.qryGeral.ParamByName('PTS_B1').Value := LblB1.Text;
+      dm.qryGeral.ParamByName('PTS_B2').Value := LblB2.Text;
+      dm.qryGeral.ParamByName('PTS_B3').Value := LblB3.Text;
+      dm.qryGeral.ParamByName('PTS_B4').Value := LblB4.Text;
+      dm.qryGeral.ParamByName('PTS_B5').Value := LblB5.Text;
+      dm.qryGeral.ParamByName('PTS_B6').Value := LblB6.Text;
+      dm.qryGeral.ParamByName('PTS_B7').Value := LblB7.Text;
+      dm.qryGeral.ParamByName('PTS_B8').Value := LblB8.Text;
+      dm.qryGeral.ParamByName('PTS_M1').Value := LblM1.Text;
+      dm.qryGeral.ParamByName('PTS_M2').Value := LblM2.Text;
+      dm.qryGeral.ParamByName('PTS_M3').Value := LblM3.Text;
+      dm.qryGeral.ParamByName('PTS_M4').Value := LblM4.Text;
+      dm.qryGeral.ParamByName('PTS_M5').Value := LblM5.Text;
+      dm.qryGeral.ParamByName('PTS_M6').Value := LblM6.Text;
+      dm.qryGeral.ParamByName('PTS_M7').Value := LblM7.Text;
+      dm.qryGeral.ParamByName('PTS_M8').Value := LblM8.Text;
+      dm.qryGeral.ParamByName('PTS_M9').Value := LblM9.Text;
+      dm.qryGeral.ParamByName('PTS_A1').Value := LblA1.Text;
+      dm.qryGeral.ParamByName('PTS_A2').Value := LblA2.Text;
+      dm.qryGeral.ParamByName('PTS_A3').Value := LblA3.Text;
+      dm.qryGeral.ParamByName('PTS_A4').Value := LblA4.Text;
+      dm.qryGeral.ParamByName('PTS_A5').Value := LblA5.Text;
+      dm.qryGeral.ParamByName('PTS_A6').Value := LblA6.Text;
+      dm.qryGeral.ParamByName('PTS_A7').Value := LblA7.Text;
+      dm.qryGeral.ParamByName('PTS_A8').Value := LblA8.Text;
+      dm.qryGeral.ParamByName('PTS_A9').Value := LblA9.Text;
+      dm.qryGeral.ParamByName('PTS_T1').Value := LblT1.Text;
+      dm.qryGeral.ParamByName('PTS_T2').Value := LblT2.Text;
+      dm.qryGeral.ParamByName('PTS_T3').Value := LblT3.Text;
+      dm.qryGeral.ParamByName('PTS_T4').Value := LblT4.Text;
+      dm.qryGeral.ExecSQL;
+
 
       //Atualiza o total de pontos
       dm.qryGeral.Active := false;
@@ -426,16 +415,56 @@ begin
       dm.qryGeral.ExecSQL;
 
       ConsultarClube;
-      TabControl.GotoVisibleTab(0);
+      TabControl.GotoVisibleTab(1);
 
     except on ex:exception do
         fancy.Show(TIconDialog.Error, '', 'Erro ao gravar avaliação!', 'OK');
     end;
 end;
 
+procedure TFrmPrincipal.ImgVotarClick(Sender: TObject);
+begin
+  ConsultarClube;
+  TabControl.GotoVisibleTab(1);
+end;
+
 procedure TFrmPrincipal.lblMenuFecharClick(Sender: TObject);
 begin
     lytMenuClube.Visible := false;
+end;
+
+procedure TFrmPrincipal.LimparEdits;
+begin
+    LblB1.Text:= '0,0';
+    LblB2.Text:= '0,0';
+    LblB3.Text:= '0,0';
+    LblB4.Text:= '0,0';
+    LblB5.Text:= '0,0';
+    LblB6.Text:= '0,0';
+    LblB7.Text:= '0,0';
+    LblB8.Text:= '0,0';
+    LblM1.Text:= '0,0';
+    LblM2.Text:= '0,0';
+    LblM3.Text:= '0,0';
+    LblM4.Text:= '0,0';
+    LblM5.Text:= '0,0';
+    LblM6.Text:= '0,0';
+    LblM7.Text:= '0,0';
+    LblM8.Text:= '0,0';
+    LblM9.Text:= '0,0';
+    LblA1.Text:= '0,0';
+    LblA2.Text:= '0,0';
+    LblA3.Text:= '0,0';
+    LblA4.Text:= '0,0';
+    LblA5.Text:= '0,0';
+    LblA6.Text:= '0,0';
+    LblA7.Text:= '0,0';
+    LblA8.Text:= '0,0';
+    LblA9.Text:= '0,0';
+    LblT1.Text:= '0,0';
+    LblT2.Text:= '0,0';
+    LblT3.Text:= '0,0';
+    LblT4.Text:= '0,0';
 end;
 
 procedure TFrmPrincipal.AlterarStatusOS(codOS, status: string);
@@ -459,20 +488,47 @@ end;
 
 procedure TFrmPrincipal.lblMenuApagarClick(Sender: TObject);
 begin
-//    if NOT Assigned(FrmAssinatura) then
-//        Application.CreateForm(TFrmAssinatura, FrmAssinatura);
-//
-//    FrmAssinatura.codOS := lytMenuOS.TagString;
-//    FrmAssinatura.Show;
-//
-//    lytMenuOS.Visible := false;
+    try
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('DELETE FROM TAB_CLUBES');
+        dm.qryGeral.ExecSQL;
+
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('DELETE FROM TAB_PONTOS');
+        dm.qryGeral.ExecSQL;
+
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('DELETE FROM TAB_RESULTADO');
+        dm.qryGeral.ExecSQL;
+
+        lytMenuClube.Visible := false;
+        ConsultarClube;
+
+    except on ex:exception do
+        fancy.Show(TIconDialog.Error, '', 'Erro ao apagar avaliações!', 'OK');
+    end;
 end;
 
 procedure TFrmPrincipal.lblMenuAvaliarClick(Sender: TObject);
 begin
+    dm.qryGeral.Active := false;
+    dm.qryGeral.SQL.Clear;
+    dm.qryGeral.SQL.Add('SELECT * FROM TAB_PONTOS WHERE COD_CLUBE = :COD_CLUBE');
+    dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+    dm.qryGeral.Active := true;
+    if dm.qryGeral.RecordCount > 0 then
+    begin
+      fancy.Show(TIconDialog.Info, '', 'Avaliação finalizada!', 'OK');
+      Exit;
+    end;
+
+    LimparEdits;
     LytMenuClube.Visible:=False;
     TabControlRequisitos.GotoVisibleTab(0);
-    TabControl.GotoVisibleTab(1);
+    TabControl.GotoVisibleTab(2);
 end;
 
 procedure TFrmPrincipal.lblMenuExcluirClick(Sender: TObject);
@@ -480,7 +536,19 @@ begin
     try
         dm.qryGeral.Active := false;
         dm.qryGeral.SQL.Clear;
-        dm.qryGeral.SQL.Add('DELETE FROM TAB_CLUBE WHERE COD_CLUBE=:COD_CLUBE');
+        dm.qryGeral.SQL.Add('DELETE FROM TAB_CLUBES WHERE COD_CLUBE=:COD_CLUBE');
+        dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+        dm.qryGeral.ExecSQL;
+
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('DELETE FROM TAB_PONTOS WHERE COD_CLUBE=:COD_CLUBE');
+        dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+        dm.qryGeral.ExecSQL;
+
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('DELETE FROM TAB_RESULTADO WHERE COD_CLUBE=:COD_CLUBE');
         dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
         dm.qryGeral.ExecSQL;
 
@@ -494,7 +562,56 @@ end;
 
 procedure TFrmPrincipal.lblMenuAlterarClick(Sender: TObject);
 begin
-//    AlterarStatusOS(lytMenuOS.TagString, 'A');
+    dm.qryGeral.Active := false;
+    dm.qryGeral.SQL.Clear;
+    dm.qryGeral.SQL.Add('SELECT * FROM TAB_PONTOS WHERE COD_CLUBE = :COD_CLUBE');
+    dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+    dm.qryGeral.Active := true;
+    if dm.qryGeral.RecordCount > 0 then
+    begin
+      fancy.Show(TIconDialog.Info, '', 'Clube sem avaliação!', 'OK');
+      Exit;
+    end;
+
+    dm.qryGeral.Active := false;
+    dm.qryGeral.SQL.Clear;
+    dm.qryGeral.SQL.Add('SELECT * FROM TAB_PONTOS WHERE COD_CLUBE = :COD_CLUBE');
+    dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+    dm.qryGeral.Active := true;
+    LblB1.Text:= dm.qryGeral.FieldByName('PTS_B1').Value;
+    LblB2.Text:= dm.qryGeral.FieldByName('PTS_B2').Value;
+    LblB3.Text:= dm.qryGeral.FieldByName('PTS_B3').Value;
+    LblB4.Text:= dm.qryGeral.FieldByName('PTS_B4').Value;
+    LblB5.Text:= dm.qryGeral.FieldByName('PTS_B5').Value;
+    LblB6.Text:= dm.qryGeral.FieldByName('PTS_B6').Value;
+    LblB7.Text:= dm.qryGeral.FieldByName('PTS_B7').Value;
+    LblB8.Text:= dm.qryGeral.FieldByName('PTS_B8').Value;
+    LblM1.Text:= dm.qryGeral.FieldByName('PTS_M1').Value;
+    LblM2.Text:= dm.qryGeral.FieldByName('PTS_M2').Value;
+    LblM3.Text:= dm.qryGeral.FieldByName('PTS_M3').Value;
+    LblM4.Text:= dm.qryGeral.FieldByName('PTS_M4').Value;
+    LblM5.Text:= dm.qryGeral.FieldByName('PTS_M5').Value;
+    LblM6.Text:= dm.qryGeral.FieldByName('PTS_M6').Value;
+    LblM7.Text:= dm.qryGeral.FieldByName('PTS_M7').Value;
+    LblM8.Text:= dm.qryGeral.FieldByName('PTS_M8').Value;
+    LblM9.Text:= dm.qryGeral.FieldByName('PTS_M9').Value;
+    LblA1.Text:= dm.qryGeral.FieldByName('PTS_A1').Value;
+    LblA2.Text:= dm.qryGeral.FieldByName('PTS_A2').Value;
+    LblA3.Text:= dm.qryGeral.FieldByName('PTS_A3').Value;
+    LblA4.Text:= dm.qryGeral.FieldByName('PTS_A4').Value;
+    LblA5.Text:= dm.qryGeral.FieldByName('PTS_A5').Value;
+    LblA6.Text:= dm.qryGeral.FieldByName('PTS_A6').Value;
+    LblA7.Text:= dm.qryGeral.FieldByName('PTS_A7').Value;
+    LblA8.Text:= dm.qryGeral.FieldByName('PTS_A8').Value;
+    LblA9.Text:= dm.qryGeral.FieldByName('PTS_A9').Value;
+    LblT1.Text:= dm.qryGeral.FieldByName('PTS_T1').Value;
+    LblT2.Text:= dm.qryGeral.FieldByName('PTS_T2').Value;
+    LblT3.Text:= dm.qryGeral.FieldByName('PTS_T3').Value;
+    LblT4.Text:= dm.qryGeral.FieldByName('PTS_T4').Value;
+
+    LytMenuClube.Visible:=False;
+    TabControlRequisitos.GotoVisibleTab(0);
+    TabControl.GotoVisibleTab(2);
 end;
 
 procedure TFrmPrincipal.lvClubeItemClickEx(const Sender: TObject;
@@ -903,7 +1020,7 @@ begin
 
     dm.qryConsOS.Active := false;
     dm.qryConsOS.SQL.Clear;
-    dm.qryConsOS.SQL.Add('SELECT * FROM TAB_CLUBE');
+    dm.qryConsOS.SQL.Add('SELECT * FROM TAB_CLUBES');
     dm.qryConsOS.SQL.Add('ORDER BY NOME');
     dm.qryConsOS.Active := true;
 
@@ -996,8 +1113,13 @@ end;
 procedure TFrmPrincipal.FormShow(Sender: TObject);
 begin
     LblNomeAvaliador.Text:= 'Avaliador: '+Nome_Usuario;
-    TabControl.GotoVisibleTab(0);
+    TabControl.GotoVisibleTab(1);
     ConsultarClube;
+end;
+
+procedure TFrmPrincipal.ImgCalcularClick(Sender: TObject);
+begin
+    TabControl.GotoVisibleTab(0);
 end;
 
 procedure TFrmPrincipal.AddCliente(codCliente, nome, endereco, cidade, uf: string);
@@ -1139,14 +1261,14 @@ begin
 
         if Status_Clube = 'N' then
         begin
-            SQL.Add('INSERT INTO TAB_CLUBE(COD_CLUBE, NOME, REGIAO, DIRETOR, PONTOS)');
+            SQL.Add('INSERT INTO TAB_CLUBES(COD_CLUBE, NOME, REGIAO, DIRETOR, PONTOS)');
             SQL.Add('VALUES(:COD_CLUBE, :NOME, :REGIAO, :DIRETOR, :PONTOS)');
 
             CodClube := GeraCodClube;
         end
         else
         begin
-            SQL.Add('UPDATE TAB_CLUBE SET COD_CLUBE=:COD_CLUBE, NOME=:NOME, DIRETOR=:DIRETOR, PONTOS=:PONTOS');
+            SQL.Add('UPDATE TAB_CLUBES SET COD_CLUBE=:COD_CLUBE, NOME=:NOME, DIRETOR=:DIRETOR, PONTOS=:PONTOS');
         end;
 
         ParamByName('COD_CLUBE').Value := CodClube;
