@@ -7,7 +7,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
   FMX.TabControl, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Edit,
   FMX.ListView.Types, FMX.ListView.Appearances, FMX.ListView.Adapters.Base,
-  FMX.ListView, FMX.Layouts, uFancyDialog;
+  FMX.ListView, FMX.Layouts, uFancyDialog, FMX.VirtualKeyboard, FMX.Platform;
 
 type
   TExecutaClick = procedure(Sender: TObject) of Object;
@@ -225,6 +225,10 @@ type
     Label6: TLabel;
     Image37: TImage;
     Image38: TImage;
+    RtgFundoBasico: TRectangle;
+    RtgFundoMovimento: TRectangle;
+    RtgFundoAvancado: TRectangle;
+    RtgFundoInstrutor: TRectangle;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -302,6 +306,8 @@ type
     procedure ImgSalvarClick(Sender: TObject);
     procedure ImgVotarClick(Sender: TObject);
     procedure ImgCalcularClick(Sender: TObject);
+    procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
+      Shift: TShiftState);
   private
     fancy : TFancyDialog;
     procedure MudarAba(Image: TImage);
@@ -311,6 +317,7 @@ type
     procedure ConsultarCliente(filtro: string);
     procedure AddCliente(codCliente, nome, endereco, cidade, uf: string);
     procedure AlterarStatusOS(codOS, status: string);
+    procedure ClickLogout(Sender: TObject);
     { Private declarations }
   public
     { Public declarations }
@@ -521,7 +528,7 @@ begin
     dm.qryGeral.Active := true;
     if dm.qryGeral.RecordCount > 0 then
     begin
-      fancy.Show(TIconDialog.Info, '', 'Avaliação finalizada!', 'OK');
+      fancy.Show(TIconDialog.Info, '', 'Avaliação encerrada para esse clube!', 'OK');
       Exit;
     end;
 
@@ -529,6 +536,11 @@ begin
     LytMenuClube.Visible:=False;
     TabControlRequisitos.GotoVisibleTab(0);
     TabControl.GotoVisibleTab(2);
+    ImgSalvar.Visible:=True;
+    RtgFundoBasico.Visible:=False;
+    RtgFundoMovimento.Visible:=False;
+    RtgFundoAvancado.Visible:=False;
+    RtgFundoInstrutor.Visible:=False;
 end;
 
 procedure TFrmPrincipal.lblMenuExcluirClick(Sender: TObject);
@@ -567,7 +579,7 @@ begin
     dm.qryGeral.SQL.Add('SELECT * FROM TAB_PONTOS WHERE COD_CLUBE = :COD_CLUBE');
     dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
     dm.qryGeral.Active := true;
-    if dm.qryGeral.RecordCount > 0 then
+    if dm.qryGeral.RecordCount = 0 then
     begin
       fancy.Show(TIconDialog.Info, '', 'Clube sem avaliação!', 'OK');
       Exit;
@@ -612,6 +624,11 @@ begin
     LytMenuClube.Visible:=False;
     TabControlRequisitos.GotoVisibleTab(0);
     TabControl.GotoVisibleTab(2);
+    ImgSalvar.Visible:=False;
+    RtgFundoBasico.Visible:=True;
+    RtgFundoMovimento.Visible:=True;
+    RtgFundoAvancado.Visible:=True;
+    RtgFundoInstrutor.Visible:=True;
 end;
 
 procedure TFrmPrincipal.lvClubeItemClickEx(const Sender: TObject;
@@ -1110,6 +1127,39 @@ begin
   fancy := TFancyDialog.Create(FrmPrincipal);
 end;
 
+procedure TFrmPrincipal.FormKeyUp(Sender: TObject; var Key: Word;
+  var KeyChar: Char; Shift: TShiftState);
+{$IFDEF ANDROID}
+var
+  FService: IFMXVirtualKeyboardService;
+{$ENDIF}
+begin
+{$IFDEF ANDROID}
+  if (Key = vkHardwareBack) then
+  begin
+    TPlatformServices.Current.SupportsPlatformService(IFMXVirtualKeyboardService, IInterface(FService));
+
+    if (FService <> nil) and (TVirtualKeyboardState.Visible in FService.VirtualKeyBoardState) then
+    begin
+      //botao back pressionado e teclado visivel
+      //apenas fecha teclado
+    end else
+    begin
+      if (TabControl.ActiveTab = TabPontuacoes) or
+         (TabControl.ActiveTab = TabCalcular) then
+      begin
+        Key := 0;
+        TabControl.GotoVisibleTab(1);
+      end else
+      begin
+        Key := 0;
+        fancy.Show(TIconDialog.Question, 'Logout', 'Deseja sair?', 'Sim', ClickLogout, 'Não');
+      end;
+    end;
+  end;
+{$ENDIF}
+end;
+
 procedure TFrmPrincipal.FormShow(Sender: TObject);
 begin
     LblNomeAvaliador.Text:= 'Avaliador: '+Nome_Usuario;
@@ -1137,6 +1187,11 @@ begin
 //        TListItemText(Objects.FindDrawable('txtEndereco')).Text := endereco;
 //        TListItemText(Objects.FindDrawable('txtCidade')).Text := cidade + ' - ' + uf;
 //    end;
+end;
+
+procedure TFrmPrincipal.ClickLogout(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TFrmPrincipal.ConsultarCliente(filtro: string);
