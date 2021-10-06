@@ -11,7 +11,7 @@ procedure LoadBitmapFromBlob(Bitmap: TBitmap; Blob: TBlobField);
 function GeraCodPontos: String;
 function GeraCodUsuario: String;
 function GeraCodClube: String;
-function GeraCodCliente: String;
+function GeraCodResultado: String;
 function FormataData(dt: string): string;
 
 implementation
@@ -45,7 +45,7 @@ begin
     Result := FormatDateTime('yymmddHHnnsszzz', now);
 end;
 
-function GeraCodCliente: String;
+function GeraCodResultado: String;
 begin
     Result := FormatDateTime('yymmddHHnnsszzz', now);
 end;

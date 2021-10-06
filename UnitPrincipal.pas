@@ -220,15 +220,29 @@ type
     Label4: TLabel;
     ImgRefresh: TImage;
     ImgVotar: TImage;
-    Rectangle34: TRectangle;
-    Rectangle35: TRectangle;
-    Label6: TLabel;
-    Image37: TImage;
-    Image38: TImage;
     RtgFundoBasico: TRectangle;
     RtgFundoMovimento: TRectangle;
     RtgFundoAvancado: TRectangle;
     RtgFundoInstrutor: TRectangle;
+    lvResultado: TListView;
+    Rectangle34: TRectangle;
+    edtBuscaCliente: TEdit;
+    Rectangle35: TRectangle;
+    ImgBuscar: TImage;
+    imgTrofeu1: TImage;
+    imgTrofeu2: TImage;
+    imgTrofeu3: TImage;
+    imgMedalha: TImage;
+    imgSomar: TImage;
+    lytAddAvaliadores: TLayout;
+    Rectangle36: TRectangle;
+    RtgResultadoAdd: TRectangle;
+    Label5: TLabel;
+    Rectangle38: TRectangle;
+    Rectangle39: TRectangle;
+    edtResultadoAvaliador: TEdit;
+    Rectangle40: TRectangle;
+    edtResultadoPontos: TEdit;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -308,12 +322,20 @@ type
     procedure ImgCalcularClick(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
       Shift: TShiftState);
+    procedure ImgVoltarClick(Sender: TObject);
+    procedure ImgRefreshClick(Sender: TObject);
+    procedure RtgResultadoAddClick(Sender: TObject);
   private
     fancy : TFancyDialog;
+    posicao_final: Integer;
     procedure MudarAba(Image: TImage);
     procedure LimparEdits;
     procedure ConsultarClube;
+    procedure ConsultarResultado;
+    procedure ConsultarResultadoFinal;
     procedure AddClube(codClube, Nome, Regiao, Diretor, Pontos: String);
+    procedure AddResultado(codClube, Nome, Avaliador, Pontos: String);
+    procedure AddResultadoFinal(codClube, Nome, Avaliador, Pontos: String);
     procedure ConsultarCliente(filtro: string);
     procedure AddCliente(codCliente, nome, endereco, cidade, uf: string);
     procedure AlterarStatusOS(codOS, status: string);
@@ -421,12 +443,29 @@ begin
       dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
       dm.qryGeral.ExecSQL;
 
+      //Resultado parcial
+      dm.qryGeral.Active := false;
+      dm.qryGeral.SQL.Clear;
+      dm.qryGeral.SQL.Add('INSERT INTO TAB_RESULTADO (COD_RESULTADO, COD_CLUBE, AVALIADOR, PONTOS)');
+      dm.qryGeral.SQL.Add('VALUES (:COD_RESULTADO, :COD_CLUBE, :AVALIADOR, :PONTOS)');
+      dm.qryGeral.ParamByName('COD_RESULTADO').Value := GeraCodResultado;
+      dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+      dm.qryGeral.ParamByName('AVALIADOR').Value := Nome_Usuario;
+      dm.qryGeral.ParamByName('PONTOS').Value := FloatToStr(pontos);
+      dm.qryGeral.ExecSQL;
+
       ConsultarClube;
       TabControl.GotoVisibleTab(1);
 
     except on ex:exception do
         fancy.Show(TIconDialog.Error, '', 'Erro ao gravar avaliação!', 'OK');
     end;
+end;
+
+procedure TFrmPrincipal.ImgVoltarClick(Sender: TObject);
+begin
+  ConsultarClube;
+  TabControl.GotoVisibleTab(1);
 end;
 
 procedure TFrmPrincipal.ImgVotarClick(Sender: TObject);
@@ -1031,6 +1070,57 @@ begin
     end;
 end;
 
+procedure TFrmPrincipal.AddResultado(codClube, Nome, Avaliador, Pontos: String);
+var
+    item : TListViewItem;
+begin
+    item := lvResultado.Items.Add;
+
+    with item do
+    begin
+        Height := 50;
+        TagString := codClube;
+        Detail := Avaliador;
+
+        TListItemText(Objects.FindDrawable('txtNome')).Text := Nome;
+        TListItemText(Objects.FindDrawable('txtPosicao')).Text := '0';
+        TListItemText(Objects.FindDrawable('txtTitulo')).Text := 'Clube:';
+        TListItemText(Objects.FindDrawable('txtPontos')).Text := Pontos;
+        TListItemImage(Objects.FindDrawable('ImageAdd')).Bitmap := imgSomar.Bitmap;
+        TListItemImage(Objects.FindDrawable('ImageIcone')).Bitmap := imgMedalha.Bitmap ;
+    end;
+end;
+
+procedure TFrmPrincipal.AddResultadoFinal(codClube, Nome, Avaliador,
+  Pontos: String);
+var
+    item : TListViewItem;
+begin
+    item := lvResultado.Items.Add;
+    posicao_final:= posicao_final + 1;
+
+    with item do
+    begin
+        Height := 50;
+        TagString := codClube;
+        Detail := Avaliador;
+
+        TListItemText(Objects.FindDrawable('txtNome')).Text := Nome;
+        TListItemText(Objects.FindDrawable('txtPosicao')).Text := IntToStr(posicao_final)+'º';
+        TListItemText(Objects.FindDrawable('txtTitulo')).Text := 'Clube:';
+        TListItemText(Objects.FindDrawable('txtPontos')).Text := Pontos;
+        TListItemImage(Objects.FindDrawable('ImageAdd')).Bitmap := imgSomar.Bitmap;
+        if posicao_final = 1 then
+          TListItemImage(Objects.FindDrawable('ImageIcone')).Bitmap := imgTrofeu1.Bitmap
+        else if posicao_final = 2 then
+          TListItemImage(Objects.FindDrawable('ImageIcone')).Bitmap := imgTrofeu2.Bitmap
+        else if posicao_final = 3 then
+          TListItemImage(Objects.FindDrawable('ImageIcone')).Bitmap := imgTrofeu3.Bitmap
+        else
+          TListItemImage(Objects.FindDrawable('ImageIcone')).Bitmap := imgMedalha.Bitmap;
+    end;
+end;
+
 procedure TFrmPrincipal.ConsultarClube;
 begin
     lvClube.Items.Clear;
@@ -1040,6 +1130,7 @@ begin
     dm.qryConsOS.SQL.Add('SELECT * FROM TAB_CLUBES');
     dm.qryConsOS.SQL.Add('ORDER BY NOME');
     dm.qryConsOS.Active := true;
+    dm.qryConsOS.First;
 
     while NOT dm.qryConsOS.Eof do
     begin
@@ -1052,6 +1143,51 @@ begin
         dm.qryConsOS.Next;
     end;
 
+end;
+
+procedure TFrmPrincipal.ConsultarResultado;
+begin
+    lvResultado.Items.Clear;
+
+    dm.qryConsOS.Active := false;
+    dm.qryConsOS.SQL.Clear;
+    dm.qryConsOS.SQL.Add('SELECT R.COD_RESULTADO, R.COD_CLUBE, C.NOME, R.AVALIADOR, R.PONTOS FROM TAB_RESULTADO R');
+    dm.qryConsOS.SQL.Add('INNER JOIN TAB_CLUBES C ON (R.COD_CLUBE = C.COD_CLUBE)');
+    dm.qryConsOS.SQL.Add('ORDER BY NOME');
+    dm.qryConsOS.Active := true;
+
+    while NOT dm.qryConsOS.Eof do
+    begin
+        AddResultado(dm.qryConsOS.FieldByName('COD_CLUBE').AsString,
+              dm.qryConsOS.FieldByName('NOME').AsString,
+              dm.qryConsOS.FieldByName('AVALIADOR').AsString,
+              dm.qryConsOS.FieldByName('PONTOS').AsString);
+
+        dm.qryConsOS.Next;
+    end;
+end;
+
+procedure TFrmPrincipal.ConsultarResultadoFinal;
+begin
+    lvResultado.Items.Clear;
+    posicao_final:= 0;
+
+    dm.qryConsOS.Active := false;
+    dm.qryConsOS.SQL.Clear;
+    dm.qryConsOS.SQL.Add('SELECT R.COD_RESULTADO, R.COD_CLUBE, C.NOME, R.AVALIADOR, R.PONTOS FROM TAB_RESULTADO R');
+    dm.qryConsOS.SQL.Add('INNER JOIN TAB_CLUBES C ON (R.COD_CLUBE = C.COD_CLUBE)');
+    dm.qryConsOS.SQL.Add('ORDER BY R.PONTOS DESC');
+    dm.qryConsOS.Active := true;
+
+    while NOT dm.qryConsOS.Eof do
+    begin
+        AddResultadoFinal(dm.qryConsOS.FieldByName('COD_CLUBE').AsString,
+              dm.qryConsOS.FieldByName('NOME').AsString,
+              dm.qryConsOS.FieldByName('AVALIADOR').AsString,
+              dm.qryConsOS.FieldByName('PONTOS').AsString);
+
+        dm.qryConsOS.Next;
+    end;
 end;
 
 procedure TFrmPrincipal.EditarCampo(objeto: TObject; tipo_campo, titulo, subtitulo,
@@ -1169,7 +1305,13 @@ end;
 
 procedure TFrmPrincipal.ImgCalcularClick(Sender: TObject);
 begin
+    ConsultarResultado;
     TabControl.GotoVisibleTab(0);
+end;
+
+procedure TFrmPrincipal.ImgRefreshClick(Sender: TObject);
+begin
+    ConsultarResultadoFinal;
 end;
 
 procedure TFrmPrincipal.AddCliente(codCliente, nome, endereco, cidade, uf: string);
@@ -1298,6 +1440,41 @@ end;
 procedure TFrmPrincipal.RtgCadClubesClick(Sender: TObject);
 begin
     lytCadClube.Visible:=False;
+end;
+
+procedure TFrmPrincipal.RtgResultadoAddClick(Sender: TObject);
+begin
+    if EdtResultadoAvaliador.Text = '' then
+    begin
+      fancy.Show(TIconDialog.Info, '', 'Digite o nome do avaliador!', 'OK');
+      Exit;
+    end;
+
+    if EdtResultadoPontos.Text = '' then
+    begin
+      fancy.Show(TIconDialog.Info, '', 'Digite os pontos!', 'OK');
+      Exit;
+    end;
+
+    with dm.qryGeral do
+    begin
+        // Salvar Clube...
+        Active := false;
+        SQL.Clear;
+
+        SQL.Add('UPDATE TAB_CLUBES SET COD_CLUBE=:COD_CLUBE, NOME=:NOME, DIRETOR=:DIRETOR, PONTOS=:PONTOS');
+
+        ParamByName('COD_CLUBE').Value := CodClube;
+        ParamByName('NOME').Value := EdtNome.Text;
+        ParamByName('REGIAO').Value := EdtRegiao.Text;
+        ParamByName('DIRETOR').Value := EdtDiretor.Text;
+        ParamByName('PONTOS').Value := '0,0';
+
+        ExecSQL;
+    end;
+
+    ConsultarResultado;
+    lytAddAvaliadores.Visible:=False;
 end;
 
 procedure TFrmPrincipal.RtgSalvarClubeClick(Sender: TObject);
