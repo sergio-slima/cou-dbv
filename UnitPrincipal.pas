@@ -7,7 +7,13 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
   FMX.TabControl, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Edit,
   FMX.ListView.Types, FMX.ListView.Appearances, FMX.ListView.Adapters.Base,
-  FMX.ListView, FMX.Layouts, uFancyDialog, FMX.VirtualKeyboard, FMX.Platform;
+  FMX.ListView, FMX.Layouts,
+
+  {$IFDEF ANDROID}
+  UnitPdfPrint;
+  {$ENDIF}
+
+  uFancyDialog, FMX.VirtualKeyboard, FMX.Platform;
 
 type
   TExecutaClick = procedure(Sender: TObject) of Object;
@@ -325,6 +331,7 @@ type
     procedure ImgVoltarClick(Sender: TObject);
     procedure ImgRefreshClick(Sender: TObject);
     procedure RtgResultadoAddClick(Sender: TObject);
+    procedure Image2Click(Sender: TObject);
   private
     fancy : TFancyDialog;
     posicao_final: Integer;
@@ -340,6 +347,8 @@ type
     procedure AddCliente(codCliente, nome, endereco, cidade, uf: string);
     procedure AlterarStatusOS(codOS, status: string);
     procedure ClickLogout(Sender: TObject);
+    procedure ClickApagar(Sender: TObject);
+    procedure ClickExcluir(Sender: TObject);
     { Private declarations }
   public
     { Public declarations }
@@ -535,28 +544,8 @@ end;
 
 procedure TFrmPrincipal.lblMenuApagarClick(Sender: TObject);
 begin
-    try
-        dm.qryGeral.Active := false;
-        dm.qryGeral.SQL.Clear;
-        dm.qryGeral.SQL.Add('DELETE FROM TAB_CLUBES');
-        dm.qryGeral.ExecSQL;
+    fancy.Show(TIconDialog.Question, 'Atenção', 'Deseja apagar todas as avaliações?', 'Sim', ClickApagar, 'Não');
 
-        dm.qryGeral.Active := false;
-        dm.qryGeral.SQL.Clear;
-        dm.qryGeral.SQL.Add('DELETE FROM TAB_PONTOS');
-        dm.qryGeral.ExecSQL;
-
-        dm.qryGeral.Active := false;
-        dm.qryGeral.SQL.Clear;
-        dm.qryGeral.SQL.Add('DELETE FROM TAB_RESULTADO');
-        dm.qryGeral.ExecSQL;
-
-        lytMenuClube.Visible := false;
-        ConsultarClube;
-
-    except on ex:exception do
-        fancy.Show(TIconDialog.Error, '', 'Erro ao apagar avaliações!', 'OK');
-    end;
 end;
 
 procedure TFrmPrincipal.lblMenuAvaliarClick(Sender: TObject);
@@ -585,31 +574,8 @@ end;
 
 procedure TFrmPrincipal.lblMenuExcluirClick(Sender: TObject);
 begin
-    try
-        dm.qryGeral.Active := false;
-        dm.qryGeral.SQL.Clear;
-        dm.qryGeral.SQL.Add('DELETE FROM TAB_CLUBES WHERE COD_CLUBE=:COD_CLUBE');
-        dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
-        dm.qryGeral.ExecSQL;
+  fancy.Show(TIconDialog.Question, 'Atenção', 'Deseja excluir o clube?', 'Sim', ClickExcluir, 'Não');
 
-        dm.qryGeral.Active := false;
-        dm.qryGeral.SQL.Clear;
-        dm.qryGeral.SQL.Add('DELETE FROM TAB_PONTOS WHERE COD_CLUBE=:COD_CLUBE');
-        dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
-        dm.qryGeral.ExecSQL;
-
-        dm.qryGeral.Active := false;
-        dm.qryGeral.SQL.Clear;
-        dm.qryGeral.SQL.Add('DELETE FROM TAB_RESULTADO WHERE COD_CLUBE=:COD_CLUBE');
-        dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
-        dm.qryGeral.ExecSQL;
-
-        lytMenuClube.Visible := false;
-        ConsultarClube;
-
-    except on ex:exception do
-        fancy.Show(TIconDialog.Error, '', 'Erro ao excluir clube!', 'OK');
-    end;
 end;
 
 procedure TFrmPrincipal.lblMenuAlterarClick(Sender: TObject);
@@ -1299,6 +1265,32 @@ begin
     ConsultarClube;
 end;
 
+procedure TFrmPrincipal.Image2Click(Sender: TObject);
+{$IFDEF ANDROID}
+var
+  lPdf: tPdfPrint;
+{$ENDIF}
+begin
+{$IFDEF ANDROID}
+  lPdf:= tPdfPrint.Create('Ordem Unida');
+  try
+    lPdf.Abrir;
+    lPdf.FonteName:='Arial';
+    lPdf.ImpC( 1, 1, 'Inicio da pagina', Normal, '#FE14B3A2', 12);
+    lPdf.ImpL( 5, 1, 'Texto Exemplo', Normal, '#FE14B3A2', 10);
+    lPdf.ImpL( 6, 1, 'Teste', Normal, '#FE14B3A2', 10);
+    lPdf.ImpR( 1, 1, 'Direita', Normal, '#FE14B3A2', 10);
+
+    lPdf.Fechar;
+
+    lPdf.VisualizarPDF;
+    //lPdf.CompartilharPDF;
+  finally
+    lPdf.Free;
+  end;
+{$ENDIF}
+end;
+
 procedure TFrmPrincipal.ImgCalcularClick(Sender: TObject);
 begin
     ConsultarResultado;
@@ -1325,6 +1317,61 @@ begin
 //        TListItemText(Objects.FindDrawable('txtEndereco')).Text := endereco;
 //        TListItemText(Objects.FindDrawable('txtCidade')).Text := cidade + ' - ' + uf;
 //    end;
+end;
+
+procedure TFrmPrincipal.ClickApagar(Sender: TObject);
+begin
+    try
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('DELETE FROM TAB_CLUBES');
+        dm.qryGeral.ExecSQL;
+
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('DELETE FROM TAB_PONTOS');
+        dm.qryGeral.ExecSQL;
+
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('DELETE FROM TAB_RESULTADO');
+        dm.qryGeral.ExecSQL;
+
+        lytMenuClube.Visible := false;
+        ConsultarClube;
+
+    except on ex:exception do
+        fancy.Show(TIconDialog.Error, '', 'Erro ao apagar avaliações!', 'OK');
+    end;
+end;
+
+procedure TFrmPrincipal.ClickExcluir(Sender: TObject);
+begin
+    try
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('DELETE FROM TAB_CLUBES WHERE COD_CLUBE=:COD_CLUBE');
+        dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+        dm.qryGeral.ExecSQL;
+
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('DELETE FROM TAB_PONTOS WHERE COD_CLUBE=:COD_CLUBE');
+        dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+        dm.qryGeral.ExecSQL;
+
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('DELETE FROM TAB_RESULTADO WHERE COD_CLUBE=:COD_CLUBE');
+        dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+        dm.qryGeral.ExecSQL;
+
+        lytMenuClube.Visible := false;
+        ConsultarClube;
+
+    except on ex:exception do
+        fancy.Show(TIconDialog.Error, '', 'Erro ao excluir clube!', 'OK');
+    end;
 end;
 
 procedure TFrmPrincipal.ClickLogout(Sender: TObject);

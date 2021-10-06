@@ -9,7 +9,8 @@ uses
   UnitFunctions in 'Units\UnitFunctions.pas',
   u99Permissions in 'Units\u99Permissions.pas',
   UnitEditar in 'UnitEditar.pas' {FrmEditar},
-  uFancyDialog in 'Units\uFancyDialog.pas';
+  uFancyDialog in 'Units\uFancyDialog.pas',
+  UnitPdfPrint in 'Units\UnitPdfPrint.pas';
 
 {$R *.res}
 
