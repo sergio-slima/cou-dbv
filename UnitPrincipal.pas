@@ -334,8 +334,8 @@ type
     procedure ConsultarResultado;
     procedure ConsultarResultadoFinal;
     procedure AddClube(codClube, Nome, Regiao, Diretor, Pontos: String);
-    procedure AddResultado(codClube, Nome, Avaliador, Pontos: String);
-    procedure AddResultadoFinal(codClube, Nome, Avaliador, Pontos: String);
+    procedure AddResultado(codClube, Nome, Pontos: String);
+    procedure AddResultadoFinal(codClube, Nome, Pontos: String);
     procedure ConsultarCliente(filtro: string);
     procedure AddCliente(codCliente, nome, endereco, cidade, uf: string);
     procedure AlterarStatusOS(codOS, status: string);
@@ -437,9 +437,10 @@ begin
       //Atualiza o total de pontos
       dm.qryGeral.Active := false;
       dm.qryGeral.SQL.Clear;
-      dm.qryGeral.SQL.Add('UPDATE TAB_CLUBES SET PONTOS=:PONTOS');
+      dm.qryGeral.SQL.Add('UPDATE TAB_CLUBES SET PONTOS=:PONTOS, TOTAL=:TOTAL');
       dm.qryGeral.SQL.Add('WHERE COD_CLUBE=:COD_CLUBE');
       dm.qryGeral.ParamByName('PONTOS').Value := FloatToStr(pontos);
+      dm.qryGeral.ParamByName('TOTAL').Value := FloatToStr(pontos);
       dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
       dm.qryGeral.ExecSQL;
 
@@ -1070,7 +1071,7 @@ begin
     end;
 end;
 
-procedure TFrmPrincipal.AddResultado(codClube, Nome, Avaliador, Pontos: String);
+procedure TFrmPrincipal.AddResultado(codClube, Nome, Pontos: String);
 var
     item : TListViewItem;
 begin
@@ -1080,7 +1081,7 @@ begin
     begin
         Height := 50;
         TagString := codClube;
-        Detail := Avaliador;
+        Detail := Nome;
 
         TListItemText(Objects.FindDrawable('txtNome')).Text := Nome;
         TListItemText(Objects.FindDrawable('txtPosicao')).Text := '0';
@@ -1091,8 +1092,7 @@ begin
     end;
 end;
 
-procedure TFrmPrincipal.AddResultadoFinal(codClube, Nome, Avaliador,
-  Pontos: String);
+procedure TFrmPrincipal.AddResultadoFinal(codClube, Nome, Pontos: String);
 var
     item : TListViewItem;
 begin
@@ -1103,7 +1103,7 @@ begin
     begin
         Height := 50;
         TagString := codClube;
-        Detail := Avaliador;
+        Detail := Nome;
 
         TListItemText(Objects.FindDrawable('txtNome')).Text := Nome;
         TListItemText(Objects.FindDrawable('txtPosicao')).Text := IntToStr(posicao_final)+'º';
@@ -1151,8 +1151,7 @@ begin
 
     dm.qryConsOS.Active := false;
     dm.qryConsOS.SQL.Clear;
-    dm.qryConsOS.SQL.Add('SELECT R.COD_RESULTADO, R.COD_CLUBE, C.NOME, R.AVALIADOR, R.PONTOS FROM TAB_RESULTADO R');
-    dm.qryConsOS.SQL.Add('INNER JOIN TAB_CLUBES C ON (R.COD_CLUBE = C.COD_CLUBE)');
+    dm.qryConsOS.SQL.Add('SELECT COD_CLUBE, NOME, TOTAL FROM TAB_CLUBES');
     dm.qryConsOS.SQL.Add('ORDER BY NOME');
     dm.qryConsOS.Active := true;
 
@@ -1160,8 +1159,7 @@ begin
     begin
         AddResultado(dm.qryConsOS.FieldByName('COD_CLUBE').AsString,
               dm.qryConsOS.FieldByName('NOME').AsString,
-              dm.qryConsOS.FieldByName('AVALIADOR').AsString,
-              dm.qryConsOS.FieldByName('PONTOS').AsString);
+              dm.qryConsOS.FieldByName('TOTAL').AsString);
 
         dm.qryConsOS.Next;
     end;
@@ -1174,17 +1172,15 @@ begin
 
     dm.qryConsOS.Active := false;
     dm.qryConsOS.SQL.Clear;
-    dm.qryConsOS.SQL.Add('SELECT R.COD_RESULTADO, R.COD_CLUBE, C.NOME, R.AVALIADOR, R.PONTOS FROM TAB_RESULTADO R');
-    dm.qryConsOS.SQL.Add('INNER JOIN TAB_CLUBES C ON (R.COD_CLUBE = C.COD_CLUBE)');
-    dm.qryConsOS.SQL.Add('ORDER BY R.PONTOS DESC');
+    dm.qryConsOS.SQL.Add('SELECT COD_CLUBE, NOME, TOTAL FROM TAB_CLUBES');
+    dm.qryConsOS.SQL.Add('ORDER BY TOTAL DESC');
     dm.qryConsOS.Active := true;
 
     while NOT dm.qryConsOS.Eof do
     begin
         AddResultadoFinal(dm.qryConsOS.FieldByName('COD_CLUBE').AsString,
               dm.qryConsOS.FieldByName('NOME').AsString,
-              dm.qryConsOS.FieldByName('AVALIADOR').AsString,
-              dm.qryConsOS.FieldByName('PONTOS').AsString);
+              dm.qryConsOS.FieldByName('TOTAL').AsString);
 
         dm.qryConsOS.Next;
     end;
@@ -1443,7 +1439,15 @@ begin
 end;
 
 procedure TFrmPrincipal.RtgResultadoAddClick(Sender: TObject);
+var
+  Pontos1, Pontos2, Total_Pontos: double;
+  Avaliador: String;
 begin
+    Total_Pontos:= 0;
+    Pontos1:= 0;
+    Pontos2:= 0;
+    Avaliador:= '';
+
     if EdtResultadoAvaliador.Text = '' then
     begin
       fancy.Show(TIconDialog.Info, '', 'Digite o nome do avaliador!', 'OK');
@@ -1456,22 +1460,35 @@ begin
       Exit;
     end;
 
-    with dm.qryGeral do
-    begin
-        // Salvar Clube...
-        Active := false;
-        SQL.Clear;
+    dm.qryGeral.Active := false;
+    dm.qryGeral.SQL.Clear;
+    dm.qryGeral.SQL.Add('SELECT * FROM TAB_CLUBES WHERE COD_CLUBE=:COD_CLUBE');
+    dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+    dm.qryGeral.Active := True;
+    if dm.qryGeral.RecordCount > 0 then
+      Pontos1:= StrToFloat(dm.qryGeral.FieldByName('TOTAL').Value);
 
-        SQL.Add('UPDATE TAB_CLUBES SET COD_CLUBE=:COD_CLUBE, NOME=:NOME, DIRETOR=:DIRETOR, PONTOS=:PONTOS');
+    Pontos2:= StrToFloat(edtResultadoPontos.Text);
+    Total_Pontos:=Pontos1 + Pontos2;
 
-        ParamByName('COD_CLUBE').Value := CodClube;
-        ParamByName('NOME').Value := EdtNome.Text;
-        ParamByName('REGIAO').Value := EdtRegiao.Text;
-        ParamByName('DIRETOR').Value := EdtDiretor.Text;
-        ParamByName('PONTOS').Value := '0,0';
+    dm.qryGeral.Active := false;
+    dm.qryGeral.SQL.Clear;
+    dm.qryGeral.SQL.Add('UPDATE TAB_CLUBES SET TOTAL=:TOTAL');
+    dm.qryGeral.SQL.Add('WHERE COD_CLUBE=:COD_CLUBE');
+    dm.qryGeral.ParamByName('TOTAL').Value := FloatToStr(Total_Pontos);
+    dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+    dm.qryGeral.ExecSQL;
 
-        ExecSQL;
-    end;
+    //Resultado parcial
+    dm.qryGeral.Active := false;
+    dm.qryGeral.SQL.Clear;
+    dm.qryGeral.SQL.Add('INSERT INTO TAB_RESULTADO (COD_RESULTADO, COD_CLUBE, AVALIADOR, PONTOS)');
+    dm.qryGeral.SQL.Add('VALUES (:COD_RESULTADO, :COD_CLUBE, :AVALIADOR, :PONTOS)');
+    dm.qryGeral.ParamByName('COD_RESULTADO').Value := GeraCodResultado;
+    dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+    dm.qryGeral.ParamByName('AVALIADOR').Value := edtResultadoAvaliador.Text;
+    dm.qryGeral.ParamByName('PONTOS').Value := FloatToStr(Pontos2);
+    dm.qryGeral.ExecSQL;
 
     ConsultarResultado;
     lytAddAvaliadores.Visible:=False;
