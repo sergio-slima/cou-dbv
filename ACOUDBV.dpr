@@ -9,8 +9,10 @@ uses
   UnitFunctions in 'Units\UnitFunctions.pas',
   u99Permissions in 'Units\u99Permissions.pas',
   UnitEditar in 'UnitEditar.pas' {FrmEditar},
-  uFancyDialog in 'Units\uFancyDialog.pas',
-  UnitPdfPrint in 'Units\UnitPdfPrint.pas';
+  {$IFDEF ANDROID}
+  UnitPdfPrint in 'Units\UnitPdfPrint.pas',
+  {$ENDIF}
+  uFancyDialog in 'Units\uFancyDialog.pas';
 
 {$R *.res}
 

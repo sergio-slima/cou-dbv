@@ -10,10 +10,14 @@ uses
   FMX.ListView, FMX.Layouts,
 
   {$IFDEF ANDROID}
-  UnitPdfPrint;
+  UnitPdfPrint,
   {$ENDIF}
 
-  uFancyDialog, FMX.VirtualKeyboard, FMX.Platform;
+  uFancyDialog, FMX.VirtualKeyboard, FMX.Platform, System.Permissions,
+  System.Actions, FMX.ActnList, FMX.StdActns, FMX.MediaLibrary.Actions,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
 
 type
   TExecutaClick = procedure(Sender: TObject) of Object;
@@ -42,7 +46,7 @@ type
     lblMenuAlterar: TLabel;
     lblTitulo: TLabel;
     ImgCalcular: TImage;
-    Image2: TImage;
+    ImgCompartilhar: TImage;
     Rectangle3: TRectangle;
     LblNome_Clube_Pontos: TLabel;
     ImgSalvar: TImage;
@@ -241,7 +245,7 @@ type
     imgMedalha: TImage;
     imgSomar: TImage;
     lytAddAvaliadores: TLayout;
-    Rectangle36: TRectangle;
+    RtgAddAvaliador: TRectangle;
     RtgResultadoAdd: TRectangle;
     Label5: TLabel;
     Rectangle38: TRectangle;
@@ -249,6 +253,12 @@ type
     edtResultadoAvaliador: TEdit;
     Rectangle40: TRectangle;
     edtResultadoPontos: TEdit;
+    ActionList1: TActionList;
+    actPhotoLibrary: TTakePhotoFromLibraryAction;
+    TabResultado: TFDMemTable;
+    TabResultadoCod_Clube: TStringField;
+    TabResultadoNom_Clube: TStringField;
+    TabResultadoPontos: TFloatField;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -331,10 +341,24 @@ type
     procedure ImgVoltarClick(Sender: TObject);
     procedure ImgRefreshClick(Sender: TObject);
     procedure RtgResultadoAddClick(Sender: TObject);
-    procedure Image2Click(Sender: TObject);
+    procedure ImgCompartilharClick(Sender: TObject);
+    procedure lvResultadoItemClickEx(const Sender: TObject; ItemIndex: Integer;
+      const LocalClickPos: TPointF; const ItemObject: TListItemDrawable);
+    procedure RtgAddAvaliadorClick(Sender: TObject);
   private
     fancy : TFancyDialog;
     posicao_final: Integer;
+
+    {$IFDEF ANDROID}
+    PermissaoReadStorage, PermissaoWriteStorage : string;
+    procedure LibraryPermissionRequestResult(
+        Sender: TObject; const APermissions: TArray<string>;
+        const AGrantResults: TArray<TPermissionStatus>);
+    procedure DisplayMessageLibrary(Sender: TObject;
+                const APermissions: TArray<string>;
+                const APostProc: TProc);
+    {$ENDIF}
+
     procedure MudarAba(Image: TImage);
     procedure LimparEdits;
     procedure ConsultarClube;
@@ -349,6 +373,7 @@ type
     procedure ClickLogout(Sender: TObject);
     procedure ClickApagar(Sender: TObject);
     procedure ClickExcluir(Sender: TObject);
+    procedure Imprimir;
     { Private declarations }
   public
     { Public declarations }
@@ -368,7 +393,38 @@ implementation
 
 {$R *.fmx}
 
-uses UnitDM, UnitEditar, UnitFunctions;
+uses UnitDM, UnitEditar, UnitFunctions, FMX.DialogService
+{$IFDEF ANDROID}
+,Androidapi.Helpers, Androidapi.JNI.JavaTypes, Androidapi.JNI.Os
+{$ENDIF}
+;
+
+{$IFDEF ANDROID}
+procedure TFrmPrincipal.LibraryPermissionRequestResult(
+        Sender: TObject; const APermissions: TArray<string>;
+        const AGrantResults: TArray<TPermissionStatus>);
+begin
+        // 2 Permissoes: READ_EXTERNAL_STORAGE e WRITE_EXTERNAL_STORAGE
+
+        if (Length(AGrantResults) = 2) and
+           (AGrantResults[0] = TPermissionStatus.Granted) and
+           (AGrantResults[1] = TPermissionStatus.Granted) then
+                Imprimir
+        else
+                TDialogService.ShowMessage('Você não tem permissão para acessar a library');
+end;
+
+procedure TFrmPrincipal.DisplayMessageLibrary(Sender: TObject;
+                const APermissions: TArray<string>;
+                const APostProc: TProc);
+begin
+        TDialogService.ShowMessage('O app precisa acessar a library do seu dispositivo',
+                procedure(const AResult: TModalResult)
+                begin
+                        APostProc;
+                end);
+end;
+{$ENDIF}
 
 procedure TFrmPrincipal.imgAbaOSClick(Sender: TObject);
 begin
@@ -482,6 +538,56 @@ procedure TFrmPrincipal.ImgVotarClick(Sender: TObject);
 begin
   ConsultarClube;
   TabControl.GotoVisibleTab(1);
+end;
+
+procedure TFrmPrincipal.Imprimir;
+{$IFDEF ANDROID}
+var
+  lPdf: tPdfPrint;
+  linha: Integer;
+{$ENDIF}
+begin
+{$IFDEF ANDROID}
+  linha:=45;
+  lPdf:= tPdfPrint.Create('OrdemUnida-'+Nome_Usuario);
+  try
+    lPdf.Abrir;
+    lPdf.FonteName:='Arial';
+    lPdf.ImpL( 10, 30, 'CONCURSO DE ORDEM UNIDA', Normal, $FF000000, 16);
+    lPdf.ImpL( 15, 33, '(Resultado Parcial)', Normal, $FF000000, 14);
+    lPdf.ImpL( 25, 1, 'Avaliador: '+Nome_Usuario, Normal, $FF000000, 14);
+
+    ConsultarResultadoFinal;
+
+    lPdf.ImpLinhaH(33, 1, 100, $FF000000);
+    lPdf.ImpL( 40, 1, 'Clube', Normal, $FF000000, 14);
+    lPdf.ImpL( 40, 70, 'Pontos', Normal, $FF000000, 14);
+    lPdf.ImpLinhaH(42, 1, 100, $FF000000);
+
+    dm.qryConsOS.Active := false;
+    dm.qryConsOS.SQL.Clear;
+    dm.qryConsOS.SQL.Add('SELECT COD_CLUBE, NOME, TOTAL FROM TAB_CLUBES');
+    dm.qryConsOS.SQL.Add('ORDER BY NOME');
+    dm.qryConsOS.Active := true;
+    while NOT dm.qryConsOS.Eof do
+    begin
+        linha:=linha+4;
+        lPdf.ImpL(linha, 1, dm.qryConsOS.FieldByName('NOME').AsString, Normal, $FF000000, 14);
+        lPdf.ImpL(linha, 70, dm.qryConsOS.FieldByName('TOTAL').AsString, Normal, $FF000000, 14);
+
+        dm.qryConsOS.Next;
+    end;
+
+    //lPdf.NovaPagina;
+
+    lPdf.Fechar;
+
+    //lPdf.VisualizarPDF;
+    lPdf.CompartilharPDF;
+  finally
+    lPdf.Free;
+  end;
+{$ENDIF}
 end;
 
 procedure TFrmPrincipal.lblMenuFecharClick(Sender: TObject);
@@ -652,6 +758,25 @@ begin
             lytMenuClube.TagString := codClube;
             LblNome_Clube_Pontos.TExt:='Clube: '+nomeClube;
             lytMenuClube.Visible := true;
+            exit;
+        end;
+end;
+
+procedure TFrmPrincipal.lvResultadoItemClickEx(const Sender: TObject;
+  ItemIndex: Integer; const LocalClickPos: TPointF;
+  const ItemObject: TListItemDrawable);
+var
+  nomeClube: String;
+begin
+    codClube := lvResultado.Items[ItemIndex].TagString;
+    nomeClube := lvResultado.Items[ItemIndex].detail;
+
+    if Assigned(ItemObject) then
+        if ItemObject.Name = 'ImageAdd' then
+        begin
+            lytAddAvaliadores.TagString := codClube;
+            edtResultadoPontos.Text:='';
+            lytAddAvaliadores.Visible := true;
             exit;
         end;
 end;
@@ -829,10 +954,8 @@ end;
 
 procedure TFrmPrincipal.Rectangle21Tap(Sender: TObject; const Point: TPointF);
 begin
-    {$IFDEF MSWINDOWS}
     FrmPrincipal.EditarCampo(LblA3, 'EDIT', LblAt3.Text, LblAs3.Text,
                              '0,0', 'N', '', 10);
-    {$ENDIF}
 end;
 
 procedure TFrmPrincipal.Rectangle22Click(Sender: TObject);
@@ -1141,14 +1264,28 @@ begin
     dm.qryConsOS.SQL.Add('SELECT COD_CLUBE, NOME, TOTAL FROM TAB_CLUBES');
     dm.qryConsOS.SQL.Add('ORDER BY TOTAL DESC');
     dm.qryConsOS.Active := true;
+    dm.qryConsOS.First;
 
+    TabResultado.EmptyDataSet;
     while NOT dm.qryConsOS.Eof do
     begin
-        AddResultadoFinal(dm.qryConsOS.FieldByName('COD_CLUBE').AsString,
-              dm.qryConsOS.FieldByName('NOME').AsString,
-              dm.qryConsOS.FieldByName('TOTAL').AsString);
+        TabResultado.Append;
+        TabResultadoCod_Clube.AsString:= dm.qryConsOS.FieldByName('COD_CLUBE').AsString;
+        TabResultadoNom_Clube.AsString:= dm.qryConsOS.FieldByName('NOME').AsString;
+        TabResultadoPontos.AsFloat:= StrToFloat(dm.qryConsOS.FieldByName('TOTAL').AsString);
+        TabResultado.Post;
 
         dm.qryConsOS.Next;
+    end;
+
+    TabResultado.IndexFieldNames := 'PONTOS:D';
+    while NOT TabResultado.Eof do
+    begin
+        AddResultadoFinal(TabResultadoCod_Clube.AsString,
+                          TabResultadoNom_Clube.AsString,
+                          FloatToStr(TabResultadoPontos.AsFloat));
+
+        TabResultado.Next;
     end;
 end;
 
@@ -1223,6 +1360,12 @@ end;
 procedure TFrmPrincipal.FormCreate(Sender: TObject);
 begin
   fancy := TFancyDialog.Create(FrmPrincipal);
+  TabResultado.CreateDataSet;
+
+  {$IFDEF ANDROID}
+  PermissaoReadStorage := JStringToString(TJManifest_permission.JavaClass.READ_EXTERNAL_STORAGE);
+  PermissaoWriteStorage := JStringToString(TJManifest_permission.JavaClass.WRITE_EXTERNAL_STORAGE);
+  {$ENDIF}
 end;
 
 procedure TFrmPrincipal.FormKeyUp(Sender: TObject; var Key: Word;
@@ -1265,30 +1408,17 @@ begin
     ConsultarClube;
 end;
 
-procedure TFrmPrincipal.Image2Click(Sender: TObject);
-{$IFDEF ANDROID}
-var
-  lPdf: tPdfPrint;
-{$ENDIF}
+procedure TFrmPrincipal.ImgCompartilharClick(Sender: TObject);
 begin
+
 {$IFDEF ANDROID}
-  lPdf:= tPdfPrint.Create('Ordem Unida');
-  try
-    lPdf.Abrir;
-    lPdf.FonteName:='Arial';
-    lPdf.ImpC( 1, 1, 'Inicio da pagina', Normal, '#FE14B3A2', 12);
-    lPdf.ImpL( 5, 1, 'Texto Exemplo', Normal, '#FE14B3A2', 10);
-    lPdf.ImpL( 6, 1, 'Teste', Normal, '#FE14B3A2', 10);
-    lPdf.ImpR( 1, 1, 'Direita', Normal, '#FE14B3A2', 10);
-
-    lPdf.Fechar;
-
-    lPdf.VisualizarPDF;
-    //lPdf.CompartilharPDF;
-  finally
-    lPdf.Free;
-  end;
+  PermissionsService.RequestPermissions([PermissaoReadStorage,
+                                         PermissaoWriteStorage],
+                                         LibraryPermissionRequestResult,
+                                         DisplayMessageLibrary
+                                         );
 {$ENDIF}
+
 end;
 
 procedure TFrmPrincipal.ImgCalcularClick(Sender: TObject);
@@ -1480,6 +1610,11 @@ begin
                              '0,0', 'N', '', 10);
 end;
 
+procedure TFrmPrincipal.RtgAddAvaliadorClick(Sender: TObject);
+begin
+  lytAddAvaliadores.Visible:=False;
+end;
+
 procedure TFrmPrincipal.RtgCadClubesClick(Sender: TObject);
 begin
     lytCadClube.Visible:=False;
@@ -1495,6 +1630,8 @@ begin
     Pontos2:= 0;
     Avaliador:= '';
 
+    edtResultadoPontos.Text:= StringReplace(edtResultadoPontos.Text, '.', ',', []);
+
     if EdtResultadoAvaliador.Text = '' then
     begin
       fancy.Show(TIconDialog.Info, '', 'Digite o nome do avaliador!', 'OK');
@@ -1509,8 +1646,8 @@ begin
 
     dm.qryGeral.Active := false;
     dm.qryGeral.SQL.Clear;
-    dm.qryGeral.SQL.Add('SELECT * FROM TAB_CLUBES WHERE COD_CLUBE=:COD_CLUBE');
-    dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+    dm.qryGeral.SQL.Add('SELECT TOTAL FROM TAB_CLUBES WHERE COD_CLUBE=:COD_CLUBE');
+    dm.qryGeral.ParamByName('COD_CLUBE').Value := lytAddAvaliadores.TagString;
     dm.qryGeral.Active := True;
     if dm.qryGeral.RecordCount > 0 then
       Pontos1:= StrToFloat(dm.qryGeral.FieldByName('TOTAL').Value);
@@ -1523,7 +1660,7 @@ begin
     dm.qryGeral.SQL.Add('UPDATE TAB_CLUBES SET TOTAL=:TOTAL');
     dm.qryGeral.SQL.Add('WHERE COD_CLUBE=:COD_CLUBE');
     dm.qryGeral.ParamByName('TOTAL').Value := FloatToStr(Total_Pontos);
-    dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+    dm.qryGeral.ParamByName('COD_CLUBE').Value := lytAddAvaliadores.TagString;
     dm.qryGeral.ExecSQL;
 
     //Resultado parcial
@@ -1532,7 +1669,7 @@ begin
     dm.qryGeral.SQL.Add('INSERT INTO TAB_RESULTADO (COD_RESULTADO, COD_CLUBE, AVALIADOR, PONTOS)');
     dm.qryGeral.SQL.Add('VALUES (:COD_RESULTADO, :COD_CLUBE, :AVALIADOR, :PONTOS)');
     dm.qryGeral.ParamByName('COD_RESULTADO').Value := GeraCodResultado;
-    dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
+    dm.qryGeral.ParamByName('COD_CLUBE').Value := lytAddAvaliadores.TagString;
     dm.qryGeral.ParamByName('AVALIADOR').Value := edtResultadoAvaliador.Text;
     dm.qryGeral.ParamByName('PONTOS').Value := FloatToStr(Pontos2);
     dm.qryGeral.ExecSQL;

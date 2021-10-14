@@ -16,12 +16,18 @@ type
     Label2: TLabel;
     ImgLogo: TImage;
     EdtUsuario: TEdit;
+    VScroll: TVertScrollBox;
+    lytAvaliador: TLayout;
     procedure rectAcessarClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure EdtUsuarioEnter(Sender: TObject);
+    procedure FormVirtualKeyboardHidden(Sender: TObject;
+      KeyboardVisible: Boolean; const Bounds: TRect);
   private
     { Private declarations }
     fancy : TFancyDialog;
+    foco: TControl;
   public
     { Public declarations }
   end;
@@ -35,6 +41,24 @@ implementation
 
 uses UnitPrincipal, UnitDM, UnitFunctions;
 
+procedure Ajustar_Scroll();
+var
+  x: Integer;
+begin
+  with FrmLogin do
+  begin
+    VScroll.Margins.Bottom := 250;
+    VScroll.ViewportPosition := PointF(VScroll.ViewportPosition.X,
+                                TControl(foco).Position.Y - 90);
+  end;
+end;
+
+procedure TFrmLogin.EdtUsuarioEnter(Sender: TObject);
+begin
+    foco := TControl(TEdit(sender).Parent);
+    Ajustar_Scroll();
+end;
+
 procedure TFrmLogin.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   fancy.DisposeOf;
@@ -43,6 +67,12 @@ end;
 procedure TFrmLogin.FormCreate(Sender: TObject);
 begin
   fancy := TFancyDialog.Create(FrmLogin);
+end;
+
+procedure TFrmLogin.FormVirtualKeyboardHidden(Sender: TObject;
+  KeyboardVisible: Boolean; const Bounds: TRect);
+begin
+    VScroll.Margins.Bottom := 0;
 end;
 
 procedure TFrmLogin.rectAcessarClick(Sender: TObject);

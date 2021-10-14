@@ -31,16 +31,13 @@ type
 
 type
   JFileProvider = interface;
-  {$IFDEF ANDROID}
   JFileProviderClass = interface(JContentProviderClass)
     ['{33A87969-5731-4791-90F6-3AD22F2BB822}']
     {class} function getUriForFile(context: JContext; authority: JString; _file: JFile): Jnet_Uri; cdecl;
     {class} function init: JFileProvider; cdecl;
   end;
-  {$ENDIF}
 
   [JavaSignature('android/support/v4/content/FileProvider')]
-  {$IFDEF ANDROID}
   JFileProvider = interface(JContentProvider)
     ['{12F5DD38-A3CE-4D2E-9F68-24933C9D221B}']
     procedure attachInfo(context: JContext; info: JProviderInfo); cdecl;
@@ -53,7 +50,6 @@ type
       sortOrder: JString): JCursor; cdecl;
     function update(uri: Jnet_Uri; values: JContentValues; selection: JString; selectionArgs: TJavaObjectArray<JString>): Integer; cdecl;
   end;
-  {$ENDIF}
 
   TJFileProvider = class(TJavaGenericImport<JFileProviderClass, JFileProvider>) end;
 
