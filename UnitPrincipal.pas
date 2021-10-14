@@ -259,6 +259,11 @@ type
     TabResultadoCod_Clube: TStringField;
     TabResultadoNom_Clube: TStringField;
     TabResultadoPontos: TFloatField;
+    Rectangle36: TRectangle;
+    LblAt10: TLabel;
+    Image1: TImage;
+    LblA10: TLabel;
+    LblAs10: TLabel;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -345,6 +350,8 @@ type
     procedure lvResultadoItemClickEx(const Sender: TObject; ItemIndex: Integer;
       const LocalClickPos: TPointF; const ItemObject: TListItemDrawable);
     procedure RtgAddAvaliadorClick(Sender: TObject);
+    procedure Rectangle36Click(Sender: TObject);
+    procedure Rectangle36Tap(Sender: TObject; const Point: TPointF);
   private
     fancy : TFancyDialog;
     posicao_final: Integer;
@@ -367,9 +374,6 @@ type
     procedure AddClube(codClube, Nome, Regiao, Diretor, Pontos: String);
     procedure AddResultado(codClube, Nome, Pontos: String);
     procedure AddResultadoFinal(codClube, Nome, Pontos: String);
-    procedure ConsultarCliente(filtro: string);
-    procedure AddCliente(codCliente, nome, endereco, cidade, uf: string);
-    procedure AlterarStatusOS(codOS, status: string);
     procedure ClickLogout(Sender: TObject);
     procedure ClickApagar(Sender: TObject);
     procedure ClickExcluir(Sender: TObject);
@@ -447,7 +451,7 @@ var
 begin
     pontos:= StrToFloat(LblB1.text)+StrToFloat(LblB2.text)+StrToFloat(LblB3.text)+StrToFloat(LblB4.text)+StrToFloat(LblB5.text)+StrToFloat(LblB6.text)+StrToFloat(LblB7.text)+StrToFloat(LblB8.text)+
              StrToFloat(LblM1.text)+StrToFloat(LblM2.text)+StrToFloat(LblM3.text)+StrToFloat(LblM4.text)+StrToFloat(LblM5.text)+StrToFloat(LblM6.text)+StrToFloat(LblM7.text)+StrToFloat(LblM8.text)+StrToFloat(LblM9.text)+
-             StrToFloat(LblA1.text)+StrToFloat(LblA2.text)+StrToFloat(LblA3.text)+StrToFloat(LblA4.text)+StrToFloat(LblA5.text)+StrToFloat(LblA6.text)+StrToFloat(LblA7.text)+StrToFloat(LblA8.text)+StrToFloat(LblA9.text)+
+             StrToFloat(LblA1.text)+StrToFloat(LblA2.text)+StrToFloat(LblA3.text)+StrToFloat(LblA4.text)+StrToFloat(LblA5.text)+StrToFloat(LblA6.text)+StrToFloat(LblA7.text)+StrToFloat(LblA8.text)+StrToFloat(LblA9.text)+StrToFloat(LblA10.text)+
              StrToFloat(LblT1.text)+StrToFloat(LblT2.text)+StrToFloat(LblT3.text)+StrToFloat(LblT4.text);
 
     try
@@ -457,12 +461,12 @@ begin
       dm.qryGeral.SQL.Add('INSERT INTO TAB_PONTOS (COD_PONTO, COD_CLUBE,');
       dm.qryGeral.SQL.Add('PTS_B1,PTS_B2,PTS_B3,PTS_B4,PTS_B5,PTS_B6,PTS_B7,PTS_B8,');
       dm.qryGeral.SQL.Add('PTS_M1,PTS_M2,PTS_M3,PTS_M4,PTS_M5,PTS_M6,PTS_M7,PTS_M8,PTS_M9,');
-      dm.qryGeral.SQL.Add('PTS_A1,PTS_A2,PTS_A3,PTS_A4,PTS_A5,PTS_A6,PTS_A7,PTS_A8,PTS_A9,');
+      dm.qryGeral.SQL.Add('PTS_A1,PTS_A2,PTS_A3,PTS_A4,PTS_A5,PTS_A6,PTS_A7,PTS_A8,PTS_A9,PTS_A10,');
       dm.qryGeral.SQL.Add('PTS_T1,PTS_T2,PTS_T3,PTS_T4)');
       dm.qryGeral.SQL.Add('VALUES (:COD_PONTO, :COD_CLUBE,');
       dm.qryGeral.SQL.Add(':PTS_B1,:PTS_B2,:PTS_B3,:PTS_B4,:PTS_B5,:PTS_B6,:PTS_B7,:PTS_B8,');
       dm.qryGeral.SQL.Add(':PTS_M1,:PTS_M2,:PTS_M3,:PTS_M4,:PTS_M5,:PTS_M6,:PTS_M7,:PTS_M8,:PTS_M9,');
-      dm.qryGeral.SQL.Add(':PTS_A1,:PTS_A2,:PTS_A3,:PTS_A4,:PTS_A5,:PTS_A6,:PTS_A7,:PTS_A8,:PTS_A9,');
+      dm.qryGeral.SQL.Add(':PTS_A1,:PTS_A2,:PTS_A3,:PTS_A4,:PTS_A5,:PTS_A6,:PTS_A7,:PTS_A8,:PTS_A9,:PTS_A10,');
       dm.qryGeral.SQL.Add(':PTS_T1,:PTS_T2,:PTS_T3,:PTS_T4)');
       dm.qryGeral.ParamByName('COD_PONTO').Value := GeraCodPontos;
       dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
@@ -492,6 +496,7 @@ begin
       dm.qryGeral.ParamByName('PTS_A7').Value := LblA7.Text;
       dm.qryGeral.ParamByName('PTS_A8').Value := LblA8.Text;
       dm.qryGeral.ParamByName('PTS_A9').Value := LblA9.Text;
+      dm.qryGeral.ParamByName('PTS_A10').Value := LblA10.Text;
       dm.qryGeral.ParamByName('PTS_T1').Value := LblT1.Text;
       dm.qryGeral.ParamByName('PTS_T2').Value := LblT2.Text;
       dm.qryGeral.ParamByName('PTS_T3').Value := LblT3.Text;
@@ -623,29 +628,11 @@ begin
     LblA7.Text:= '0,0';
     LblA8.Text:= '0,0';
     LblA9.Text:= '0,0';
+    LblA10.Text:= '0,0';
     LblT1.Text:= '0,0';
     LblT2.Text:= '0,0';
     LblT3.Text:= '0,0';
     LblT4.Text:= '0,0';
-end;
-
-procedure TFrmPrincipal.AlterarStatusOS(codOS, status: string);
-begin
-//    try
-//        dm.qryGeral.Active := false;
-//        dm.qryGeral.SQL.Clear;
-//        dm.qryGeral.SQL.Add('UPDATE TAB_OS SET STATUS=:STATUS');
-//        dm.qryGeral.SQL.Add('WHERE COD_OS=:COD_OS');
-//        dm.qryGeral.ParamByName('STATUS').Value := status;
-//        dm.qryGeral.ParamByName('COD_OS').Value := codOS;
-//        dm.qryGeral.ExecSQL;
-//
-//        lytMenuOS.Visible := false;
-//        ConsultarOS(edtBuscaOS.Text);
-//
-//    except on ex:exception do
-//        showmessage('Erro alterar status da OS: ' + ex.Message);
-//    end;
 end;
 
 procedure TFrmPrincipal.lblMenuApagarClick(Sender: TObject);
@@ -728,6 +715,7 @@ begin
     LblA7.Text:= dm.qryGeral.FieldByName('PTS_A7').Value;
     LblA8.Text:= dm.qryGeral.FieldByName('PTS_A8').Value;
     LblA9.Text:= dm.qryGeral.FieldByName('PTS_A9').Value;
+    LblA10.Text:= dm.qryGeral.FieldByName('PTS_A10').Value;
     LblT1.Text:= dm.qryGeral.FieldByName('PTS_T1').Value;
     LblT2.Text:= dm.qryGeral.FieldByName('PTS_T2').Value;
     LblT3.Text:= dm.qryGeral.FieldByName('PTS_T3').Value;
@@ -1112,6 +1100,20 @@ begin
                              '0,0', 'N', '', 10);
 end;
 
+procedure TFrmPrincipal.Rectangle36Click(Sender: TObject);
+begin
+    {$IFDEF MSWINDOWS}
+    FrmPrincipal.EditarCampo(LblA10, 'EDIT', LblAt10.Text, LblAs10.Text,
+                             '0,0', 'N', '', 10);
+    {$ENDIF}
+end;
+
+procedure TFrmPrincipal.Rectangle36Tap(Sender: TObject; const Point: TPointF);
+begin
+    FrmPrincipal.EditarCampo(LblA10, 'EDIT', LblAt10.Text, LblAs10.Text,
+                             '0,0', 'N', '', 10);
+end;
+
 procedure TFrmPrincipal.Rectangle5Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
@@ -1154,7 +1156,7 @@ begin
 
         TListItemText(Objects.FindDrawable('txtNome')).Text := Nome;
         TListItemText(Objects.FindDrawable('txtRegiao')).Text := Regiao+' Região';
-        TListItemText(Objects.FindDrawable('txtDiretor')).Text := 'Diretor: '+Diretor;
+        TListItemText(Objects.FindDrawable('txtDiretor')).Text := 'Instrutor: '+Diretor;
         TListItemText(Objects.FindDrawable('txtPontos')).Text := Pontos;
         TListItemImage(Objects.FindDrawable('ImageMenu')).Bitmap := imgOpcao.Bitmap
     end;
@@ -1262,7 +1264,6 @@ begin
     dm.qryConsOS.Active := false;
     dm.qryConsOS.SQL.Clear;
     dm.qryConsOS.SQL.Add('SELECT COD_CLUBE, NOME, TOTAL FROM TAB_CLUBES');
-    dm.qryConsOS.SQL.Add('ORDER BY TOTAL DESC');
     dm.qryConsOS.Active := true;
     dm.qryConsOS.First;
 
@@ -1432,23 +1433,6 @@ begin
     ConsultarResultadoFinal;
 end;
 
-procedure TFrmPrincipal.AddCliente(codCliente, nome, endereco, cidade, uf: string);
-var
-    item : TListViewItem;
-begin
-//    item := lvCliente.Items.Add;
-//
-//    with item do
-//    begin
-//        Height := 70;
-//        TagString := codCliente;
-//
-//        TListItemText(Objects.FindDrawable('txtNome')).Text := nome;
-//        TListItemText(Objects.FindDrawable('txtEndereco')).Text := endereco;
-//        TListItemText(Objects.FindDrawable('txtCidade')).Text := cidade + ' - ' + uf;
-//    end;
-end;
-
 procedure TFrmPrincipal.ClickApagar(Sender: TObject);
 begin
     try
@@ -1507,37 +1491,6 @@ end;
 procedure TFrmPrincipal.ClickLogout(Sender: TObject);
 begin
   Close;
-end;
-
-procedure TFrmPrincipal.ConsultarCliente(filtro: string);
-begin
-//    lvCliente.Items.Clear;
-//
-//    dm.qryConsCliente.Active := false;
-//    dm.qryConsCliente.SQL.Clear;
-//    dm.qryConsCliente.SQL.Add('SELECT C.*');
-//    dm.qryConsCliente.SQL.Add('FROM TAB_CLIENTE C');
-//
-//    if filtro <> '' then
-//    begin
-//        dm.qryConsCliente.SQL.Add('WHERE C.NOME LIKE :NOME');
-//        dm.qryConsCliente.ParamByName('NOME').Value := '%' + filtro + '%';
-//    end;
-//
-//    dm.qryConsCliente.SQL.Add('ORDER BY C.NOME');
-//    dm.qryConsCliente.Active := true;
-//
-//    while NOT dm.qryConsCliente.Eof do
-//    begin
-//        AddCliente(dm.qryConsCliente.FieldByName('COD_CLIENTE').AsString,
-//                   dm.qryConsCliente.FieldByName('NOME').AsString,
-//                   dm.qryConsCliente.FieldByName('ENDERECO').AsString,
-//                   dm.qryConsCliente.FieldByName('CIDADE').AsString,
-//                   dm.qryConsCliente.FieldByName('UF').AsString);
-//
-//        dm.qryConsCliente.Next;
-//    end;
-
 end;
 
 procedure TFrmPrincipal.rect_cidadeClick(Sender: TObject);

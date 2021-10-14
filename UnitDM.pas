@@ -58,7 +58,7 @@ begin
                  'TOTAL VARCHAR(10)' +
                  ')');
 
-    // Cria tabela de Clubes...
+    // Cria tabela de Tab Resultado...
     conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_RESULTADO(' +
                  'COD_RESULTADO VARCHAR(20) PRIMARY KEY,' +
                  'COD_CLUBE VARCHAR(20),' +
@@ -103,6 +103,7 @@ begin
                  'PTS_A7 VARCHAR(10),' +
                  'PTS_A8 VARCHAR(10),' +
                  'PTS_A9 VARCHAR(10),' +
+                 'PTS_A10 VARCHAR(10),' +
                  'PTS_T1 VARCHAR(10),' +
                  'PTS_T2 VARCHAR(10),' +
                  'PTS_T3 VARCHAR(10),' +
