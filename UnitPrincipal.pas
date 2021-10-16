@@ -553,21 +553,16 @@ var
 {$ENDIF}
 begin
 {$IFDEF ANDROID}
-  linha:=45;
+  linha:=20;
   lPdf:= tPdfPrint.Create('OrdemUnida-'+Nome_Usuario);
   try
     lPdf.Abrir;
     lPdf.FonteName:='Arial';
-    lPdf.ImpL( 10, 30, 'CONCURSO DE ORDEM UNIDA', Normal, $FF000000, 16);
-    lPdf.ImpL( 15, 33, '(Resultado Parcial)', Normal, $FF000000, 14);
-    lPdf.ImpL( 25, 1, 'Avaliador: '+Nome_Usuario, Normal, $FF000000, 14);
+    lPdf.ImpL( 5, 40, 'CONCURSO DE ORDEM UNIDA', Normal, $FF000000, 16);
+    lPdf.ImpL( 10, 50, '(Resultado Parcial)', Normal, $FF000000, 14);
+    lPdf.ImpL( 20, 1, 'Avaliador: '+Nome_Usuario, Normal, $FF000000, 14);
 
     ConsultarResultadoFinal;
-
-    lPdf.ImpLinhaH(33, 1, 100, $FF000000);
-    lPdf.ImpL( 40, 1, 'Clube', Normal, $FF000000, 14);
-    lPdf.ImpL( 40, 70, 'Pontos', Normal, $FF000000, 14);
-    lPdf.ImpLinhaH(42, 1, 100, $FF000000);
 
     dm.qryConsOS.Active := false;
     dm.qryConsOS.SQL.Clear;
@@ -576,9 +571,71 @@ begin
     dm.qryConsOS.Active := true;
     while NOT dm.qryConsOS.Eof do
     begin
-        linha:=linha+4;
-        lPdf.ImpL(linha, 1, dm.qryConsOS.FieldByName('NOME').AsString, Normal, $FF000000, 14);
-        lPdf.ImpL(linha, 70, dm.qryConsOS.FieldByName('TOTAL').AsString, Normal, $FF000000, 14);
+        linha:=linha+5;
+        lPdf.ImpLinhaH(linha, 1, 120, $FF000000);
+        linha:=linha+5;
+        lPdf.ImpL(linha, 1, 'Clube: ', Normal, $FF000000, 14);
+        lPdf.ImpL(linha, 15, dm.qryConsOS.FieldByName('NOME').AsString, Normal, $FF000000, 14);
+        lPdf.ImpL(linha, 70, 'Total: ', Normal, $FF000000, 14);
+        lPdf.ImpL(linha, 85, dm.qryConsOS.FieldByName('TOTAL').AsString, Normal, $FF000000, 14);
+        linha:=linha+5;
+        lPdf.ImpLinhaH(linha, 1, 120, $FF000000);
+
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('SELECT PTS_B1,PTS_B2,PTS_B3,PTS_B4,PTS_B5,PTS_B6,PTS_B7,PTS_B8,');
+        dm.qryGeral.SQL.Add('PTS_M1,PTS_M2,PTS_M3,PTS_M4,PTS_M5,PTS_M6,PTS_M7,PTS_M8,PTS_M9,');
+        DM.qryGeral.SQL.Add('PTS_A1,PTS_A2,PTS_A3,PTS_A4,PTS_A5,PTS_A6,PTS_A7,PTS_A8,PTS_A9,PTS_A10,');
+        DM.qryGeral.SQL.Add('PTS_T1,PTS_T2,PTS_T3,PTS_T4 FROM TAB_PONTOS');
+        dm.qryGeral.SQL.Add('WHERE COD_CLUBE = :COD_CLUBE');
+        dm.qryGeral.ParamByName('COD_CLUBE').AsString:=dm.qryConsOS.FieldByName('COD_CLUBE').AsString;
+        dm.qryGeral.Active := true;
+
+        linha:=linha+3;
+        lPdf.ImpL(linha, 1, 'Descansar     = '+dm.qryGeral.FieldByName('PTS_B1').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,40, 'Ord. Marche   = '+dm.qryGeral.FieldByName('PTS_M1').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,80, 'Alinhamento   = '+dm.qryGeral.FieldByName('PTS_A1').AsString, Normal, $FF000000, 12);
+        linha:=linha+3;
+        lPdf.ImpL(linha, 1, 'Sentido       = '+dm.qryGeral.FieldByName('PTS_B2').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,40, 'Marcar Passo  = '+dm.qryGeral.FieldByName('PTS_M2').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,80, 'Cobertura     = '+dm.qryGeral.FieldByName('PTS_A2').AsString, Normal, $FF000000, 12);
+        linha:=linha+3;
+        lPdf.ImpL(linha, 1, 'Cobrir        = '+dm.qryGeral.FieldByName('PTS_B3').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,40, 'Direita Volver= '+dm.qryGeral.FieldByName('PTS_M3').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,80, 'Conjunto      = '+dm.qryGeral.FieldByName('PTS_A3').AsString, Normal, $FF000000, 12);
+        linha:=linha+3;
+        lPdf.ImpL(linha, 1, 'Firme         = '+dm.qryGeral.FieldByName('PTS_B4').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,40, 'Esquerd Volver= '+dm.qryGeral.FieldByName('PTS_M4').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,80, 'Energia Movim.= '+dm.qryGeral.FieldByName('PTS_A4').AsString, Normal, $FF000000, 12);
+        linha:=linha+3;
+        lPdf.ImpL(linha, 1, 'D/E/Meia Volta= '+dm.qryGeral.FieldByName('PTS_B5').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,40, 'Meia Volta    = '+dm.qryGeral.FieldByName('PTS_M5').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,80, 'Dific Evolução= '+dm.qryGeral.FieldByName('PTS_A5').AsString, Normal, $FF000000, 12);
+        linha:=linha+3;
+        lPdf.ImpL(linha, 1, 'Oitava Direita= '+dm.qryGeral.FieldByName('PTS_B6').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,40, 'Olhar Dir/Esq = '+dm.qryGeral.FieldByName('PTS_M6').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,80, 'Padronização  = '+dm.qryGeral.FieldByName('PTS_A6').AsString, Normal, $FF000000, 12);
+        linha:=linha+3;
+        lPdf.ImpL(linha, 1, 'Oitava Esquerd= '+dm.qryGeral.FieldByName('PTS_B7').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,40, 'Alto          = '+dm.qryGeral.FieldByName('PTS_M7').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,80, 'Posição       = '+dm.qryGeral.FieldByName('PTS_A7').AsString, Normal, $FF000000, 12);
+        linha:=linha+3;
+        lPdf.ImpL(linha, 1, 'Frente Ret/D/E= '+dm.qryGeral.FieldByName('PTS_B8').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,40, 'Convers.Centro= '+dm.qryGeral.FieldByName('PTS_M8').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,80, 'Postura       = '+dm.qryGeral.FieldByName('PTS_A8').AsString, Normal, $FF000000, 12);
+        linha:=linha+3;
+        lPdf.ImpL(linha,40, 'Dir/Esq/Meia  = '+dm.qryGeral.FieldByName('PTS_M9').AsString, Normal, $FF000000, 12);
+        lPdf.ImpL(linha,80, 'Garra         = '+dm.qryGeral.FieldByName('PTS_A9').AsString, Normal, $FF000000, 12);
+        linha:=linha+3;
+        lPdf.ImpL(linha,80, 'Evolução Tema = '+dm.qryGeral.FieldByName('PTS_A10').AsString, Normal, $FF000000, 12);
+        linha:=linha+5;
+        lPdf.ImpL(linha, 1, 'Altura Voz    = '+dm.qryGeral.FieldByName('PTS_T1').AsString, Normal, $FF000000, 12);
+        linha:=linha+3;
+        lPdf.ImpL(linha, 1, 'Voz Comanda   = '+dm.qryGeral.FieldByName('PTS_T2').AsString, Normal, $FF000000, 12);
+        linha:=linha+3;
+        lPdf.ImpL(linha, 1, 'Postura Instr = '+dm.qryGeral.FieldByName('PTS_T3').AsString, Normal, $FF000000, 12);
+        linha:=linha+3;
+        lPdf.ImpL(linha, 1, 'Tempo         = '+dm.qryGeral.FieldByName('PTS_T4').AsString, Normal, $FF000000, 12);
 
         dm.qryConsOS.Next;
     end;

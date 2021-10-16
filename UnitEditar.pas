@@ -68,6 +68,8 @@ type
   private
     { Private declarations }
     lbl : TLabel;
+
+    function Validar_Pontos(pontos: Double): Boolean;
   public
     { Public declarations }
     tipo, ind_campo_obrigatorio : string;
@@ -162,6 +164,12 @@ var
 begin
     edt_Texto.Text:= StringReplace(edt_Texto.Text, '.', ',', []);
 
+    if not Validar_Pontos(StrToFloat(edt_Texto.Text)) then
+    begin
+      ShowMessage('Valor não permitido!');
+      Exit;
+    end;
+
     if tipo = 'EDIT' then
         ret := edt_texto.Text;
     if tipo = 'MEMO' then
@@ -176,7 +184,7 @@ begin
     // Campo obrigatorio...
     if (ind_campo_obrigatorio = 'S') and (ret = '') then
     begin
-        ShowMessage('Esse campo é obrigatório');
+        ShowMessage('Esse campo é obrigatório!');
         exit;
     end;
 
@@ -194,6 +202,22 @@ end;
 procedure TFrmEditar.Label1Click(Sender: TObject);
 begin
     TeclaNumero(Sender);
+end;
+
+function TFrmEditar.Validar_Pontos(pontos: Double): Boolean;
+var
+  valor: Double;
+begin
+  Result:= True;
+
+  if lbl_subtitulo.Text = '(30 A 60 Pontos)'  then
+    valor:= 60
+  else
+    valor:= StrToFloat(Copy(lbl_subtitulo.Text, 6, 2));
+
+  if pontos > valor then
+    Result:= False;
+
 end;
 
 end.

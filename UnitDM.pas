@@ -111,6 +111,7 @@ begin
                  'STATUS CHAR(1)' +
                  ')' );
 
+
 end;
 
 procedure Tdm.connBeforeConnect(Sender: TObject);
