@@ -166,7 +166,9 @@ begin
 
     if not Validar_Pontos(StrToFloat(edt_Texto.Text)) then
     begin
-      ShowMessage('Valor não permitido!');
+      ShowMessage('Valor maior que o permitido!');
+      edt_Texto.Text:= '';
+      edt_Texto.SetFocus;
       Exit;
     end;
 

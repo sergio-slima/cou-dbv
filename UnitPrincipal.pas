@@ -57,8 +57,6 @@ type
     Rectangle6: TRectangle;
     Rectangle7: TRectangle;
     EdtNome: TEdit;
-    Rectangle4: TRectangle;
-    EdtRegiao: TEdit;
     Rectangle8: TRectangle;
     EdtDiretor: TEdit;
     VertScrollBox1: TVertScrollBox;
@@ -84,7 +82,7 @@ type
     LblB2: TLabel;
     TabControlRequisitos: TTabControl;
     TabBasico: TTabItem;
-    TabAvançado: TTabItem;
+    TabAvancado: TTabItem;
     TabInstrutor: TTabItem;
     LblBs1: TLabel;
     LblBs2: TLabel;
@@ -223,7 +221,7 @@ type
     LblNomeAvaliador: TLabel;
     ImgVoltar: TImage;
     imgAdd: TImage;
-    ImgUpload: TImage;
+    ImgSorteio: TImage;
     ImgDownload: TImage;
     TabCalcular: TTabItem;
     Rectangle31: TRectangle;
@@ -258,12 +256,12 @@ type
     TabResultado: TFDMemTable;
     TabResultadoCod_Clube: TStringField;
     TabResultadoNom_Clube: TStringField;
-    TabResultadoPontos: TFloatField;
     Rectangle36: TRectangle;
     LblAt10: TLabel;
     Image1: TImage;
     LblA10: TLabel;
     LblAs10: TLabel;
+    TabResultadoTotal: TFloatField;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -352,6 +350,7 @@ type
     procedure RtgAddAvaliadorClick(Sender: TObject);
     procedure Rectangle36Click(Sender: TObject);
     procedure Rectangle36Tap(Sender: TObject; const Point: TPointF);
+    procedure ImgSorteioClick(Sender: TObject);
   private
     fancy : TFancyDialog;
     posicao_final: Integer;
@@ -378,11 +377,13 @@ type
     procedure ClickApagar(Sender: TObject);
     procedure ClickExcluir(Sender: TObject);
     procedure Imprimir;
+    procedure AjustarTabRequisitos;
     { Private declarations }
   public
     { Public declarations }
     CodClube: string;
     Nome_Usuario: String;
+    Item_Avaliar: String;
     Status_Clube: String;
     procedure EditarCampo(objeto: TObject;
                           tipo_campo, titulo, subtitulo, textprompt, ind_obrigatorio,
@@ -438,7 +439,6 @@ end;
 procedure TFrmPrincipal.imgAddClick(Sender: TObject);
 begin
     EdtNome.Text:='';
-    EdtRegiao.Text:='';
     EdtDiretor.Text:='';
     Status_Clube:='N';
     lytCadClube.Visible:=True;
@@ -510,7 +510,7 @@ begin
       dm.qryGeral.SQL.Add('UPDATE TAB_CLUBES SET PONTOS=:PONTOS, TOTAL=:TOTAL');
       dm.qryGeral.SQL.Add('WHERE COD_CLUBE=:COD_CLUBE');
       dm.qryGeral.ParamByName('PONTOS').Value := FloatToStr(pontos);
-      dm.qryGeral.ParamByName('TOTAL').Value := FloatToStr(pontos);
+      dm.qryGeral.ParamByName('TOTAL').Value := pontos;
       dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
       dm.qryGeral.ExecSQL;
 
@@ -531,6 +531,59 @@ begin
     except on ex:exception do
         fancy.Show(TIconDialog.Error, '', 'Erro ao gravar avaliação!', 'OK');
     end;
+end;
+
+procedure TFrmPrincipal.ImgSorteioClick(Sender: TObject);
+var
+  j, i, num: integer;
+  Sorteado: array of integer;
+
+  function JaSorteado(numero: integer): Boolean;
+  var
+    i: integer;
+  begin
+    Result:=False;
+    for i := 0 to High(Sorteado) do
+      if Sorteado[i] = numero then
+      begin
+        Result:= True;
+        Break;
+      end;
+  end;
+begin
+
+  dm.qryConsCliente.Active := false;
+  dm.qryConsCliente.SQL.Clear;
+  dm.qryConsCliente.SQL.Add('SELECT * FROM TAB_CLUBES');
+  dm.qryConsCliente.Prepare;
+  dm.qryConsCliente.Active := true;
+  if dm.qryConsCliente.RecordCount > 0 then
+  begin
+    i:= dm.qryConsCliente.RecordCount;
+    dm.qryConsCliente.First;
+    Randomize;
+    while not dm.qryConsCliente.eof do
+    begin
+      repeat
+        num:= Random(i)+1;
+      until not JaSorteado(num);
+//      ShowMessage(IntToStr(num));
+      SetLength(Sorteado,Length(Sorteado)+1);
+      Sorteado[High(Sorteado)]:= num;
+
+      dm.qryGeral.Close;
+      dm.qryGeral.SQL.Clear;
+      dm.qryGeral.SQL.Add('UPDATE TAB_CLUBES SET SEQUENCIA=:SEQUENCIA');
+      dm.qryGeral.SQL.Add('WHERE COD_CLUBE=:COD_CLUBE');
+      dm.qryGeral.ParamByName('COD_CLUBE').Value := dm.qryConsCliente.FieldByName('COD_CLUBE').AsString;
+      dm.qryGeral.ParamByName('SEQUENCIA').Value := num;
+      dm.qryGeral.ExecSQL;
+
+      dm.qryConsCliente.next;
+    end;
+  end;
+
+  ConsultarClube;
 end;
 
 procedure TFrmPrincipal.ImgVoltarClick(Sender: TObject);
@@ -561,8 +614,9 @@ begin
     lPdf.ImpL( 5, 40, 'CONCURSO DE ORDEM UNIDA', Normal, $FF000000, 16);
     lPdf.ImpL( 10, 50, '(Resultado Parcial)', Normal, $FF000000, 14);
     lPdf.ImpL( 20, 1, 'Avaliador: '+Nome_Usuario, Normal, $FF000000, 14);
+    lPdf.ImpL( 20, 60, 'Avaliação: '+Item_Avaliar, Normal, $FF000000, 14);
 
-    ConsultarResultadoFinal;
+//    ConsultarResultadoFinal;
 
     dm.qryConsOS.Active := false;
     dm.qryConsOS.SQL.Clear;
@@ -577,8 +631,8 @@ begin
         lPdf.ImpL(linha, 1, 'Clube: ', Normal, $FF000000, 14);
         lPdf.ImpL(linha, 15, dm.qryConsOS.FieldByName('NOME').AsString, Normal, $FF000000, 14);
         lPdf.ImpL(linha, 70, 'Total: ', Normal, $FF000000, 14);
-        lPdf.ImpL(linha, 85, dm.qryConsOS.FieldByName('TOTAL').AsString, Normal, $FF000000, 14);
-        linha:=linha+5;
+        lPdf.ImpL(linha, 85, dm.qryConsOS.FieldByName('TOTAL').Value, Normal, $FF000000, 14);
+        linha:=linha+4;
         lPdf.ImpLinhaH(linha, 1, 120, $FF000000);
 
         dm.qryGeral.Active := false;
@@ -591,51 +645,68 @@ begin
         dm.qryGeral.ParamByName('COD_CLUBE').AsString:=dm.qryConsOS.FieldByName('COD_CLUBE').AsString;
         dm.qryGeral.Active := true;
 
+        if (Item_Avaliar = 'Básico') or (Item_Avaliar = 'Todas') then
+        begin
+          linha:=linha+4;
+          lPdf.ImpL(linha, 1, '# Básico #', Normal, $FF000000, 14);
+          linha:=linha+3;
+          lPdf.ImpL(linha, 1, 'Descansar     = '+dm.qryGeral.FieldByName('PTS_B1').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha, 40, 'Sentido       = '+dm.qryGeral.FieldByName('PTS_B2').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha, 80, 'Cobrir        = '+dm.qryGeral.FieldByName('PTS_B3').AsString, Normal, $FF000000, 12);
+          linha:=linha+3;
+          lPdf.ImpL(linha, 1, 'Firme         = '+dm.qryGeral.FieldByName('PTS_B4').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha, 40, 'Dir/Esq/MeiaVolta= '+dm.qryGeral.FieldByName('PTS_B5').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha, 80, 'Oitava Direita= '+dm.qryGeral.FieldByName('PTS_B6').AsString, Normal, $FF000000, 12);
+          linha:=linha+3;
+          lPdf.ImpL(linha, 1, 'Oitava Esquerd= '+dm.qryGeral.FieldByName('PTS_B7').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha, 40, 'Frente Ret/Dir/Esq= '+dm.qryGeral.FieldByName('PTS_B8').AsString, Normal, $FF000000, 12);
+        end;
+        if (Item_Avaliar = 'Movimento') or (Item_Avaliar = 'Todas') then
+        begin
+          linha:=linha+4;
+          lPdf.ImpL(linha, 1, '# Movimento #', Normal, $FF000000, 14);
+          linha:=linha+3;
+          lPdf.ImpL(linha, 1, 'Ord. Marche   = '+dm.qryGeral.FieldByName('PTS_M1').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,40, 'Marcar Passo  = '+dm.qryGeral.FieldByName('PTS_M2').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,80, 'Direita Volver= '+dm.qryGeral.FieldByName('PTS_M3').AsString, Normal, $FF000000, 12);
+          linha:=linha+3;
+          lPdf.ImpL(linha, 1, 'Esquerda Volver= '+dm.qryGeral.FieldByName('PTS_M4').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,40, 'MeiaVolta Volver= '+dm.qryGeral.FieldByName('PTS_M5').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,80, 'Olhar Dir/Esq = '+dm.qryGeral.FieldByName('PTS_M6').AsString, Normal, $FF000000, 12);
+          linha:=linha+3;
+          lPdf.ImpL(linha, 1, 'Alto          = '+dm.qryGeral.FieldByName('PTS_M7').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,40, 'Convers.Centro= '+dm.qryGeral.FieldByName('PTS_M8').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,80, 'Dir/Esq/Meia  = '+dm.qryGeral.FieldByName('PTS_M9').AsString, Normal, $FF000000, 12);
+        end;
+        if (Item_Avaliar = 'Avançado') or (Item_Avaliar = 'Todas') then
+        begin
+          linha:=linha+4;
+          lPdf.ImpL(linha, 1, '# Avançado #', Normal, $FF000000, 14);
+          linha:=linha+3;
+          lPdf.ImpL(linha, 1, 'Alinhamento   = '+dm.qryGeral.FieldByName('PTS_A1').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,40, 'Cobertura     = '+dm.qryGeral.FieldByName('PTS_A2').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,80, 'Conjunto      = '+dm.qryGeral.FieldByName('PTS_A3').AsString, Normal, $FF000000, 12);
+          linha:=linha+3;
+          lPdf.ImpL(linha, 1, 'Energia Movim.= '+dm.qryGeral.FieldByName('PTS_A4').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,40, 'Dific Evolução= '+dm.qryGeral.FieldByName('PTS_A5').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,80, 'Padronização  = '+dm.qryGeral.FieldByName('PTS_A6').AsString, Normal, $FF000000, 12);
+          linha:=linha+3;
+          lPdf.ImpL(linha, 1, 'Posição       = '+dm.qryGeral.FieldByName('PTS_A7').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,40, 'Postura       = '+dm.qryGeral.FieldByName('PTS_A8').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,80, 'Garra         = '+dm.qryGeral.FieldByName('PTS_A9').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,110, 'Evolução Tema = '+dm.qryGeral.FieldByName('PTS_A10').AsString, Normal, $FF000000, 12);
+        end;
+        if (Item_Avaliar = 'Instrutor') or (Item_Avaliar = 'Todas') then
+        begin
+          linha:=linha+4;
+          lPdf.ImpL(linha, 1, '# Instrutor #', Normal, $FF000000, 14);
+          linha:=linha+3;
+          lPdf.ImpL(linha, 1, 'Altura Voz    = '+dm.qryGeral.FieldByName('PTS_T1').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,40, 'Voz Comanda   = '+dm.qryGeral.FieldByName('PTS_T2').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,80, 'Postura Instr = '+dm.qryGeral.FieldByName('PTS_T3').AsString, Normal, $FF000000, 12);
+          lPdf.ImpL(linha,120, 'Tempo = '+dm.qryGeral.FieldByName('PTS_T4').AsString, Normal, $FF000000, 12);
+        end;
         linha:=linha+3;
-        lPdf.ImpL(linha, 1, 'Descansar     = '+dm.qryGeral.FieldByName('PTS_B1').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,40, 'Ord. Marche   = '+dm.qryGeral.FieldByName('PTS_M1').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,80, 'Alinhamento   = '+dm.qryGeral.FieldByName('PTS_A1').AsString, Normal, $FF000000, 12);
-        linha:=linha+3;
-        lPdf.ImpL(linha, 1, 'Sentido       = '+dm.qryGeral.FieldByName('PTS_B2').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,40, 'Marcar Passo  = '+dm.qryGeral.FieldByName('PTS_M2').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,80, 'Cobertura     = '+dm.qryGeral.FieldByName('PTS_A2').AsString, Normal, $FF000000, 12);
-        linha:=linha+3;
-        lPdf.ImpL(linha, 1, 'Cobrir        = '+dm.qryGeral.FieldByName('PTS_B3').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,40, 'Direita Volver= '+dm.qryGeral.FieldByName('PTS_M3').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,80, 'Conjunto      = '+dm.qryGeral.FieldByName('PTS_A3').AsString, Normal, $FF000000, 12);
-        linha:=linha+3;
-        lPdf.ImpL(linha, 1, 'Firme         = '+dm.qryGeral.FieldByName('PTS_B4').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,40, 'Esquerd Volver= '+dm.qryGeral.FieldByName('PTS_M4').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,80, 'Energia Movim.= '+dm.qryGeral.FieldByName('PTS_A4').AsString, Normal, $FF000000, 12);
-        linha:=linha+3;
-        lPdf.ImpL(linha, 1, 'D/E/Meia Volta= '+dm.qryGeral.FieldByName('PTS_B5').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,40, 'Meia Volta    = '+dm.qryGeral.FieldByName('PTS_M5').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,80, 'Dific Evolução= '+dm.qryGeral.FieldByName('PTS_A5').AsString, Normal, $FF000000, 12);
-        linha:=linha+3;
-        lPdf.ImpL(linha, 1, 'Oitava Direita= '+dm.qryGeral.FieldByName('PTS_B6').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,40, 'Olhar Dir/Esq = '+dm.qryGeral.FieldByName('PTS_M6').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,80, 'Padronização  = '+dm.qryGeral.FieldByName('PTS_A6').AsString, Normal, $FF000000, 12);
-        linha:=linha+3;
-        lPdf.ImpL(linha, 1, 'Oitava Esquerd= '+dm.qryGeral.FieldByName('PTS_B7').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,40, 'Alto          = '+dm.qryGeral.FieldByName('PTS_M7').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,80, 'Posição       = '+dm.qryGeral.FieldByName('PTS_A7').AsString, Normal, $FF000000, 12);
-        linha:=linha+3;
-        lPdf.ImpL(linha, 1, 'Frente Ret/D/E= '+dm.qryGeral.FieldByName('PTS_B8').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,40, 'Convers.Centro= '+dm.qryGeral.FieldByName('PTS_M8').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,80, 'Postura       = '+dm.qryGeral.FieldByName('PTS_A8').AsString, Normal, $FF000000, 12);
-        linha:=linha+3;
-        lPdf.ImpL(linha,40, 'Dir/Esq/Meia  = '+dm.qryGeral.FieldByName('PTS_M9').AsString, Normal, $FF000000, 12);
-        lPdf.ImpL(linha,80, 'Garra         = '+dm.qryGeral.FieldByName('PTS_A9').AsString, Normal, $FF000000, 12);
-        linha:=linha+3;
-        lPdf.ImpL(linha,80, 'Evolução Tema = '+dm.qryGeral.FieldByName('PTS_A10').AsString, Normal, $FF000000, 12);
-        linha:=linha+5;
-        lPdf.ImpL(linha, 1, 'Altura Voz    = '+dm.qryGeral.FieldByName('PTS_T1').AsString, Normal, $FF000000, 12);
-        linha:=linha+3;
-        lPdf.ImpL(linha, 1, 'Voz Comanda   = '+dm.qryGeral.FieldByName('PTS_T2').AsString, Normal, $FF000000, 12);
-        linha:=linha+3;
-        lPdf.ImpL(linha, 1, 'Postura Instr = '+dm.qryGeral.FieldByName('PTS_T3').AsString, Normal, $FF000000, 12);
-        linha:=linha+3;
-        lPdf.ImpL(linha, 1, 'Tempo         = '+dm.qryGeral.FieldByName('PTS_T4').AsString, Normal, $FF000000, 12);
 
         dm.qryConsOS.Next;
     end;
@@ -1212,7 +1283,7 @@ begin
         Detail := Nome;
 
         TListItemText(Objects.FindDrawable('txtNome')).Text := Nome;
-        TListItemText(Objects.FindDrawable('txtRegiao')).Text := Regiao+' Região';
+        TListItemText(Objects.FindDrawable('txtRegiao')).Text := Regiao+' Apresentação';
         TListItemText(Objects.FindDrawable('txtDiretor')).Text := 'Instrutor: '+Diretor;
         TListItemText(Objects.FindDrawable('txtPontos')).Text := Pontos;
         TListItemImage(Objects.FindDrawable('ImageMenu')).Bitmap := imgOpcao.Bitmap
@@ -1269,6 +1340,46 @@ begin
     end;
 end;
 
+procedure TFrmPrincipal.AjustarTabRequisitos;
+begin
+  if Item_Avaliar = 'Básico' then
+  begin
+     TabBasico.Visible:= True;
+     TabMovimento.Visible:= False;
+     TabAvancado.Visible:= False;
+     TabInstrutor.Visible:= False;
+     TabControlRequisitos.GotoVisibleTab(0);
+  end else if Item_Avaliar = 'Movimento' then
+  begin
+     TabBasico.Visible:= False;
+     TabMovimento.Visible:= True;
+     TabAvancado.Visible:= False;
+     TabInstrutor.Visible:= False;
+     TabControlRequisitos.GotoVisibleTab(1);
+  end else if Item_Avaliar = 'Avançado' then
+  begin
+     TabBasico.Visible:= False;
+     TabMovimento.Visible:= False;
+     TabAvancado.Visible:= True;
+     TabInstrutor.Visible:= False;
+     TabControlRequisitos.GotoVisibleTab(2);
+  end else if Item_Avaliar = 'Instrutor' then
+  begin
+     TabBasico.Visible:= False;
+     TabMovimento.Visible:= False;
+     TabAvancado.Visible:= False;
+     TabInstrutor.Visible:= True;
+     TabControlRequisitos.GotoVisibleTab(3);
+  end else
+  begin
+     TabBasico.Visible:= True;
+     TabMovimento.Visible:= True;
+     TabAvancado.Visible:= True;
+     TabInstrutor.Visible:= True;
+     TabControlRequisitos.GotoVisibleTab(0);
+  end;
+end;
+
 procedure TFrmPrincipal.ConsultarClube;
 begin
     lvClube.Items.Clear;
@@ -1276,7 +1387,7 @@ begin
     dm.qryConsOS.Active := false;
     dm.qryConsOS.SQL.Clear;
     dm.qryConsOS.SQL.Add('SELECT * FROM TAB_CLUBES');
-    dm.qryConsOS.SQL.Add('ORDER BY NOME');
+    dm.qryConsOS.SQL.Add('ORDER BY SEQUENCIA, NOME');
     dm.qryConsOS.Active := true;
     dm.qryConsOS.First;
 
@@ -1284,7 +1395,7 @@ begin
     begin
         AddClube(dm.qryConsOS.FieldByName('COD_CLUBE').AsString,
               dm.qryConsOS.FieldByName('NOME').AsString,
-              dm.qryConsOS.FieldByName('REGIAO').AsString,
+              IntToStr(dm.qryConsOS.FieldByName('SEQUENCIA').AsInteger),
               dm.qryConsOS.FieldByName('DIRETOR').AsString,
               dm.qryConsOS.FieldByName('PONTOS').AsString);
 
@@ -1307,7 +1418,7 @@ begin
     begin
         AddResultado(dm.qryConsOS.FieldByName('COD_CLUBE').AsString,
               dm.qryConsOS.FieldByName('NOME').AsString,
-              dm.qryConsOS.FieldByName('TOTAL').AsString);
+              dm.qryConsOS.FieldByName('TOTAL').Value);
 
         dm.qryConsOS.Next;
     end;
@@ -1321,30 +1432,28 @@ begin
     dm.qryConsOS.Active := false;
     dm.qryConsOS.SQL.Clear;
     dm.qryConsOS.SQL.Add('SELECT COD_CLUBE, NOME, TOTAL FROM TAB_CLUBES');
+    dm.qryConsOS.SQL.Add('ORDER BY TOTAL DESC');
     dm.qryConsOS.Active := true;
     dm.qryConsOS.First;
 
-    TabResultado.EmptyDataSet;
     while NOT dm.qryConsOS.Eof do
     begin
-        TabResultado.Append;
-        TabResultadoCod_Clube.AsString:= dm.qryConsOS.FieldByName('COD_CLUBE').AsString;
-        TabResultadoNom_Clube.AsString:= dm.qryConsOS.FieldByName('NOME').AsString;
-        TabResultadoPontos.AsFloat:= StrToFloat(dm.qryConsOS.FieldByName('TOTAL').AsString);
-        TabResultado.Post;
+        AddResultadoFinal(dm.qryConsOS.FieldByName('COD_CLUBE').AsString,
+                          dm.qryConsOS.FieldByName('NOME').AsString,
+                          FloatToStr(dm.qryConsOS.FieldByName('TOTAL').Value));
 
         dm.qryConsOS.Next;
     end;
 
-    TabResultado.IndexFieldNames := 'PONTOS:D';
-    while NOT TabResultado.Eof do
-    begin
-        AddResultadoFinal(TabResultadoCod_Clube.AsString,
-                          TabResultadoNom_Clube.AsString,
-                          FloatToStr(TabResultadoPontos.AsFloat));
-
-        TabResultado.Next;
-    end;
+//    TabResultado.IndexFieldNames := 'TOTAL:D';
+//    while NOT TabResultado.Eof do
+//    begin
+//        AddResultadoFinal(TabResultadoCod_Clube.AsString,
+//                          TabResultadoNom_Clube.AsString,
+//                          FloatToStr(TabResultadoTotal.AsFloat));
+//
+//        TabResultado.Next;
+//    end;
 end;
 
 procedure TFrmPrincipal.EditarCampo(objeto: TObject; tipo_campo, titulo, subtitulo,
@@ -1463,6 +1572,7 @@ procedure TFrmPrincipal.FormShow(Sender: TObject);
 begin
     LblNomeAvaliador.Text:= 'Avaliador: '+Nome_Usuario;
     TabControl.GotoVisibleTab(1);
+    AjustarTabRequisitos;
     ConsultarClube;
 end;
 
@@ -1660,7 +1770,7 @@ begin
     dm.qryGeral.ParamByName('COD_CLUBE').Value := lytAddAvaliadores.TagString;
     dm.qryGeral.Active := True;
     if dm.qryGeral.RecordCount > 0 then
-      Pontos1:= StrToFloat(dm.qryGeral.FieldByName('TOTAL').Value);
+      Pontos1:= dm.qryGeral.FieldByName('TOTAL').Value;
 
     Pontos2:= StrToFloat(edtResultadoPontos.Text);
     Total_Pontos:=Pontos1 + Pontos2;
@@ -1669,7 +1779,7 @@ begin
     dm.qryGeral.SQL.Clear;
     dm.qryGeral.SQL.Add('UPDATE TAB_CLUBES SET TOTAL=:TOTAL');
     dm.qryGeral.SQL.Add('WHERE COD_CLUBE=:COD_CLUBE');
-    dm.qryGeral.ParamByName('TOTAL').Value := FloatToStr(Total_Pontos);
+    dm.qryGeral.ParamByName('TOTAL').Value := Total_Pontos;
     dm.qryGeral.ParamByName('COD_CLUBE').Value := lytAddAvaliadores.TagString;
     dm.qryGeral.ExecSQL;
 
@@ -1704,8 +1814,8 @@ begin
 
         if Status_Clube = 'N' then
         begin
-            SQL.Add('INSERT INTO TAB_CLUBES(COD_CLUBE, NOME, REGIAO, DIRETOR, PONTOS)');
-            SQL.Add('VALUES(:COD_CLUBE, :NOME, :REGIAO, :DIRETOR, :PONTOS)');
+            SQL.Add('INSERT INTO TAB_CLUBES(COD_CLUBE, NOME, SEQUENCIA, DIRETOR, PONTOS)');
+            SQL.Add('VALUES(:COD_CLUBE, :NOME, :SEQUENCIA, :DIRETOR, :PONTOS)');
 
             CodClube := GeraCodClube;
         end
@@ -1716,7 +1826,7 @@ begin
 
         ParamByName('COD_CLUBE').Value := CodClube;
         ParamByName('NOME').Value := EdtNome.Text;
-        ParamByName('REGIAO').Value := EdtRegiao.Text;
+        ParamByName('SEQUENCIA').Value := 0;
         ParamByName('DIRETOR').Value := EdtDiretor.Text;
         ParamByName('PONTOS').Value := '0,0';
 

@@ -40,7 +40,7 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="$(BDS)\bin\Artwork\Android\FM_LauncherIcon_36x36.png" Condition="'$(Config)'=='Debug'">
+        <DeployFile Include="Images\ico-campori\36.png" Condition="'$(Config)'=='Debug'">
             <RemoteDir>ACOUDBV\res\drawable-ldpi\</RemoteDir>
             <RemoteName>ic_launcher.png</RemoteName>
             <DeployClass>Android_LauncherIcon36</DeployClass>
@@ -49,7 +49,7 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Images\ico\android\mipmap-xxhdpi\ic_launcher.png" Condition="'$(Config)'=='Debug'">
+        <DeployFile Include="Images\ico-campori\144.png" Condition="'$(Config)'=='Debug'">
             <RemoteDir>ACOUDBV\res\drawable-xxhdpi\</RemoteDir>
             <RemoteName>ic_launcher.png</RemoteName>
             <DeployClass>Android_LauncherIcon144</DeployClass>
@@ -58,28 +58,10 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Images\splash\3.png" Condition="'$(Config)'=='Debug'">
+        <DeployFile Include="Images\splash\03.png" Condition="'$(Config)'=='Debug'">
             <RemoteDir>ACOUDBV\res\drawable-large\</RemoteDir>
             <RemoteName>splash_image.png</RemoteName>
             <DeployClass>Android_SplashImage640</DeployClass>
-            <Operation>1</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
-        <DeployFile Include="Images\splash\4.png" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>ACOUDBV\res\drawable-xlarge\</RemoteDir>
-            <RemoteName>splash_image.png</RemoteName>
-            <DeployClass>Android_SplashImage960</DeployClass>
-            <Operation>1</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
-        <DeployFile Include="Images\splash\1.png" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>ACOUDBV\res\drawable-small\</RemoteDir>
-            <RemoteName>splash_image.png</RemoteName>
-            <DeployClass>Android_SplashImage426</DeployClass>
             <Operation>1</Operation>
             <LocalCommand/>
             <RemoteCommand/>
@@ -130,6 +112,15 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
+        <DeployFile Include="Images\splash\01.png" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>ACOUDBV\res\drawable-small\</RemoteDir>
+            <RemoteName>splash_image.png</RemoteName>
+            <DeployClass>Android_SplashImage426</DeployClass>
+            <Operation>1</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
         <DeployFile Include="Android\Debug\styles.xml" Condition="'$(Config)'=='Debug'">
             <RemoteDir>ACOUDBV\res\values\</RemoteDir>
             <RemoteName>styles.xml</RemoteName>
@@ -139,7 +130,7 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Images\ico\android\mipmap-xhdpi\ic_launcher.png" Condition="'$(Config)'=='Debug'">
+        <DeployFile Include="Images\ico-campori\96.png" Condition="'$(Config)'=='Debug'">
             <RemoteDir>ACOUDBV\res\drawable-xhdpi\</RemoteDir>
             <RemoteName>ic_launcher.png</RemoteName>
             <DeployClass>Android_LauncherIcon96</DeployClass>
@@ -152,6 +143,15 @@
             <RemoteDir>ACOUDBV\res\drawable-xxxhdpi\</RemoteDir>
             <RemoteName>ic_notification.png</RemoteName>
             <DeployClass>Android_NotificationIcon96</DeployClass>
+            <Operation>1</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="Images\splash\02.png" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>ACOUDBV\res\drawable-normal\</RemoteDir>
+            <RemoteName>splash_image.png</RemoteName>
+            <DeployClass>Android_SplashImage470</DeployClass>
             <Operation>1</Operation>
             <LocalCommand/>
             <RemoteCommand/>
@@ -175,15 +175,6 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Images\splash\2.png" Condition="'$(Config)'=='Debug'">
-            <RemoteDir>ACOUDBV\res\drawable-normal\</RemoteDir>
-            <RemoteName>splash_image.png</RemoteName>
-            <DeployClass>Android_SplashImage470</DeployClass>
-            <Operation>1</Operation>
-            <LocalCommand/>
-            <RemoteCommand/>
-            <Overwrite>True</Overwrite>
-        </DeployFile>
         <DeployFile Include="$(BDS)\bin\Artwork\Android\FM_NotificationIcon_24x24.png" Condition="'$(Config)'=='Debug'">
             <RemoteDir>ACOUDBV\res\drawable-mdpi\</RemoteDir>
             <RemoteName>ic_notification.png</RemoteName>
@@ -197,6 +188,15 @@
             <RemoteDir>ACOUDBV\res\values\</RemoteDir>
             <RemoteName>colors.xml</RemoteName>
             <DeployClass>Android_Colors</DeployClass>
+            <Operation>1</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="Images\splash\04.png" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>ACOUDBV\res\drawable-xlarge\</RemoteDir>
+            <RemoteName>splash_image.png</RemoteName>
+            <DeployClass>Android_SplashImage960</DeployClass>
             <Operation>1</Operation>
             <LocalCommand/>
             <RemoteCommand/>
@@ -220,7 +220,7 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Images\ico\android\mipmap-mdpi\ic_launcher.png" Condition="'$(Config)'=='Debug'">
+        <DeployFile Include="Images\ico-campori\48.png" Condition="'$(Config)'=='Debug'">
             <RemoteDir>ACOUDBV\res\drawable-mdpi\</RemoteDir>
             <RemoteName>ic_launcher.png</RemoteName>
             <DeployClass>Android_LauncherIcon48</DeployClass>
@@ -238,7 +238,7 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
-        <DeployFile Include="Images\ico\android\mipmap-hdpi\ic_launcher.png" Condition="'$(Config)'=='Debug'">
+        <DeployFile Include="Images\ico-campori\72.png" Condition="'$(Config)'=='Debug'">
             <RemoteDir>ACOUDBV\res\drawable-hdpi\</RemoteDir>
             <RemoteName>ic_launcher.png</RemoteName>
             <DeployClass>Android_LauncherIcon72</DeployClass>

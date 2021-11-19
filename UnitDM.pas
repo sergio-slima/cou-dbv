@@ -43,19 +43,16 @@ begin
                  'NOME_USUARIO VARCHAR(50)' +
                  ')' );
 
-    // Cria tabela de Pontuação...
-    conn.ExecSQL('DROP TABLE IF EXISTS TAB_CLUBE');
-
     // Cria tabela de Clubes...
     conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_CLUBES(' +
                  'COD_CLUBE VARCHAR(20) PRIMARY KEY,' +
                  'NOME VARCHAR(50),' +
                  'DISTRITO VARCHAR(20),' +
-                 'REGIAO VARCHAR(20),' +
+                 'SEQUENCIA INTEGER,' +
                  'ASSOCIACAO VARCHAR(20),' +
                  'DIRETOR VARCHAR(50),' +
                  'PONTOS VARCHAR(10),' +
-                 'TOTAL VARCHAR(10)' +
+                 'TOTAL NUMERIC(20,2)' +
                  ')');
 
     // Cria tabela de Tab Resultado...
@@ -66,12 +63,6 @@ begin
                  'OBSERVACAO VARCHAR(100),' +
                  'PONTOS VARCHAR(10)' +
                  ')');
-
-    // Cria tabela de Pontuação...
-    conn.ExecSQL('DROP TABLE IF EXISTS TAB_PONTUACAO');
-
-    // Cria tabela de Avaliação...
-    conn.ExecSQL('DROP TABLE IF EXISTS TAB_AVAL' );
 
     // Cria tabela de Pontos...
     conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_PONTOS(' +
@@ -119,9 +110,9 @@ begin
     conn.DriverName := 'SQLite';
 
     {$IFDEF MSWINDOWS}
-    conn.Params.Values['Database'] := System.SysUtils.GetCurrentDir + '\ACOUDBV.db';
+    conn.Params.Values['Database'] := System.SysUtils.GetCurrentDir + '\ACOUDBV3.db';
     {$ELSE}
-    conn.Params.Values['Database'] := TPath.Combine(TPath.GetDocumentsPath, 'ACOUDBV.db');
+    conn.Params.Values['Database'] := TPath.Combine(TPath.GetDocumentsPath, 'ACOUDBV3.db');
     {$ENDIF}
 end;
 

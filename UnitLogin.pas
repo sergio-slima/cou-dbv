@@ -18,12 +18,29 @@ type
     EdtUsuario: TEdit;
     VScroll: TVertScrollBox;
     lytAvaliador: TLayout;
+    Layout2: TLayout;
+    Layout9: TLayout;
+    cloSelecao: TCircle;
+    imgBasico: TImage;
+    imgTodas: TImage;
+    imgMovimento: TImage;
+    Label9: TLabel;
+    imgAvancado: TImage;
+    imgInstrutor: TImage;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Layout3: TLayout;
     procedure rectAcessarClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure EdtUsuarioEnter(Sender: TObject);
     procedure FormVirtualKeyboardHidden(Sender: TObject;
       KeyboardVisible: Boolean; const Bounds: TRect);
+    procedure imgTodasClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
     fancy : TFancyDialog;
@@ -53,6 +70,23 @@ begin
   end;
 end;
 
+procedure SelecionaIcone(Sender: TObject);
+begin
+  with FrmLogin do
+  begin
+    imgTodas.Tag := 0;
+    imgBasico.Tag := 0;
+    imgMovimento.Tag := 0;
+    imgAvancado.Tag := 0;
+    imgInstrutor.Tag := 0;
+
+    TImage(Sender).Tag := 1;
+
+    cloSelecao.AnimateFloat('Position.X', TImage(Sender).Position.X + 20, 0.2);
+  end;
+
+end;
+
 procedure TFrmLogin.EdtUsuarioEnter(Sender: TObject);
 begin
     foco := TControl(TEdit(sender).Parent);
@@ -69,13 +103,25 @@ begin
   fancy := TFancyDialog.Create(FrmLogin);
 end;
 
+procedure TFrmLogin.FormShow(Sender: TObject);
+begin
+   imgTodas.Tag := 1;
+end;
+
 procedure TFrmLogin.FormVirtualKeyboardHidden(Sender: TObject;
   KeyboardVisible: Boolean; const Bounds: TRect);
 begin
     VScroll.Margins.Bottom := 0;
 end;
 
+procedure TFrmLogin.imgTodasClick(Sender: TObject);
+begin
+    SelecionaIcone(Sender);
+end;
+
 procedure TFrmLogin.rectAcessarClick(Sender: TObject);
+var
+  avaliar: String;
 begin
   if EdtUsuario.Text = '' then
   begin
@@ -94,11 +140,19 @@ begin
     Execute;
   end;
 
+  // Icone selecionado
+  if imgTodas.Tag = 1 then avaliar := 'Todas';
+  if imgBasico.Tag = 1 then avaliar := 'Básico';
+  if imgMovimento.Tag = 1 then avaliar := 'Movimento';
+  if imgAvancado.Tag = 1 then avaliar := 'Avançado';
+  if imgInstrutor.Tag = 1 then avaliar := 'Instrutor';
+
   if Assigned(FrmPrincipal) then
       Application.CreateForm(TFrmPrincipal, FrmPrincipal);
 
   Application.MainForm := FrmPrincipal;
   FrmPrincipal.Nome_Usuario:= EdtUsuario.Text;
+  FrmPrincipal.Item_Avaliar:= avaliar;
   FrmPrincipal.Show;
   FrmLogin.Close;
 end;
