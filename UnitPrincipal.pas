@@ -222,7 +222,6 @@ type
     ImgVoltar: TImage;
     imgAdd: TImage;
     ImgSorteio: TImage;
-    ImgDownload: TImage;
     TabCalcular: TTabItem;
     Rectangle31: TRectangle;
     Label4: TLabel;
@@ -262,6 +261,7 @@ type
     LblA10: TLabel;
     LblAs10: TLabel;
     TabResultadoTotal: TFloatField;
+    AniIndicator1: TAniIndicator;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -378,6 +378,7 @@ type
     procedure ClickExcluir(Sender: TObject);
     procedure Imprimir;
     procedure AjustarTabRequisitos;
+    procedure ThreadFim(Sender: TObject);
     { Private declarations }
   public
     { Public declarations }
@@ -537,6 +538,7 @@ procedure TFrmPrincipal.ImgSorteioClick(Sender: TObject);
 var
   j, i, num: integer;
   Sorteado: array of integer;
+  t: TThread;
 
   function JaSorteado(numero: integer): Boolean;
   var
@@ -551,12 +553,14 @@ var
       end;
   end;
 begin
+  lvClube.Items.Clear;
 
   dm.qryConsCliente.Active := false;
   dm.qryConsCliente.SQL.Clear;
   dm.qryConsCliente.SQL.Add('SELECT * FROM TAB_CLUBES');
   dm.qryConsCliente.Prepare;
   dm.qryConsCliente.Active := true;
+
   if dm.qryConsCliente.RecordCount > 0 then
   begin
     i:= dm.qryConsCliente.RecordCount;
@@ -583,7 +587,41 @@ begin
     end;
   end;
 
-  ConsultarClube;
+  AniIndicator1.Enabled := true;
+  lvClube.BeginUpdate;
+
+  t := TThread.CreateAnonymousThread(
+  procedure
+  begin
+    dm.qryConsOS.Active := false;
+    dm.qryConsOS.SQL.Clear;
+    dm.qryConsOS.SQL.Add('SELECT * FROM TAB_CLUBES');
+    dm.qryConsOS.SQL.Add('ORDER BY SEQUENCIA, NOME');
+    dm.qryConsOS.Active := true;
+    dm.qryConsOS.First;
+    sleep(3000);
+
+    dm.qryConsOS.First;
+    while not dm.qryConsOS.Eof do
+    begin
+      sleep(2000);
+
+      TThread.Synchronize(nil, procedure
+      begin
+        AddClube(dm.qryConsOS.FieldByName('COD_CLUBE').AsString,
+              dm.qryConsOS.FieldByName('NOME').AsString,
+              IntToStr(dm.qryConsOS.FieldByName('SEQUENCIA').AsInteger),
+              dm.qryConsOS.FieldByName('DIRETOR').AsString,
+              dm.qryConsOS.FieldByName('PONTOS').AsString);
+      end);
+      dm.qryConsOS.Next;
+    end;
+  end);
+
+  t.OnTerminate := ThreadFim;
+  t.Start;
+
+  //ConsultarClube;
 end;
 
 procedure TFrmPrincipal.ImgVoltarClick(Sender: TObject);
@@ -1283,7 +1321,7 @@ begin
         Detail := Nome;
 
         TListItemText(Objects.FindDrawable('txtNome')).Text := Nome;
-        TListItemText(Objects.FindDrawable('txtRegiao')).Text := Regiao+' Apresentação';
+        TListItemText(Objects.FindDrawable('txtRegiao')).Text := Regiao+'º apresentar';
         TListItemText(Objects.FindDrawable('txtDiretor')).Text := 'Instrutor: '+Diretor;
         TListItemText(Objects.FindDrawable('txtPontos')).Text := Pontos;
         TListItemImage(Objects.FindDrawable('ImageMenu')).Bitmap := imgOpcao.Bitmap
@@ -1835,6 +1873,15 @@ begin
 
     ConsultarClube;
     lytCadClube.Visible:=False;
+end;
+
+procedure TFrmPrincipal.ThreadFim(Sender: TObject);
+begin
+    AniIndicator1.Enabled := false;
+    lvClube.EndUpdate;
+
+    if Assigned(TThread(Sender).FatalException) then
+        showmessage(Exception(TThread(Sender).FatalException).Message);
 end;
 
 end.
