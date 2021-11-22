@@ -11,8 +11,9 @@ uses
   UnitEditar in 'UnitEditar.pas' {FrmEditar},
   {$IFDEF ANDROID}
   UnitPdfPrint in 'Units\UnitPdfPrint.pas',
-  {$ENDIF}
-  uFancyDialog in 'Units\uFancyDialog.pas';
+  {$ENDIF }
+  uFancyDialog in 'Units\uFancyDialog.pas',
+  Unitinicial in 'Unitinicial.pas' {FrmInicial};
 
 {$R *.res}
 
@@ -23,5 +24,6 @@ begin
   Application.CreateForm(TFrmLogin, FrmLogin);
   Application.CreateForm(TFrmPrincipal, FrmPrincipal);
   Application.CreateForm(TFrmEditar, FrmEditar);
+  Application.CreateForm(TFrmInicial, FrmInicial);
   Application.Run;
 end.

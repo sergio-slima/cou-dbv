@@ -58,7 +58,7 @@ type
     Rectangle7: TRectangle;
     EdtNome: TEdit;
     Rectangle8: TRectangle;
-    EdtDiretor: TEdit;
+    EdtInstrutor: TEdit;
     VertScrollBox1: TVertScrollBox;
     rect_nome: TRectangle;
     LblBt1: TLabel;
@@ -262,6 +262,20 @@ type
     LblAs10: TLabel;
     TabResultadoTotal: TFloatField;
     AniIndicator1: TAniIndicator;
+    lytShared: TLayout;
+    Rectangle4: TRectangle;
+    Rectangle37: TRectangle;
+    Label6: TLabel;
+    Rectangle41: TRectangle;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label10: TLabel;
+    ImgPdf: TImage;
+    ImgExport: TImage;
+    ImgImport: TImage;
+    Layout1: TLayout;
+    Rectangle42: TRectangle;
+    EdtOrdem: TEdit;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -351,6 +365,8 @@ type
     procedure Rectangle36Click(Sender: TObject);
     procedure Rectangle36Tap(Sender: TObject; const Point: TPointF);
     procedure ImgSorteioClick(Sender: TObject);
+    procedure Rectangle4Click(Sender: TObject);
+    procedure Rectangle37Click(Sender: TObject);
   private
     fancy : TFancyDialog;
     posicao_final: Integer;
@@ -440,7 +456,8 @@ end;
 procedure TFrmPrincipal.imgAddClick(Sender: TObject);
 begin
     EdtNome.Text:='';
-    EdtDiretor.Text:='';
+    EdtInstrutor.Text:='';
+    EdtOrdem.Text:='';
     Status_Clube:='N';
     lytCadClube.Visible:=True;
 end;
@@ -571,7 +588,6 @@ begin
       repeat
         num:= Random(i)+1;
       until not JaSorteado(num);
-//      ShowMessage(IntToStr(num));
       SetLength(Sorteado,Length(Sorteado)+1);
       Sorteado[High(Sorteado)]:= num;
 
@@ -1280,6 +1296,16 @@ begin
                              '0,0', 'N', '', 10);
 end;
 
+procedure TFrmPrincipal.Rectangle37Click(Sender: TObject);
+begin
+  lytShared.Visible:=False;
+end;
+
+procedure TFrmPrincipal.Rectangle4Click(Sender: TObject);
+begin
+  lytShared.Visible := false;
+end;
+
 procedure TFrmPrincipal.Rectangle5Click(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
@@ -1616,14 +1642,15 @@ end;
 
 procedure TFrmPrincipal.ImgCompartilharClick(Sender: TObject);
 begin
+  {$IFDEF ANDROID}
+    PermissionsService.RequestPermissions([PermissaoReadStorage,
+                                           PermissaoWriteStorage],
+                                           LibraryPermissionRequestResult,
+                                           DisplayMessageLibrary
+                                           );
+  {$ENDIF}
 
-{$IFDEF ANDROID}
-  PermissionsService.RequestPermissions([PermissaoReadStorage,
-                                         PermissaoWriteStorage],
-                                         LibraryPermissionRequestResult,
-                                         DisplayMessageLibrary
-                                         );
-{$ENDIF}
+  //lytShared.Visible:=True;
 
 end;
 
@@ -1864,8 +1891,11 @@ begin
 
         ParamByName('COD_CLUBE').Value := CodClube;
         ParamByName('NOME').Value := EdtNome.Text;
-        ParamByName('SEQUENCIA').Value := 0;
-        ParamByName('DIRETOR').Value := EdtDiretor.Text;
+        if EdtOrdem.Text<>'' then
+          ParamByName('SEQUENCIA').Value := StrToInt(EdtOrdem.Text)
+        else
+          ParamByName('SEQUENCIA').Value := 0;
+        ParamByName('DIRETOR').Value := EdtInstrutor.Text;
         ParamByName('PONTOS').Value := '0,0';
 
         ExecSQL;

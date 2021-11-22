@@ -235,6 +235,10 @@
         </DCCReference>
         <DCCReference Include="Units\UnitPdfPrint.pas"/>
         <DCCReference Include="Units\uFancyDialog.pas"/>
+        <DCCReference Include="Unitinicial.pas">
+            <Form>FrmInicial</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
