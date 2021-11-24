@@ -21,9 +21,6 @@ begin
   Application.Initialize;
   Application.FormFactor.Orientations := [TFormOrientation.Portrait];
   Application.CreateForm(Tdm, dm);
-  Application.CreateForm(TFrmLogin, FrmLogin);
-  Application.CreateForm(TFrmPrincipal, FrmPrincipal);
-  Application.CreateForm(TFrmEditar, FrmEditar);
   Application.CreateForm(TFrmInicial, FrmInicial);
   Application.Run;
 end.

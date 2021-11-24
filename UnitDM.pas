@@ -37,6 +37,12 @@ implementation
 
 procedure Tdm.connAfterConnect(Sender: TObject);
 begin
+    // Cria tabela de Configuracoes...
+    conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_CONFIG(' +
+                 'COD_CONFIG VARCHAR(20) PRIMARY KEY,' +
+                 'TELA_INICIAL CHAR(1)' +
+                 ')' );
+
     // Cria tabela de Usuario...
     conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_USUARIO(' +
                  'COD_USUARIO VARCHAR(20) PRIMARY KEY,' +

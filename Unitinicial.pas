@@ -6,7 +6,7 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.TabControl,
   FMX.Layouts, FMX.Objects, FMX.Controls.Presentation, FMX.StdCtrls,
-  System.Actions, FMX.ActnList, cUsuario;
+  System.Actions, FMX.ActnList;
 
 type
   TFrmInicial = class(TForm)
@@ -41,15 +41,14 @@ type
     ActTab4: TChangeTabAction;
     layout_botoes: TLayout;
     btn_login: TSpeedButton;
-    btn_nova_conta: TSpeedButton;
     Timer_Load: TTimer;
+    Label8: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure btn_proximoClick(Sender: TObject);
     procedure NavegacaoAba(cont : integer);
     procedure btn_voltarClick(Sender: TObject);
     procedure btn_loginClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure btn_nova_contaClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Timer_LoadTimer(Sender: TObject);
   private
@@ -65,29 +64,27 @@ implementation
 
 {$R *.fmx}
 
-uses UnitLogin, UnitDM, UnitPrincipal;
+uses UnitLogin, UnitDM, UnitPrincipal, UnitFunctions;
 
 
 procedure TFrmInicial.btn_loginClick(Sender: TObject);
 begin
+
+    with DM.qryConsCliente do
+    begin
+      Close;
+      SQL.Clear;
+      SQL.Add('INSERT INTO TAB_CONFIG (COD_CONFIG, TELA_INICIAL)');
+      SQL.Add('VALUES (:COD_CONFIG, :TELA_INICIAL)');
+      ParamByName('COD_CONFIG').AsString:=GeraCodUsuario;
+      ParamByName('TELA_INICIAL').AsString:='S';
+      Execute;
+    end;
+
     if NOT Assigned(FrmLogin) then
         Application.CreateForm(TFrmLogin, FrmLogin);
 
     Application.MainForm := FrmLogin;
-    FrmLogin.LimparCampos;
-    FrmLogin.TabControl.ActiveTab := FrmLogin.TabLogin;
-    FrmLogin.Show;
-    FrmInicial.Close;
-end;
-
-procedure TFrmInicial.btn_nova_contaClick(Sender: TObject);
-begin
-    if NOT Assigned(FrmLogin) then
-        Application.CreateForm(TFrmLogin, FrmLogin);
-
-    Application.MainForm := FrmLogin;
-    FrmLogin.LimparCampos;
-    FrmLogin.TabControl.ActiveTab := FrmLogin.TabConta;
     FrmLogin.Show;
     FrmInicial.Close;
 end;
@@ -165,21 +162,16 @@ end;
 
 procedure TFrmInicial.Timer_LoadTimer(Sender: TObject);
 var
-    usuario : TUsuario;
     erro : string;
 begin
     Timer_Load.Enabled := false;
 
     try
-        if NOT Assigned(dm) then
-            Application.CreateForm(Tdm, dm);
-
-        // Verificar se usuario está logado...
-        usuario := TUsuario.Create(dm.conn);
-        usuario.Cod_Usuario := 0;
-
-        // Erro ao buscar dados do usuario...
-        if NOT usuario.DadosUsuario(erro) then
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('SELECT * FROM TAB_CONFIG');
+        dm.qryGeral.Active := True;
+        if dm.qryGeral.RecordCount = 0 then
         begin
             TabControl.ActiveTab := TabItem2;
             NavegacaoAba(-1);
@@ -188,38 +180,15 @@ begin
             exit;
         end;
 
-        // Usuario ja logado....
-        if usuario.Ind_Login = 'S' then
-        begin
-            if NOT Assigned(FrmPrincipal) then
-                Application.CreateForm(TFrmPrincipal, FrmPrincipal);
+        if NOT Assigned(FrmLogin) then
+            Application.CreateForm(TFrmLogin, FrmLogin);
 
-            FrmPrincipal.cod_usuario := usuario.Cod_Usuario;
-            FrmPrincipal.nome_usuario := usuario.Nome;
+        Application.MainForm := FrmLogin;
+        FrmLogin.Show;
+        FrmInicial.Close;
 
-            Application.MainForm := FrmPrincipal;
-            FrmPrincipal.Show;
-            FrmInicial.Close;
-        end
-        else
-        // Leva direto tela de login /conta
-        if usuario.Ind_Ajuda = 'N' then
-        begin
-            TabControl.ActiveTab := TabItem3;
-            NavegacaoAba(1);
-            TabControl.Visible := true;
-            layout_botoes.Visible := true;
-        end
-        else
-        // Faz pocesso onboarding inteiro...
-        begin
-            TabControl.ActiveTab := TabItem2;
-            NavegacaoAba(-1);
-            TabControl.Visible := true;
-            layout_proximo.Visible := true;
-        end;
     finally
-        usuario.DisposeOf;
+
     end;
 
 end;

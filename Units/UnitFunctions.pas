@@ -10,6 +10,7 @@ uses
 procedure LoadBitmapFromBlob(Bitmap: TBitmap; Blob: TBlobField);
 function GeraCodPontos: String;
 function GeraCodUsuario: String;
+function GeraCodConfig: String;
 function GeraCodClube: String;
 function GeraCodResultado: String;
 function FormataData(dt: string): string;
@@ -36,6 +37,11 @@ begin
 end;
 
 function GeraCodUsuario: String;
+begin
+    Result := FormatDateTime('yymmddHHnnsszzz', now);
+end;
+
+function GeraCodConfig: String;
 begin
     Result := FormatDateTime('yymmddHHnnsszzz', now);
 end;

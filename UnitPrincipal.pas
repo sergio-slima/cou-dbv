@@ -392,9 +392,11 @@ type
     procedure ClickLogout(Sender: TObject);
     procedure ClickApagar(Sender: TObject);
     procedure ClickExcluir(Sender: TObject);
+    procedure ClickSorteio(Sender: TObject);
     procedure Imprimir;
     procedure AjustarTabRequisitos;
     procedure ThreadFim(Sender: TObject);
+    function ValidaClubesPonto: Boolean;
     { Private declarations }
   public
     { Public declarations }
@@ -552,92 +554,14 @@ begin
 end;
 
 procedure TFrmPrincipal.ImgSorteioClick(Sender: TObject);
-var
-  j, i, num: integer;
-  Sorteado: array of integer;
-  t: TThread;
-
-  function JaSorteado(numero: integer): Boolean;
-  var
-    i: integer;
-  begin
-    Result:=False;
-    for i := 0 to High(Sorteado) do
-      if Sorteado[i] = numero then
-      begin
-        Result:= True;
-        Break;
-      end;
-  end;
 begin
-  lvClube.Items.Clear;
-
-  dm.qryConsCliente.Active := false;
-  dm.qryConsCliente.SQL.Clear;
-  dm.qryConsCliente.SQL.Add('SELECT * FROM TAB_CLUBES');
-  dm.qryConsCliente.Prepare;
-  dm.qryConsCliente.Active := true;
-
-  if dm.qryConsCliente.RecordCount > 0 then
+  if lvClube.Items.Count = 0 then
   begin
-    i:= dm.qryConsCliente.RecordCount;
-    dm.qryConsCliente.First;
-    Randomize;
-    while not dm.qryConsCliente.eof do
-    begin
-      repeat
-        num:= Random(i)+1;
-      until not JaSorteado(num);
-      SetLength(Sorteado,Length(Sorteado)+1);
-      Sorteado[High(Sorteado)]:= num;
-
-      dm.qryGeral.Close;
-      dm.qryGeral.SQL.Clear;
-      dm.qryGeral.SQL.Add('UPDATE TAB_CLUBES SET SEQUENCIA=:SEQUENCIA');
-      dm.qryGeral.SQL.Add('WHERE COD_CLUBE=:COD_CLUBE');
-      dm.qryGeral.ParamByName('COD_CLUBE').Value := dm.qryConsCliente.FieldByName('COD_CLUBE').AsString;
-      dm.qryGeral.ParamByName('SEQUENCIA').Value := num;
-      dm.qryGeral.ExecSQL;
-
-      dm.qryConsCliente.next;
-    end;
+    fancy.Show(TIconDialog.Info, '', 'No momento nada para sortear!', 'OK');
+    Exit;
   end;
 
-  AniIndicator1.Enabled := true;
-  lvClube.BeginUpdate;
-
-  t := TThread.CreateAnonymousThread(
-  procedure
-  begin
-    dm.qryConsOS.Active := false;
-    dm.qryConsOS.SQL.Clear;
-    dm.qryConsOS.SQL.Add('SELECT * FROM TAB_CLUBES');
-    dm.qryConsOS.SQL.Add('ORDER BY SEQUENCIA, NOME');
-    dm.qryConsOS.Active := true;
-    dm.qryConsOS.First;
-    sleep(3000);
-
-    dm.qryConsOS.First;
-    while not dm.qryConsOS.Eof do
-    begin
-      sleep(2000);
-
-      TThread.Synchronize(nil, procedure
-      begin
-        AddClube(dm.qryConsOS.FieldByName('COD_CLUBE').AsString,
-              dm.qryConsOS.FieldByName('NOME').AsString,
-              IntToStr(dm.qryConsOS.FieldByName('SEQUENCIA').AsInteger),
-              dm.qryConsOS.FieldByName('DIRETOR').AsString,
-              dm.qryConsOS.FieldByName('PONTOS').AsString);
-      end);
-      dm.qryConsOS.Next;
-    end;
-  end);
-
-  t.OnTerminate := ThreadFim;
-  t.Start;
-
-  //ConsultarClube;
+  fancy.Show(TIconDialog.Question, 'Atenção', 'Deseja realizar o sorteio?', 'Sim', ClickSorteio, 'Não');
 end;
 
 procedure TFrmPrincipal.ImgVoltarClick(Sender: TObject);
@@ -660,6 +584,12 @@ var
 {$ENDIF}
 begin
 {$IFDEF ANDROID}
+  if not ValidaClubesPonto then
+  begin
+    fancy.Show(TIconDialog.Info, '', 'Clube sem pontuação. Avalie ou Exclua!', 'OK');
+    Exit;
+  end;
+
   linha:=20;
   lPdf:= tPdfPrint.Create('OrdemUnida-'+Nome_Usuario);
   try
@@ -1481,8 +1411,8 @@ begin
     while NOT dm.qryConsOS.Eof do
     begin
         AddResultado(dm.qryConsOS.FieldByName('COD_CLUBE').AsString,
-              dm.qryConsOS.FieldByName('NOME').AsString,
-              dm.qryConsOS.FieldByName('TOTAL').Value);
+                     dm.qryConsOS.FieldByName('NOME').AsString,
+                     dm.qryConsOS.FieldByName('TOTAL').Value);
 
         dm.qryConsOS.Next;
     end;
@@ -1656,6 +1586,18 @@ end;
 
 procedure TFrmPrincipal.ImgCalcularClick(Sender: TObject);
 begin
+    if lvClube.Items.Count = 0 then
+    begin
+      fancy.Show(TIconDialog.Info, '', 'No momento nada para calcular!', 'OK');
+      Exit;
+    end;
+
+    if not ValidaClubesPonto then
+    begin
+      fancy.Show(TIconDialog.Info, '', 'Clube sem pontuação. Avalie ou Exclua!', 'OK');
+      Exit;
+    end;
+
     ConsultarResultado;
     TabControl.GotoVisibleTab(0);
 end;
@@ -1723,6 +1665,93 @@ end;
 procedure TFrmPrincipal.ClickLogout(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TFrmPrincipal.ClickSorteio(Sender: TObject);
+var
+  j, i, num: integer;
+  Sorteado: array of integer;
+  t: TThread;
+
+  function JaSorteado(numero: integer): Boolean;
+  var
+    i: integer;
+  begin
+    Result:=False;
+    for i := 0 to High(Sorteado) do
+      if Sorteado[i] = numero then
+      begin
+        Result:= True;
+        Break;
+      end;
+  end;
+begin
+  lvClube.Items.Clear;
+
+  dm.qryConsCliente.Active := false;
+  dm.qryConsCliente.SQL.Clear;
+  dm.qryConsCliente.SQL.Add('SELECT * FROM TAB_CLUBES');
+  dm.qryConsCliente.Prepare;
+  dm.qryConsCliente.Active := true;
+
+  if dm.qryConsCliente.RecordCount > 0 then
+  begin
+    i:= dm.qryConsCliente.RecordCount;
+    dm.qryConsCliente.First;
+    Randomize;
+    while not dm.qryConsCliente.eof do
+    begin
+      repeat
+        num:= Random(i)+1;
+      until not JaSorteado(num);
+      SetLength(Sorteado,Length(Sorteado)+1);
+      Sorteado[High(Sorteado)]:= num;
+
+      dm.qryGeral.Close;
+      dm.qryGeral.SQL.Clear;
+      dm.qryGeral.SQL.Add('UPDATE TAB_CLUBES SET SEQUENCIA=:SEQUENCIA');
+      dm.qryGeral.SQL.Add('WHERE COD_CLUBE=:COD_CLUBE');
+      dm.qryGeral.ParamByName('COD_CLUBE').Value := dm.qryConsCliente.FieldByName('COD_CLUBE').AsString;
+      dm.qryGeral.ParamByName('SEQUENCIA').Value := num;
+      dm.qryGeral.ExecSQL;
+
+      dm.qryConsCliente.next;
+    end;
+  end;
+
+  AniIndicator1.Enabled := true;
+  lvClube.BeginUpdate;
+
+  t := TThread.CreateAnonymousThread(
+  procedure
+  begin
+    dm.qryConsOS.Active := false;
+    dm.qryConsOS.SQL.Clear;
+    dm.qryConsOS.SQL.Add('SELECT * FROM TAB_CLUBES');
+    dm.qryConsOS.SQL.Add('ORDER BY SEQUENCIA, NOME');
+    dm.qryConsOS.Active := true;
+    dm.qryConsOS.First;
+    sleep(3000);
+
+    dm.qryConsOS.First;
+    while not dm.qryConsOS.Eof do
+    begin
+      sleep(2000);
+
+      TThread.Synchronize(nil, procedure
+      begin
+        AddClube(dm.qryConsOS.FieldByName('COD_CLUBE').AsString,
+              dm.qryConsOS.FieldByName('NOME').AsString,
+              IntToStr(dm.qryConsOS.FieldByName('SEQUENCIA').AsInteger),
+              dm.qryConsOS.FieldByName('DIRETOR').AsString,
+              dm.qryConsOS.FieldByName('PONTOS').AsString);
+      end);
+      dm.qryConsOS.Next;
+    end;
+  end);
+
+  t.OnTerminate := ThreadFim;
+  t.Start;
 end;
 
 procedure TFrmPrincipal.rect_cidadeClick(Sender: TObject);
@@ -1912,6 +1941,25 @@ begin
 
     if Assigned(TThread(Sender).FatalException) then
         showmessage(Exception(TThread(Sender).FatalException).Message);
+end;
+
+function TFrmPrincipal.ValidaClubesPonto: Boolean;
+begin
+    Result:=True;
+
+    dm.qryConsOS.Active := false;
+    dm.qryConsOS.SQL.Clear;
+    dm.qryConsOS.SQL.Add('SELECT COD_CLUBE, NOME, TOTAL FROM TAB_CLUBES');
+    dm.qryConsOS.SQL.Add('ORDER BY NOME');
+    dm.qryConsOS.Active := true;
+
+    while NOT dm.qryConsOS.Eof do
+    begin
+      if dm.qryConsOS.FieldByName('TOTAL').IsNull then
+        Result:= False;
+
+      dm.qryConsOS.Next;
+    end;
 end;
 
 end.

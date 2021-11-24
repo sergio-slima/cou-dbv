@@ -56,7 +56,7 @@ implementation
 
 {$R *.fmx}
 
-uses UnitPrincipal, UnitDM, UnitFunctions;
+uses UnitPrincipal, UnitDM, UnitFunctions, Unitinicial;
 
 procedure Ajustar_Scroll();
 var
@@ -101,6 +101,7 @@ end;
 procedure TFrmLogin.FormCreate(Sender: TObject);
 begin
   fancy := TFancyDialog.Create(FrmLogin);
+
 end;
 
 procedure TFrmLogin.FormShow(Sender: TObject);
@@ -147,7 +148,7 @@ begin
   if imgAvancado.Tag = 1 then avaliar := 'Avançado';
   if imgInstrutor.Tag = 1 then avaliar := 'Instrutor';
 
-  if Assigned(FrmPrincipal) then
+  if not Assigned(FrmPrincipal) then
       Application.CreateForm(TFrmPrincipal, FrmPrincipal);
 
   Application.MainForm := FrmPrincipal;
