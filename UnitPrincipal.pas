@@ -17,7 +17,7 @@ uses
   System.Actions, FMX.ActnList, FMX.StdActns, FMX.MediaLibrary.Actions,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
-  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, FMX.Advertising;
 
 type
   TExecutaClick = procedure(Sender: TObject) of Object;
@@ -276,6 +276,7 @@ type
     Layout1: TLayout;
     Rectangle42: TRectangle;
     EdtOrdem: TEdit;
+    BannerAd1: TBannerAd;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
