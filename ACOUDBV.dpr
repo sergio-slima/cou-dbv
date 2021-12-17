@@ -13,7 +13,8 @@ uses
   UnitPdfPrint in 'Units\UnitPdfPrint.pas',
   {$ENDIF }
   uFancyDialog in 'Units\uFancyDialog.pas',
-  Unitinicial in 'Unitinicial.pas' {FrmInicial};
+  Unitinicial in 'Unitinicial.pas' {FrmInicial},
+  AdMob in 'Units\AdMob.pas';
 
 {$R *.res}
 

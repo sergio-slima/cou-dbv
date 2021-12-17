@@ -7,7 +7,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
   FMX.TabControl, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Edit,
   FMX.ListView.Types, FMX.ListView.Appearances, FMX.ListView.Adapters.Base,
-  FMX.ListView, FMX.Layouts,
+  FMX.ListView, FMX.Layouts, AdMob,
 
   {$IFDEF ANDROID}
   UnitPdfPrint,
@@ -276,7 +276,6 @@ type
     Layout1: TLayout;
     Rectangle42: TRectangle;
     EdtOrdem: TEdit;
-    BannerAd1: TBannerAd;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -401,6 +400,9 @@ type
     { Private declarations }
   public
     { Public declarations }
+    banner: TAdBanner;
+    intersticial: TAdBanner;
+
     CodClube: string;
     Nome_Usuario: String;
     Item_Avaliar: String;
@@ -1528,6 +1530,8 @@ begin
   PermissaoReadStorage := JStringToString(TJManifest_permission.JavaClass.READ_EXTERNAL_STORAGE);
   PermissaoWriteStorage := JStringToString(TJManifest_permission.JavaClass.WRITE_EXTERNAL_STORAGE);
   {$ENDIF}
+
+
 end;
 
 procedure TFrmPrincipal.FormKeyUp(Sender: TObject; var Key: Word;
@@ -1569,6 +1573,11 @@ begin
     TabControl.GotoVisibleTab(1);
     AjustarTabRequisitos;
     ConsultarClube;
+
+  {$IFDEF ANDROID}
+  banner := TAdBanner.Create(self, 'ca-app-pub-5318830765545492/11408406', TAdBannerType.Banner);
+  banner.show(True, TAlignLayout.MostBottom);
+  {$ENDIF}
 end;
 
 procedure TFrmPrincipal.ImgCompartilharClick(Sender: TObject);
@@ -1600,6 +1609,12 @@ begin
     end;
 
     ConsultarResultado;
+
+    {$IFDEF ANDROID}
+    intersticial := TAdBanner.Create(self, 'ca-app-pub-5318830765545492/15237905', TAdBannerType.Interstitial);
+    intersticial.show(True);
+    {$ENDIF}
+
     TabControl.GotoVisibleTab(0);
 end;
 
