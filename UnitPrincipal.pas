@@ -7,7 +7,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
   FMX.TabControl, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Edit,
   FMX.ListView.Types, FMX.ListView.Appearances, FMX.ListView.Adapters.Base,
-  FMX.ListView, FMX.Layouts, AdMob,
+  FMX.ListView, FMX.Layouts, AdMob, FMX.BitmapHelper,
 
   {$IFDEF ANDROID}
   UnitPdfPrint,
@@ -283,6 +283,9 @@ type
     Layout1: TLayout;
     Rectangle42: TRectangle;
     EdtOrdem: TEdit;
+    ActShare: TShowShareSheetAction;
+    ImgImprimir_Resultado: TImage;
+    TabResultadoPosicao: TIntegerField;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -374,6 +377,7 @@ type
     procedure ImgSorteioClick(Sender: TObject);
     procedure Rectangle4Click(Sender: TObject);
     procedure Rectangle37Click(Sender: TObject);
+    procedure ImgImprimir_ResultadoClick(Sender: TObject);
   private
     fancy : TFancyDialog;
     posicao_final: Integer;
@@ -417,6 +421,7 @@ type
     Nome_Usuario: String;
     Item_Avaliar: String;
     Status_Clube: String;
+    Tela_Imprimir: String;
     procedure EditarCampo(objeto: TObject;
                           tipo_campo, titulo, subtitulo, textprompt, ind_obrigatorio,
                           texto_padrao: string; tam_maximo: integer;
@@ -507,94 +512,143 @@ begin
 end;
 
 procedure TFrmPrincipal.Imprimir;
-{$IFDEF ANDROID}
+//{$IFDEF ANDROID}
 var
+  relatorio: String;
+  i: Integer;
 //  lPdf: tPdfPrint;
 //  linha: Integer;
-  Documento: JPDFDocument;
-  InfoPagina: JPDFDocument_PageInfo;
-  Pagina: JPdfDocument_Page;
-  Canvas: JCanvas;
-  Paint: JPaint;
-  Recto: JRect;
-  Rect: JRect;
-  FileName: string;
-  OutputStream: JFileOutPutStream;
-  Intent: JIntent;
-  NativeBitmap: JBitmap;
-  sBitmap: TBitmapSurface;
-{$ENDIF}
+//{$ENDIF}
 begin
-{$IFDEF ANDROID}
+//{$IFDEF ANDROID}
 
-  try
-    Documento := TJPDFDocument.JavaClass.init;
-
-    // Pagina 1
-    InfoPagina:= TJPageInfo_Builder.JavaClass.init(595, 842, 1).Create;
-    Pagina:= Documento.startPage(InfoPagina);
-
-    Canvas:= Pagina.getCanvas;
-    Paint:= TJPaint.JavaClass.init;
-
-    Paint.setARGB($FF, 0, 0, $FF);
-
-    Canvas.drawText(StringToJString('Pagina 1'), CMToPixel(2), CMToPixel(2), Paint);
-    Canvas.drawText(StringToJString('Olá Mundo'), CMToPixel(3), CMToPixel(3), Paint);
-    Canvas.drawText(StringToJString('Olá Sérgio'), CMToPixel(4), CMToPixel(4), Paint);
-    Canvas.drawText(StringToJString('Bora Ananda'), CMToPixel(5), CMToPixel(5), Paint);
-
-    Documento.finishPage(Pagina);
-
-    // Pagina 2
-    InfoPagina:= TJPageInfo_Builder.JavaClass.init(595, 842, 2).Create;
-    Pagina:= Documento.startPage(InfoPagina);
-
-    Canvas:= Pagina.getCanvas;
-    Paint:= TJPaint.JavaClass.init;
-
-    Paint.setARGB($FF, $FF, 0, 0);
-    Canvas.drawLine(10, 10, 90, 10, Paint);
-
-    Paint.setStrokeWidth(1);
-    Paint.setARGB($FF, 0, $FF, 0);
-    Canvas.drawLine(10, 20, 90, 20, Paint);
-
-    Paint.setStrokeWidth(2);
-    Paint.setARGB($FF, 0, 0, $FF);
-    Canvas.drawLine(10, 30, 90, 30, Paint);
-
-    Paint.setARGB($FF, $FF, $FF, 0);
-    Canvas.drawRect(10, 40, 90, 60, Paint);
-
-    Rect := TJRect.JavaClass.init;
-    Rect.&set(15, 50, 65, 100);
-    Recto := TJRect.JavaClass.init;
-    Recto.&set(0, 0, Image1.Bitmap.Width, Image1.Bitmap.Height);
-    Paint.setARGB($FF, $FF, 0, $FF);
-
-    Documento.finishPage(Pagina);
-
-    FileName:= TPath.Combine(TPath.GetDocumentsPath, 'RelatorioACOUDBV.pdf');
-    OutputStream:= TJFileOutputStream.JavaClass.init(StringToJString(FileName));
-
-    try
-      Documento.writeTo(OutputStream);
-    finally
-      OutputStream.close;
+  if Tela_Imprimir = 'AVALIACAO' then
+  begin
+    if not ValidaClubesPonto then
+    begin
+      fancy.Show(TIconDialog.Info, '', 'Existe clube sem pontuação. Avalie ou Exclua!', 'OK');
+      Exit;
     end;
 
-  finally
-    Documento.close;
+    relatorio := '';
+    relatorio :=             'AVALIAÇÃO CONCURSO DE ORDEM UNIDA' + sLineBreak + sLineBreak;
+    relatorio := relatorio + '(Resultado Parcial)' + sLineBreak;
+    relatorio := relatorio + 'Avaliador: ' + Nome_Usuario + sLineBreak;
+    relatorio := relatorio + 'Avaliação: ' + Item_Avaliar + sLineBreak;
+    relatorio := relatorio + '---------------------------------' + sLineBreak;
+
+    dm.qryConsOS.Active := false;
+    dm.qryConsOS.SQL.Clear;
+    dm.qryConsOS.SQL.Add('SELECT COD_CLUBE, NOME, TOTAL FROM TAB_CLUBES');
+    dm.qryConsOS.SQL.Add('ORDER BY NOME');
+    dm.qryConsOS.Active := true;
+    while NOT dm.qryConsOS.Eof do
+    begin
+        relatorio := relatorio + 'Clube: ' + dm.qryConsOS.FieldByName('NOME').AsString + sLineBreak;
+        relatorio := relatorio + 'Total: ' + FloatToStr(dm.qryConsOS.FieldByName('TOTAL').Value) + sLineBreak;
+
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('SELECT PTS_B1,PTS_B2,PTS_B3,PTS_B4,PTS_B5,PTS_B6,PTS_B7,PTS_B8,');
+        dm.qryGeral.SQL.Add('PTS_M1,PTS_M2,PTS_M3,PTS_M4,PTS_M5,PTS_M6,PTS_M7,PTS_M8,PTS_M9,');
+        DM.qryGeral.SQL.Add('PTS_A1,PTS_A2,PTS_A3,PTS_A4,PTS_A5,PTS_A6,PTS_A7,PTS_A8,PTS_A9,PTS_A10,');
+        DM.qryGeral.SQL.Add('PTS_T1,PTS_T2,PTS_T3,PTS_T4 FROM TAB_PONTOS');
+        dm.qryGeral.SQL.Add('WHERE COD_CLUBE = :COD_CLUBE');
+        dm.qryGeral.ParamByName('COD_CLUBE').AsString:=dm.qryConsOS.FieldByName('COD_CLUBE').AsString;
+        dm.qryGeral.Active := true;
+
+        if (Item_Avaliar = 'Básico') or (Item_Avaliar = 'Todas') then
+        begin
+          relatorio := relatorio + sLineBreak;
+          relatorio := relatorio + '## Básico ##' + sLineBreak;
+          relatorio := relatorio + 'Descansar = ' + dm.qryGeral.FieldByName('PTS_B1').AsString;
+          relatorio := relatorio + '  Sentido = ' + dm.qryGeral.FieldByName('PTS_B2').AsString + sLineBreak;
+          relatorio := relatorio + 'Cobrir = ' + dm.qryGeral.FieldByName('PTS_B3').AsString;
+          relatorio := relatorio + '  Firme = ' + dm.qryGeral.FieldByName('PTS_B4').AsString + sLineBreak;
+
+          relatorio := relatorio + 'Dir/Esq/MeiaVolta = ' + dm.qryGeral.FieldByName('PTS_B5').AsString + sLineBreak;
+          relatorio := relatorio + 'Oitava Dir = ' + dm.qryGeral.FieldByName('PTS_B6').AsString;
+          relatorio := relatorio + '  Oitava Esq = ' + dm.qryGeral.FieldByName('PTS_B7').AsString + sLineBreak;
+          relatorio := relatorio + 'Frente Ret/Dir/Esq = ' + dm.qryGeral.FieldByName('PTS_B8').AsString + sLineBreak + sLineBreak;
+        end;
+        if (Item_Avaliar = 'Movimento') or (Item_Avaliar = 'Todas') then
+        begin
+          relatorio := relatorio + sLineBreak;
+          relatorio := relatorio + '## Movimento ##' + sLineBreak;
+          relatorio := relatorio + 'Ord. Marche = ' + dm.qryGeral.FieldByName('PTS_M1').AsString;
+          relatorio := relatorio + '  Marcar Passo = ' + dm.qryGeral.FieldByName('PTS_M2').AsString + sLineBreak;
+          relatorio := relatorio + 'Direita Volver = ' + dm.qryGeral.FieldByName('PTS_M3').AsString;
+          relatorio := relatorio + '  Esquerda Volver = ' + dm.qryGeral.FieldByName('PTS_M4').AsString + sLineBreak;
+
+          relatorio := relatorio + 'MeiaVolta Volver = ' + dm.qryGeral.FieldByName('PTS_M5').AsString;
+          relatorio := relatorio + '  Olhar Dir/Esq = ' + dm.qryGeral.FieldByName('PTS_M6').AsString + sLineBreak;
+          relatorio := relatorio + 'Alto = ' + dm.qryGeral.FieldByName('PTS_M7').AsString;
+          relatorio := relatorio + '  Convers.Centro = ' + dm.qryGeral.FieldByName('PTS_M8').AsString + sLineBreak;
+          relatorio := relatorio + 'Dir/Esq/Meia = ' + dm.qryGeral.FieldByName('PTS_M9').AsString + sLineBreak;
+        end;
+        if (Item_Avaliar = 'Avançado') or (Item_Avaliar = 'Todas') then
+        begin
+          relatorio := relatorio + sLineBreak;
+          relatorio := relatorio + '## Avançado ##' + sLineBreak;
+          relatorio := relatorio + 'Alinhamento = ' + dm.qryGeral.FieldByName('PTS_A1').AsString;
+          relatorio := relatorio + ' Cobertura = ' + dm.qryGeral.FieldByName('PTS_A2').AsString;
+          relatorio := relatorio + ' Conjunto = ' + dm.qryGeral.FieldByName('PTS_A3').AsString + sLineBreak;
+          relatorio := relatorio + 'Energia Movim. = ' + dm.qryGeral.FieldByName('PTS_A4').AsString;
+          relatorio := relatorio + '  Dific Evolução = ' + dm.qryGeral.FieldByName('PTS_A5').AsString + sLineBreak;
+          relatorio := relatorio + 'Padronização = ' + dm.qryGeral.FieldByName('PTS_A6').AsString;
+          relatorio := relatorio + '  Posição = ' + dm.qryGeral.FieldByName('PTS_A7').AsString + sLineBreak;
+          relatorio := relatorio + 'Postura = ' + dm.qryGeral.FieldByName('PTS_A8').AsString;
+          relatorio := relatorio + ' Garra = ' + dm.qryGeral.FieldByName('PTS_A9').AsString;
+          relatorio := relatorio + ' Evolução Tema = ' + dm.qryGeral.FieldByName('PTS_A10').AsString + sLineBreak;
+        end;
+        if (Item_Avaliar = 'Instrutor') or (Item_Avaliar = 'Todas') then
+        begin
+          relatorio := relatorio + sLineBreak;
+          relatorio := relatorio + '## Instrutor ##' + sLineBreak;
+          relatorio := relatorio + 'Altura Voz = '+dm.qryGeral.FieldByName('PTS_T1').AsString;
+          relatorio := relatorio + '  Voz Comanda = '+dm.qryGeral.FieldByName('PTS_T2').AsString + sLineBreak;
+          relatorio := relatorio + 'Postura Instr = '+dm.qryGeral.FieldByName('PTS_T3').AsString;
+          relatorio := relatorio + '  Tempo = '+dm.qryGeral.FieldByName('PTS_T4').AsString + sLineBreak;
+        end;
+        relatorio := relatorio + '---------------------------------' + sLineBreak;
+
+        dm.qryConsOS.Next;
+    end;
+
+    ActShare.Bitmap := nil;
+    ActShare.TextMessage := relatorio;
+    ActShare.Execute;
+  end
+  else if Tela_Imprimir = 'RESULTADO' then
+  begin
+    if posicao_final = 0 then
+    begin
+      fancy.Show(TIconDialog.Info, '', 'Atualize a lista de classificação!', 'OK');
+      Exit;
+    end;
+
+    relatorio := '';
+    relatorio :=             'AVALIAÇÃO CONCURSO DE ORDEM UNIDA' + sLineBreak;
+    relatorio := relatorio + '(Resultado Final)' + sLineBreak;
+    relatorio := relatorio + '---------------------------------' + sLineBreak;
+
+    TabResultado.Open;
+    TabResultado.First;
+    while NOT TabResultado.Eof do
+    begin
+        relatorio := relatorio + IntToStr(TabResultadoPosicao.Value) + 'º Lugar' + sLineBreak;
+        relatorio := relatorio + 'Clube: ' + TabResultadoNom_Clube.AsString + sLineBreak;
+        relatorio := relatorio + 'Total: ' + FloatToStr(TabResultadoTotal.Value) + sLineBreak;
+        relatorio := relatorio + '---------------------------------' + sLineBreak;
+
+        TabResultado.Next;
+    end;
+
+    ActShare.Bitmap := nil;
+    ActShare.TextMessage := relatorio;
+    ActShare.Execute;
+
   end;
-
-  Intent:= TJIntent.JavaClass.init;
-  Intent.setAction(TJIntent.JavaClass.ACTION_VIEW);
-  Intent.setDataAndType(FileNameToUri(FileName), StringToJString('application/pdf'));
-  Intent.setFlags(TJIntent.JavaClass.FLAG_ACTIVITY_NO_HISTORY or TJIntent.JavaClass.FLAG_ACTIVITY_CLEAR_TOP);
-  SharedActivity.StartActivity(Intent);
-
-
 
 //  if not ValidaClubesPonto then
 //  begin
@@ -711,12 +765,12 @@ begin
 //
 //    lPdf.Fechar;
 //
-//    //lPdf.VisualizarPDF;
+////    lPdf.VisualizarPDF;
 //    lPdf.CompartilharPDF;
 //  finally
 //    lPdf.Free;
 //  end;
-{$ENDIF}
+//{$ENDIF}
 end;
 
 procedure TFrmPrincipal.lblMenuFecharClick(Sender: TObject);
@@ -888,6 +942,7 @@ begin
         begin
             lytAddAvaliadores.TagString := codClube;
             edtResultadoPontos.Text:='';
+            posicao_final:= 0;
             lytAddAvaliadores.Visible := true;
             exit;
         end;
@@ -1344,6 +1399,13 @@ begin
         else
           TListItemImage(Objects.FindDrawable('ImageIcone')).Bitmap := imgMedalha.Bitmap;
     end;
+
+    TabResultado.Append;
+    TabResultadoPosicao.AsInteger := posicao_final;
+    TabResultadoCod_Clube.AsString := codClube;
+    TabResultadoNom_Clube.AsString := Nome;
+    TabResultadoTotal.Value := StrToFloat(Pontos);
+    TabResultado.Post;
 end;
 
 procedure TFrmPrincipal.AjustarTabRequisitos;
@@ -1432,6 +1494,7 @@ end;
 
 procedure TFrmPrincipal.ConsultarResultadoFinal;
 begin
+    TabResultado.EmptyDataSet;
     lvResultado.Items.Clear;
     posicao_final:= 0;
 
@@ -1451,15 +1514,6 @@ begin
         dm.qryConsOS.Next;
     end;
 
-//    TabResultado.IndexFieldNames := 'TOTAL:D';
-//    while NOT TabResultado.Eof do
-//    begin
-//        AddResultadoFinal(TabResultadoCod_Clube.AsString,
-//                          TabResultadoNom_Clube.AsString,
-//                          FloatToStr(TabResultadoTotal.AsFloat));
-//
-//        TabResultado.Next;
-//    end;
 end;
 
 procedure TFrmPrincipal.EditarCampo(objeto: TObject; tipo_campo, titulo, subtitulo,
@@ -1599,6 +1653,8 @@ end;
 
 procedure TFrmPrincipal.ImgCompartilharClick(Sender: TObject);
 begin
+  tela_imprimir := 'AVALIACAO';
+
   {$IFDEF ANDROID}
     PermissionsService.RequestPermissions([PermissaoReadStorage,
                                            PermissaoWriteStorage],
@@ -1611,6 +1667,19 @@ begin
 
 end;
 
+procedure TFrmPrincipal.ImgImprimir_ResultadoClick(Sender: TObject);
+begin
+  tela_imprimir := 'RESULTADO';
+
+  {$IFDEF ANDROID}
+    PermissionsService.RequestPermissions([PermissaoReadStorage,
+                                           PermissaoWriteStorage],
+                                           LibraryPermissionRequestResult,
+                                           DisplayMessageLibrary
+                                           );
+  {$ENDIF}
+end;
+
 procedure TFrmPrincipal.ImgCalcularClick(Sender: TObject);
 begin
     if lvClube.Items.Count = 0 then
@@ -1621,10 +1690,11 @@ begin
 
     if not ValidaClubesPonto then
     begin
-      fancy.Show(TIconDialog.Info, '', 'Clube sem pontuação. Avalie ou Exclua!', 'OK');
+      fancy.Show(TIconDialog.Info, '', 'Existe clube sem pontuação. Avalie ou Exclua!', 'OK');
       Exit;
     end;
 
+    posicao_final := 0;
     ConsultarResultado;
 
     {$IFDEF ANDROID}
