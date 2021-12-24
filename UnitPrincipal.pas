@@ -286,6 +286,7 @@ type
     ActShare: TShowShareSheetAction;
     ImgImprimir_Resultado: TImage;
     TabResultadoPosicao: TIntegerField;
+    lblMenuCompartilhar: TLabel;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -378,6 +379,7 @@ type
     procedure Rectangle4Click(Sender: TObject);
     procedure Rectangle37Click(Sender: TObject);
     procedure ImgImprimir_ResultadoClick(Sender: TObject);
+    procedure lblMenuCompartilharClick(Sender: TObject);
   private
     fancy : TFancyDialog;
     posicao_final: Integer;
@@ -405,6 +407,7 @@ type
     procedure ClickExcluir(Sender: TObject);
     procedure ClickSorteio(Sender: TObject);
     procedure ClickSalvar(Sender: TObject);
+    procedure ClickVoltar(Sender: TObject);
     procedure Imprimir;
     procedure AjustarTabRequisitos;
     procedure ThreadFim(Sender: TObject);
@@ -501,8 +504,7 @@ end;
 
 procedure TFrmPrincipal.ImgVoltarClick(Sender: TObject);
 begin
-  ConsultarClube;
-  TabControl.GotoVisibleTab(1);
+  fancy.Show(TIconDialog.Question, 'Ops!', 'Deseja sair da avaliação?', 'Sim', ClickVoltar, 'Não');
 end;
 
 procedure TFrmPrincipal.ImgVotarClick(Sender: TObject);
@@ -524,26 +526,21 @@ begin
 
   if Tela_Imprimir = 'AVALIACAO' then
   begin
-    if not ValidaClubesPonto then
-    begin
-      fancy.Show(TIconDialog.Info, '', 'Existe clube sem pontuação. Avalie ou Exclua!', 'OK');
-      Exit;
-    end;
-
-    relatorio := '';
-    relatorio :=             'AVALIAÇÃO CONCURSO DE ORDEM UNIDA' + sLineBreak + sLineBreak;
-    relatorio := relatorio + '(Resultado Parcial)' + sLineBreak;
-    relatorio := relatorio + 'Avaliador: ' + Nome_Usuario + sLineBreak;
-    relatorio := relatorio + 'Avaliação: ' + Item_Avaliar + sLineBreak;
-    relatorio := relatorio + '---------------------------------' + sLineBreak;
-
     dm.qryConsOS.Active := false;
     dm.qryConsOS.SQL.Clear;
-    dm.qryConsOS.SQL.Add('SELECT COD_CLUBE, NOME, TOTAL FROM TAB_CLUBES');
+    dm.qryConsOS.SQL.Add('SELECT COD_CLUBE, NOME, TOTAL FROM TAB_CLUBES WHERE COD_CLUBE = :COD_CLUBE');
     dm.qryConsOS.SQL.Add('ORDER BY NOME');
+    dm.qryConsOS.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
     dm.qryConsOS.Active := true;
-    while NOT dm.qryConsOS.Eof do
+    if dm.qryConsOS.RecordCount > 0 then
     begin
+        relatorio := '';
+        relatorio :=             'AVALIAÇÃO CONCURSO DE ORDEM UNIDA' + sLineBreak + sLineBreak;
+        relatorio := relatorio + '(Resultado Detalhado Individual)' + sLineBreak;
+        relatorio := relatorio + 'Avaliador: ' + Nome_Usuario + sLineBreak;
+        relatorio := relatorio + 'Avaliação: ' + Item_Avaliar + sLineBreak;
+        relatorio := relatorio + '---------------------------------' + sLineBreak;
+
         relatorio := relatorio + 'Clube: ' + dm.qryConsOS.FieldByName('NOME').AsString + sLineBreak;
         relatorio := relatorio + 'Total: ' + FloatToStr(dm.qryConsOS.FieldByName('TOTAL').Value) + sLineBreak;
 
@@ -562,57 +559,59 @@ begin
           relatorio := relatorio + sLineBreak;
           relatorio := relatorio + '## Básico ##' + sLineBreak;
           relatorio := relatorio + 'Descansar = ' + dm.qryGeral.FieldByName('PTS_B1').AsString;
-          relatorio := relatorio + '  Sentido = ' + dm.qryGeral.FieldByName('PTS_B2').AsString + sLineBreak;
+          relatorio := relatorio + ' |  Sentido = ' + dm.qryGeral.FieldByName('PTS_B2').AsString + sLineBreak;
           relatorio := relatorio + 'Cobrir = ' + dm.qryGeral.FieldByName('PTS_B3').AsString;
-          relatorio := relatorio + '  Firme = ' + dm.qryGeral.FieldByName('PTS_B4').AsString + sLineBreak;
+          relatorio := relatorio + '        |  Firme = ' + dm.qryGeral.FieldByName('PTS_B4').AsString + sLineBreak;
 
-          relatorio := relatorio + 'Dir/Esq/MeiaVolta = ' + dm.qryGeral.FieldByName('PTS_B5').AsString + sLineBreak;
           relatorio := relatorio + 'Oitava Dir = ' + dm.qryGeral.FieldByName('PTS_B6').AsString;
-          relatorio := relatorio + '  Oitava Esq = ' + dm.qryGeral.FieldByName('PTS_B7').AsString + sLineBreak;
-          relatorio := relatorio + 'Frente Ret/Dir/Esq = ' + dm.qryGeral.FieldByName('PTS_B8').AsString + sLineBreak + sLineBreak;
+          relatorio := relatorio + '  |  Oitava Esq = ' + dm.qryGeral.FieldByName('PTS_B7').AsString + sLineBreak;
+          relatorio := relatorio + 'Dir/Esq/MeiaVolta = ' + dm.qryGeral.FieldByName('PTS_B5').AsString + sLineBreak;
+          relatorio := relatorio + 'Frente Ret/Dir/Esq = ' + dm.qryGeral.FieldByName('PTS_B8').AsString + sLineBreak;
         end;
         if (Item_Avaliar = 'Movimento') or (Item_Avaliar = 'Todas') then
         begin
           relatorio := relatorio + sLineBreak;
           relatorio := relatorio + '## Movimento ##' + sLineBreak;
           relatorio := relatorio + 'Ord. Marche = ' + dm.qryGeral.FieldByName('PTS_M1').AsString;
-          relatorio := relatorio + '  Marcar Passo = ' + dm.qryGeral.FieldByName('PTS_M2').AsString + sLineBreak;
+          relatorio := relatorio + '     | MarcarPasso = ' + dm.qryGeral.FieldByName('PTS_M2').AsString + sLineBreak;
           relatorio := relatorio + 'Direita Volver = ' + dm.qryGeral.FieldByName('PTS_M3').AsString;
-          relatorio := relatorio + '  Esquerda Volver = ' + dm.qryGeral.FieldByName('PTS_M4').AsString + sLineBreak;
+          relatorio := relatorio + '  | EsquerdVolver= ' + dm.qryGeral.FieldByName('PTS_M4').AsString + sLineBreak;
 
-          relatorio := relatorio + 'MeiaVolta Volver = ' + dm.qryGeral.FieldByName('PTS_M5').AsString;
-          relatorio := relatorio + '  Olhar Dir/Esq = ' + dm.qryGeral.FieldByName('PTS_M6').AsString + sLineBreak;
-          relatorio := relatorio + 'Alto = ' + dm.qryGeral.FieldByName('PTS_M7').AsString;
-          relatorio := relatorio + '  Convers.Centro = ' + dm.qryGeral.FieldByName('PTS_M8').AsString + sLineBreak;
-          relatorio := relatorio + 'Dir/Esq/Meia = ' + dm.qryGeral.FieldByName('PTS_M9').AsString + sLineBreak;
+          relatorio := relatorio + 'Dir/Esq/Meia = ' + dm.qryGeral.FieldByName('PTS_M9').AsString;
+          relatorio := relatorio + ' | Alto = ' + dm.qryGeral.FieldByName('PTS_M7').AsString + sLineBreak;
+          relatorio := relatorio + 'Olhar Dir/Esq = ' + dm.qryGeral.FieldByName('PTS_M6').AsString;
+          relatorio := relatorio + ' | Convers.Centro= ' + dm.qryGeral.FieldByName('PTS_M8').AsString + sLineBreak;
+          relatorio := relatorio + 'MeiaVoltaVolver = ' + dm.qryGeral.FieldByName('PTS_M5').AsString + sLineBreak;
         end;
         if (Item_Avaliar = 'Avançado') or (Item_Avaliar = 'Todas') then
         begin
           relatorio := relatorio + sLineBreak;
           relatorio := relatorio + '## Avançado ##' + sLineBreak;
-          relatorio := relatorio + 'Alinhamento = ' + dm.qryGeral.FieldByName('PTS_A1').AsString;
-          relatorio := relatorio + ' Cobertura = ' + dm.qryGeral.FieldByName('PTS_A2').AsString;
-          relatorio := relatorio + ' Conjunto = ' + dm.qryGeral.FieldByName('PTS_A3').AsString + sLineBreak;
-          relatorio := relatorio + 'Energia Movim. = ' + dm.qryGeral.FieldByName('PTS_A4').AsString;
-          relatorio := relatorio + '  Dific Evolução = ' + dm.qryGeral.FieldByName('PTS_A5').AsString + sLineBreak;
-          relatorio := relatorio + 'Padronização = ' + dm.qryGeral.FieldByName('PTS_A6').AsString;
-          relatorio := relatorio + '  Posição = ' + dm.qryGeral.FieldByName('PTS_A7').AsString + sLineBreak;
-          relatorio := relatorio + 'Postura = ' + dm.qryGeral.FieldByName('PTS_A8').AsString;
-          relatorio := relatorio + ' Garra = ' + dm.qryGeral.FieldByName('PTS_A9').AsString;
-          relatorio := relatorio + ' Evolução Tema = ' + dm.qryGeral.FieldByName('PTS_A10').AsString + sLineBreak;
+          relatorio := relatorio + 'Alinhamento=' + dm.qryGeral.FieldByName('PTS_A1').AsString;
+          relatorio := relatorio + ' | Cobertura = ' + dm.qryGeral.FieldByName('PTS_A2').AsString+ sLineBreak;
+          relatorio := relatorio + 'Conjunto = ' + dm.qryGeral.FieldByName('PTS_A3').AsString;
+          relatorio := relatorio + '     | EnergiaMovim. = ' + dm.qryGeral.FieldByName('PTS_A4').AsString + sLineBreak;
+          relatorio := relatorio + 'DificEvolução=' + dm.qryGeral.FieldByName('PTS_A5').AsString;
+          relatorio := relatorio + ' | Padronização = ' + dm.qryGeral.FieldByName('PTS_A6').AsString + sLineBreak;
+          relatorio := relatorio + 'Posição = ' + dm.qryGeral.FieldByName('PTS_A7').AsString;
+          relatorio := relatorio + '        | Postura = ' + dm.qryGeral.FieldByName('PTS_A8').AsString + sLineBreak;
+          relatorio := relatorio + 'Garra = ' + dm.qryGeral.FieldByName('PTS_A9').AsString;
+          relatorio := relatorio + '            | EvolucTema=' + dm.qryGeral.FieldByName('PTS_A10').AsString + sLineBreak;
         end;
         if (Item_Avaliar = 'Instrutor') or (Item_Avaliar = 'Todas') then
         begin
           relatorio := relatorio + sLineBreak;
           relatorio := relatorio + '## Instrutor ##' + sLineBreak;
           relatorio := relatorio + 'Altura Voz = '+dm.qryGeral.FieldByName('PTS_T1').AsString;
-          relatorio := relatorio + '  Voz Comanda = '+dm.qryGeral.FieldByName('PTS_T2').AsString + sLineBreak;
-          relatorio := relatorio + 'Postura Instr = '+dm.qryGeral.FieldByName('PTS_T3').AsString;
-          relatorio := relatorio + '  Tempo = '+dm.qryGeral.FieldByName('PTS_T4').AsString + sLineBreak;
+          relatorio := relatorio + '    | Voz Comanda = '+dm.qryGeral.FieldByName('PTS_T2').AsString + sLineBreak;
+          relatorio := relatorio + 'PosturaInstr= '+dm.qryGeral.FieldByName('PTS_T3').AsString;
+          relatorio := relatorio + '  | Tempo = '+dm.qryGeral.FieldByName('PTS_T4').AsString + sLineBreak;
         end;
         relatorio := relatorio + '---------------------------------' + sLineBreak;
-
-        dm.qryConsOS.Next;
+    end else
+    begin
+      fancy.Show(TIconDialog.Info, '', 'Clube sem pontuação. Avalie ou Exclua!', 'OK');
+      Exit;
     end;
 
     ActShare.Bitmap := nil;
@@ -648,6 +647,88 @@ begin
     ActShare.TextMessage := relatorio;
     ActShare.Execute;
 
+  end
+  else if Tela_Imprimir = 'RESUMO' then
+  begin
+    if not ValidaClubesPonto then
+    begin
+      fancy.Show(TIconDialog.Info, '', 'Existe clube sem pontuação.'+sLineBreak+'Avalie ou Exclua!', 'OK');
+      Exit;
+    end;
+
+    relatorio := '';
+    relatorio :=             'AVALIAÇÃO CONCURSO DE ORDEM UNIDA' + sLineBreak;
+    relatorio := relatorio + '(Resultado Parcial)' + sLineBreak;
+    relatorio := relatorio + 'Avaliador: ' + Nome_Usuario + sLineBreak;
+    relatorio := relatorio + 'Avaliação: ' + Item_Avaliar + sLineBreak;
+    relatorio := relatorio + '==============================' + sLineBreak;
+
+    dm.qryConsOS.Active := false;
+    dm.qryConsOS.SQL.Clear;
+    dm.qryConsOS.SQL.Add('SELECT COD_CLUBE, NOME, TOTAL FROM TAB_CLUBES');
+    dm.qryConsOS.SQL.Add('ORDER BY NOME');
+    dm.qryConsOS.Active := true;
+
+    while NOT dm.qryConsOS.Eof do
+    begin
+        relatorio := relatorio + 'Clube: ' + dm.qryConsOS.FieldByName('NOME').AsString + sLineBreak;
+        relatorio := relatorio + 'Total: ' + FloatToStr(dm.qryConsOS.FieldByName('TOTAL').Value) + sLineBreak;
+        relatorio := relatorio + '---------------------------------' + sLineBreak;
+
+        dm.qryGeral.Active := false;
+        dm.qryGeral.SQL.Clear;
+        dm.qryGeral.SQL.Add('SELECT PTS_B1,PTS_B2,PTS_B3,PTS_B4,PTS_B5,PTS_B6,PTS_B7,PTS_B8,');
+        dm.qryGeral.SQL.Add('PTS_M1,PTS_M2,PTS_M3,PTS_M4,PTS_M5,PTS_M6,PTS_M7,PTS_M8,PTS_M9,');
+        DM.qryGeral.SQL.Add('PTS_A1,PTS_A2,PTS_A3,PTS_A4,PTS_A5,PTS_A6,PTS_A7,PTS_A8,PTS_A9,PTS_A10,');
+        DM.qryGeral.SQL.Add('PTS_T1,PTS_T2,PTS_T3,PTS_T4 FROM TAB_PONTOS');
+        dm.qryGeral.SQL.Add('WHERE COD_CLUBE = :COD_CLUBE');
+        dm.qryGeral.ParamByName('COD_CLUBE').AsString:=dm.qryConsOS.FieldByName('COD_CLUBE').AsString;
+        dm.qryGeral.Active := true;
+
+        if (Item_Avaliar = 'Básico') or (Item_Avaliar = 'Todas') then
+            relatorio := relatorio + 'Total Básico: ' + FloatToStr(StrToFloat(dm.qryGeral.FieldByName('PTS_B1').Value) +
+                                                     StrToFloat(dm.qryGeral.FieldByName('PTS_B2').Value) +
+                                                     StrToFloat(dm.qryGeral.FieldByName('PTS_B3').Value) +
+                                                     StrToFloat(dm.qryGeral.FieldByName('PTS_B4').Value) +
+                                                     StrToFloat(dm.qryGeral.FieldByName('PTS_B5').Value) +
+                                                     StrToFloat(dm.qryGeral.FieldByName('PTS_B6').Value) +
+                                                     StrToFloat(dm.qryGeral.FieldByName('PTS_B7').Value) +
+                                                     StrToFloat(dm.qryGeral.FieldByName('PTS_B8').Value)) + sLineBreak;
+        if (Item_Avaliar = 'Movimento') or (Item_Avaliar = 'Todas') then
+            relatorio := relatorio + 'Total Movimento: ' + FloatToStr(StrToFloat(dm.qryGeral.FieldByName('PTS_M1').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_M2').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_M3').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_M4').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_M5').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_M6').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_M7').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_M8').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_M9').Value)) + sLineBreak;
+        if (Item_Avaliar = 'Avançado') or (Item_Avaliar = 'Todas') then
+            relatorio := relatorio + 'Total Avançado: ' +  FloatToStr(StrToFloat(dm.qryGeral.FieldByName('PTS_A1').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_A2').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_A3').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_A4').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_A5').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_A6').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_A7').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_A8').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_A9').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_A10').Value)) + sLineBreak;
+        if (Item_Avaliar = 'Instrutor') or (Item_Avaliar = 'Todas') then
+            relatorio := relatorio + 'Total Instrutor: ' + FloatToStr(StrToFloat(dm.qryGeral.FieldByName('PTS_T1').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_T2').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_T3').Value) +
+                                                        StrToFloat(dm.qryGeral.FieldByName('PTS_T4').Value)) + sLineBreak;
+
+        relatorio := relatorio + '==============================' + sLineBreak;
+
+        dm.qryConsOS.Next;
+    end;
+
+    ActShare.Bitmap := nil;
+    ActShare.TextMessage := relatorio;
+    ActShare.Execute;
   end;
 
 //  if not ValidaClubesPonto then
@@ -841,6 +922,21 @@ begin
     RtgFundoMovimento.Visible:=False;
     RtgFundoAvancado.Visible:=False;
     RtgFundoInstrutor.Visible:=False;
+end;
+
+procedure TFrmPrincipal.lblMenuCompartilharClick(Sender: TObject);
+begin
+  LytMenuClube.Visible:=False;
+
+  tela_imprimir := 'AVALIACAO';
+
+  {$IFDEF ANDROID}
+    PermissionsService.RequestPermissions([PermissaoReadStorage,
+                                           PermissaoWriteStorage],
+                                           LibraryPermissionRequestResult,
+                                           DisplayMessageLibrary
+                                           );
+  {$ENDIF}
 end;
 
 procedure TFrmPrincipal.lblMenuExcluirClick(Sender: TObject);
@@ -1653,7 +1749,19 @@ end;
 
 procedure TFrmPrincipal.ImgCompartilharClick(Sender: TObject);
 begin
-  tela_imprimir := 'AVALIACAO';
+    if lvClube.Items.Count = 0 then
+    begin
+      fancy.Show(TIconDialog.Info, '', 'Não há dados para compartilhar!', 'OK');
+      Exit;
+    end;
+
+    if not ValidaClubesPonto then
+    begin
+      fancy.Show(TIconDialog.Info, '', 'Existe clube sem pontuação.'+sLineBreak+'Avalie ou Exclua!', 'OK');
+      Exit;
+    end;
+
+  tela_imprimir := 'RESUMO';
 
   {$IFDEF ANDROID}
     PermissionsService.RequestPermissions([PermissaoReadStorage,
@@ -1690,7 +1798,7 @@ begin
 
     if not ValidaClubesPonto then
     begin
-      fancy.Show(TIconDialog.Info, '', 'Existe clube sem pontuação. Avalie ou Exclua!', 'OK');
+      fancy.Show(TIconDialog.Info, '', 'Existe clube sem pontuação.'+sLineBreak+'Avalie ou Exclua!', 'OK');
       Exit;
     end;
 
@@ -1944,6 +2052,12 @@ begin
 
   t.OnTerminate := ThreadFim;
   t.Start;
+end;
+
+procedure TFrmPrincipal.ClickVoltar(Sender: TObject);
+begin
+      ConsultarClube;
+      TabControl.GotoVisibleTab(1);
 end;
 
 function TFrmPrincipal.CMToPixel(const Acentimeter: Double): Double;

@@ -17,19 +17,15 @@ type
     TabItem4: TTabItem;
     layout_proximo: TLayout;
     Layout2: TLayout;
-    Image1: TImage;
     Label1: TLabel;
     Label2: TLabel;
     Layout3: TLayout;
-    Image2: TImage;
     Label3: TLabel;
     Label4: TLabel;
     Layout4: TLayout;
-    Image3: TImage;
     Label5: TLabel;
     Label6: TLabel;
     Layout5: TLayout;
-    Image4: TImage;
     Label7: TLabel;
     StyleBook1: TStyleBook;
     btn_voltar: TSpeedButton;
@@ -43,6 +39,13 @@ type
     btn_login: TSpeedButton;
     Timer_Load: TTimer;
     Label8: TLabel;
+    Image4: TImage;
+    Image1: TImage;
+    Image2: TImage;
+    Image3: TImage;
+    TabItem5: TTabItem;
+    Layout1: TLayout;
+    Image5: TImage;
     procedure FormCreate(Sender: TObject);
     procedure btn_proximoClick(Sender: TObject);
     procedure NavegacaoAba(cont : integer);
@@ -112,10 +115,10 @@ begin
     {$ENDIF}
 
     TabControl.TabPosition := TTabPosition.None;
-    TabControl.ActiveTab := TabItem1;
+    TabControl.ActiveTab := TabItem5;
     layout_proximo.Visible := false;
     layout_botoes.Visible := false;
-    NavegacaoAba(-1);
+    NavegacaoAba(1);
 
     TabControl.Visible := false;
 end;
