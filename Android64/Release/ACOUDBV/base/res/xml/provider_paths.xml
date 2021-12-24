@@ -1,7 +1,10 @@
 
-˜
+×
 9
 android*http://schemas.android.com/apk/res/androidpaths*
     B*:
-2external-path"nameexternal_files"	path.*	
-4
+2external-path"nameexternal_files"	path.*
+    4*.
+&
+files-path"namefiles"	path.*	
+(

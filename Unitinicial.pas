@@ -43,9 +43,6 @@ type
     Image1: TImage;
     Image2: TImage;
     Image3: TImage;
-    TabItem5: TTabItem;
-    Layout1: TLayout;
-    Image5: TImage;
     procedure FormCreate(Sender: TObject);
     procedure btn_proximoClick(Sender: TObject);
     procedure NavegacaoAba(cont : integer);
@@ -115,10 +112,10 @@ begin
     {$ENDIF}
 
     TabControl.TabPosition := TTabPosition.None;
-    TabControl.ActiveTab := TabItem5;
+    TabControl.ActiveTab := TabItem1;
     layout_proximo.Visible := false;
     layout_botoes.Visible := false;
-    NavegacaoAba(1);
+    NavegacaoAba(-1);
 
     TabControl.Visible := false;
 end;

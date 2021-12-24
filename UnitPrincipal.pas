@@ -24,7 +24,7 @@ uses
   System.Actions, FMX.ActnList, FMX.StdActns, FMX.MediaLibrary.Actions,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
-  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, FMX.Advertising;
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, FMX.Advertising, FMX.Ani;
 
 type
   TExecutaClick = procedure(Sender: TObject) of Object;
@@ -287,6 +287,9 @@ type
     ImgImprimir_Resultado: TImage;
     TabResultadoPosicao: TIntegerField;
     lblMenuCompartilhar: TLabel;
+    AnimaCadClube: TFloatAnimation;
+    AnimaMenuClube: TFloatAnimation;
+    AnimaAddAvaliadores: TFloatAnimation;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -380,6 +383,10 @@ type
     procedure Rectangle37Click(Sender: TObject);
     procedure ImgImprimir_ResultadoClick(Sender: TObject);
     procedure lblMenuCompartilharClick(Sender: TObject);
+    procedure AnimaCadClubeFinish(Sender: TObject);
+    procedure AnimaMenuClubeFinish(Sender: TObject);
+    procedure rectMenuFecharClick(Sender: TObject);
+    procedure AnimaAddAvaliadoresFinish(Sender: TObject);
   private
     fancy : TFancyDialog;
     posicao_final: Integer;
@@ -413,7 +420,7 @@ type
     procedure ThreadFim(Sender: TObject);
     function ValidaClubesPonto: Boolean;
     function CMToPixel(const Acentimeter: Double): Double;
-    function FileNameToURI(const Filename: string): Jnet_Uri;
+    procedure EscondeMenuClube;
     { Private declarations }
   public
     { Public declarations }
@@ -482,7 +489,20 @@ begin
     EdtInstrutor.Text:='';
     EdtOrdem.Text:='';
     Status_Clube:='N';
-    lytCadClube.Visible:=True;
+
+    // Posicionar Layout na parte de baixo da tela
+    lytCadClube.Position.Y := FrmPrincipal.Height + 20;
+    lytCadClube.Visible := True;
+
+    // Animação do menu - deslizar para cima
+    AnimaCadClube.Inverse := False;
+    AnimaCadClube.StartValue := FrmPrincipal.Height +20;
+    AnimaCadClube.StopValue := 0;
+    AnimaCadClube.Start;
+
+    // Animacao rotacao botao
+    imgAdd.RotationAngle:= 0;
+    imgAdd.AnimateFloat('RotationAngle', 180, 0.5, TAnimationType.InOut, TInterpolationType.Circular);
 end;
 
 procedure TFrmPrincipal.ImgSalvarClick(Sender: TObject);
@@ -856,7 +876,9 @@ end;
 
 procedure TFrmPrincipal.lblMenuFecharClick(Sender: TObject);
 begin
-    lytMenuClube.Visible := false;
+  EscondeMenuClube;
+
+//    lytMenuClube.Visible := false;
 end;
 
 procedure TFrmPrincipal.LimparEdits;
@@ -902,6 +924,8 @@ end;
 
 procedure TFrmPrincipal.lblMenuAvaliarClick(Sender: TObject);
 begin
+    EscondeMenuClube;
+
     dm.qryGeral.Active := false;
     dm.qryGeral.SQL.Clear;
     dm.qryGeral.SQL.Add('SELECT * FROM TAB_PONTOS WHERE COD_CLUBE = :COD_CLUBE');
@@ -914,7 +938,6 @@ begin
     end;
 
     LimparEdits;
-    LytMenuClube.Visible:=False;
     TabControlRequisitos.GotoVisibleTab(0);
     TabControl.GotoVisibleTab(2);
     ImgSalvar.Visible:=True;
@@ -922,11 +945,12 @@ begin
     RtgFundoMovimento.Visible:=False;
     RtgFundoAvancado.Visible:=False;
     RtgFundoInstrutor.Visible:=False;
+
 end;
 
 procedure TFrmPrincipal.lblMenuCompartilharClick(Sender: TObject);
 begin
-  LytMenuClube.Visible:=False;
+  EscondeMenuClube;
 
   tela_imprimir := 'AVALIACAO';
 
@@ -937,6 +961,7 @@ begin
                                            DisplayMessageLibrary
                                            );
   {$ENDIF}
+
 end;
 
 procedure TFrmPrincipal.lblMenuExcluirClick(Sender: TObject);
@@ -947,6 +972,8 @@ end;
 
 procedure TFrmPrincipal.lblMenuAlterarClick(Sender: TObject);
 begin
+    EscondeMenuClube;
+
     dm.qryGeral.Active := false;
     dm.qryGeral.SQL.Clear;
     dm.qryGeral.SQL.Add('SELECT * FROM TAB_PONTOS WHERE COD_CLUBE = :COD_CLUBE');
@@ -995,7 +1022,6 @@ begin
     LblT3.Text:= dm.qryGeral.FieldByName('PTS_T3').Value;
     LblT4.Text:= dm.qryGeral.FieldByName('PTS_T4').Value;
 
-    LytMenuClube.Visible:=False;
     TabControlRequisitos.GotoVisibleTab(0);
     TabControl.GotoVisibleTab(2);
     ImgSalvar.Visible:=False;
@@ -1019,7 +1045,17 @@ begin
         begin
             lytMenuClube.TagString := codClube;
             LblNome_Clube_Pontos.TExt:='Clube: '+nomeClube;
+
+            // Posicionar Layout na parte de baixo da tela
+            lytMenuClube.Position.Y := FrmPrincipal.Height + 20;
             lytMenuClube.Visible := true;
+
+            // Animação do menu - deslizar para cima
+            AnimaMenuClube.Inverse := False;
+            AnimaMenuClube.StartValue := FrmPrincipal.Height +20;
+            AnimaMenuClube.StopValue := 0;
+            AnimaMenuClube.Start;
+
             exit;
         end;
 end;
@@ -1039,7 +1075,17 @@ begin
             lytAddAvaliadores.TagString := codClube;
             edtResultadoPontos.Text:='';
             posicao_final:= 0;
+
+            // Posicionar Layout na parte de baixo da tela
+            lytAddAvaliadores.Position.Y := FrmPrincipal.Height + 20;
             lytAddAvaliadores.Visible := true;
+
+            // Animação do menu - deslizar para cima
+            AnimaAddAvaliadores.Inverse := False;
+            AnimaAddAvaliadores.StartValue := FrmPrincipal.Height +20;
+            AnimaAddAvaliadores.StopValue := 0;
+            AnimaAddAvaliadores.Start;
+
             exit;
         end;
 end;
@@ -1544,6 +1590,24 @@ begin
   end;
 end;
 
+procedure TFrmPrincipal.AnimaAddAvaliadoresFinish(Sender: TObject);
+begin
+  if AnimaAddAvaliadores.Inverse = True then
+      lytAddAvaliadores.Visible:= False;
+end;
+
+procedure TFrmPrincipal.AnimaCadClubeFinish(Sender: TObject);
+begin
+  if AnimaCadClube.Inverse = True then
+    lytCadClube.Visible:= False;
+end;
+
+procedure TFrmPrincipal.AnimaMenuClubeFinish(Sender: TObject);
+begin
+  if AnimaMenuClube.Inverse = True then
+    lytMenuClube.Visible:= False;
+end;
+
 procedure TFrmPrincipal.ConsultarClube;
 begin
     lvClube.Items.Clear;
@@ -1675,12 +1739,11 @@ begin
 
 end;
 
-function TFrmPrincipal.FileNameToURI(const Filename: string): Jnet_Uri;
-var
-  JavaFile: JFile;
+procedure TFrmPrincipal.EscondeMenuClube;
 begin
-  JavaFile:= TJFile.JavaClass.init(StringToJString(FileName));
-  Result:= TJnet_Uri.JavaClass.fromFile(JavaFile);
+  // Esconde menu
+  AnimaMenuClube.Inverse := True;
+  AnimaMenuClube.Start;
 end;
 
 procedure TFrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1743,7 +1806,7 @@ begin
 
   {$IFDEF ANDROID}
   banner := TAdBanner.Create(self, 'ca-app-pub-5318830765545492/11408406', TAdBannerType.Banner);
-  banner.show(True, TAlignLayout.MostBottom);
+  banner.show(False, TAlignLayout.MostBottom);
   {$ENDIF}
 end;
 
@@ -1807,7 +1870,7 @@ begin
 
     {$IFDEF ANDROID}
     intersticial := TAdBanner.Create(self, 'ca-app-pub-5318830765545492/15237905', TAdBannerType.Interstitial);
-    intersticial.show(True);
+    intersticial.show(False);
     {$ENDIF}
 
     TabControl.GotoVisibleTab(0);
@@ -1820,6 +1883,8 @@ end;
 
 procedure TFrmPrincipal.ClickApagar(Sender: TObject);
 begin
+    EscondeMenuClube;
+
     try
         dm.qryGeral.Active := false;
         dm.qryGeral.SQL.Clear;
@@ -1836,7 +1901,6 @@ begin
         dm.qryGeral.SQL.Add('DELETE FROM TAB_RESULTADO');
         dm.qryGeral.ExecSQL;
 
-        lytMenuClube.Visible := false;
         ConsultarClube;
 
     except on ex:exception do
@@ -1846,6 +1910,8 @@ end;
 
 procedure TFrmPrincipal.ClickExcluir(Sender: TObject);
 begin
+    EscondeMenuClube;
+
     try
         dm.qryGeral.Active := false;
         dm.qryGeral.SQL.Clear;
@@ -1865,9 +1931,7 @@ begin
         dm.qryGeral.ParamByName('COD_CLUBE').Value := lytMenuClube.TagString;
         dm.qryGeral.ExecSQL;
 
-        lytMenuClube.Visible := false;
         ConsultarClube;
-
     except on ex:exception do
         fancy.Show(TIconDialog.Error, '', 'Erro ao excluir clube!', 'OK');
     end;
@@ -2068,6 +2132,11 @@ begin
   Result:= Round(iPPI * ACentimeter);
 end;
 
+procedure TFrmPrincipal.rectMenuFecharClick(Sender: TObject);
+begin
+  EscondeMenuClube;
+end;
+
 procedure TFrmPrincipal.rect_cidadeClick(Sender: TObject);
 begin
     {$IFDEF MSWINDOWS}
@@ -2140,12 +2209,21 @@ end;
 
 procedure TFrmPrincipal.RtgAddAvaliadorClick(Sender: TObject);
 begin
-  lytAddAvaliadores.Visible:=False;
+    AnimaAddAvaliadores.Inverse := True;
+    AnimaAddAvaliadores.Start;
 end;
 
 procedure TFrmPrincipal.RtgCadClubesClick(Sender: TObject);
 begin
-    lytCadClube.Visible:=False;
+  // Esconde menu
+  AnimaCadClube.Inverse := True;
+  AnimaCadClube.Start;
+
+  // Anima botao rotacao
+  imgAdd.RotationAngle:= 180;
+  imgAdd.AnimateFloat('RotationAngle', 0, 0.5, TAnimationType.InOut, TInterpolationType.Circular);
+
+//    lytCadClube.Visible:=False;
 end;
 
 procedure TFrmPrincipal.RtgResultadoAddClick(Sender: TObject);
@@ -2203,7 +2281,9 @@ begin
     dm.qryGeral.ExecSQL;
 
     ConsultarResultado;
-    lytAddAvaliadores.Visible:=False;
+
+    AnimaAddAvaliadores.Inverse := True;
+    AnimaAddAvaliadores.Start;
 end;
 
 procedure TFrmPrincipal.RtgSalvarClubeClick(Sender: TObject);
@@ -2244,8 +2324,15 @@ begin
         ExecSQL;
     end;
 
+    AnimaCadClube.Inverse := True;
+    AnimaCadClube.Start;
+
+    // Anima botao rotacao
+    imgAdd.RotationAngle:= 180;
+    imgAdd.AnimateFloat('RotationAngle', 0, 0.5, TAnimationType.InOut, TInterpolationType.Circular);
+
     ConsultarClube;
-    lytCadClube.Visible:=False;
+//    lytCadClube.Visible:=False;
 end;
 
 procedure TFrmPrincipal.ThreadFim(Sender: TObject);

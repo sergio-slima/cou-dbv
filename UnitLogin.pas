@@ -5,7 +5,8 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
-  FMX.Layouts, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Edit, uFancyDialog;
+  FMX.Layouts, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Edit, uFancyDialog,
+  FMX.Ani;
 
 type
   TFrmLogin = class(TForm)
@@ -33,6 +34,12 @@ type
     Label6: TLabel;
     Label7: TLabel;
     Layout3: TLayout;
+    lytLogin: TLayout;
+    AnimaLogin: TFloatAnimation;
+    Layout4: TLayout;
+    ImgLogin: TImage;
+    FloatAnimation1: TFloatAnimation;
+    FloatAnimation2: TFloatAnimation;
     procedure rectAcessarClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -41,6 +48,7 @@ type
       KeyboardVisible: Boolean; const Bounds: TRect);
     procedure imgTodasClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure AnimaLoginFinish(Sender: TObject);
   private
     { Private declarations }
     fancy : TFancyDialog;
@@ -85,6 +93,14 @@ begin
     cloSelecao.AnimateFloat('Position.X', TImage(Sender).Position.X + 20, 0.2);
   end;
 
+end;
+
+procedure TFrmLogin.AnimaLoginFinish(Sender: TObject);
+begin
+  lytLogin.Visible:=False;
+  ImgLogin.Visible:= True;
+  FloatAnimation1.Start;
+  FloatAnimation2.Start;
 end;
 
 procedure TFrmLogin.EdtUsuarioEnter(Sender: TObject);
