@@ -7,7 +7,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
   FMX.TabControl, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Edit,
   FMX.ListView.Types, FMX.ListView.Appearances, FMX.ListView.Adapters.Base,
-  FMX.ListView, FMX.Layouts, AdMob, FMX.BitmapHelper,
+  FMX.ListView, FMX.Layouts, FMX.BitmapHelper,
 
   {$IFDEF ANDROID}
   UnitPdfPrint,
@@ -290,6 +290,8 @@ type
     AnimaCadClube: TFloatAnimation;
     AnimaMenuClube: TFloatAnimation;
     AnimaAddAvaliadores: TFloatAnimation;
+    BannerAd1: TBannerAd;
+    img_no_clube: TImage;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -424,9 +426,6 @@ type
     { Private declarations }
   public
     { Public declarations }
-    banner: TAdBanner;
-    intersticial: TAdBanner;
-
     CodClube: string;
     Nome_Usuario: String;
     Item_Avaliar: String;
@@ -1630,6 +1629,7 @@ begin
         dm.qryConsOS.Next;
     end;
 
+    img_no_clube.Visible := lvClube.Items.Count = 0;
 end;
 
 procedure TFrmPrincipal.ConsultarResultado;
@@ -1759,9 +1759,9 @@ begin
   {$IFDEF ANDROID}
   PermissaoReadStorage := JStringToString(TJManifest_permission.JavaClass.READ_EXTERNAL_STORAGE);
   PermissaoWriteStorage := JStringToString(TJManifest_permission.JavaClass.WRITE_EXTERNAL_STORAGE);
+
+  BannerAd1.AdUnitID := 'ca-app-pub-5318830765545492/11408406';
   {$ENDIF}
-
-
 end;
 
 procedure TFrmPrincipal.FormKeyUp(Sender: TObject; var Key: Word;
@@ -1804,10 +1804,9 @@ begin
     AjustarTabRequisitos;
     ConsultarClube;
 
-  {$IFDEF ANDROID}
-  banner := TAdBanner.Create(self, 'ca-app-pub-5318830765545492/11408406', TAdBannerType.Banner);
-  banner.show(False, TAlignLayout.MostBottom);
-  {$ENDIF}
+    {$IFDEF ANDROID}
+    BannerAd1.LoadAd;
+    {$ENDIF}
 end;
 
 procedure TFrmPrincipal.ImgCompartilharClick(Sender: TObject);
@@ -1867,11 +1866,6 @@ begin
 
     posicao_final := 0;
     ConsultarResultado;
-
-    {$IFDEF ANDROID}
-    intersticial := TAdBanner.Create(self, 'ca-app-pub-5318830765545492/15237905', TAdBannerType.Interstitial);
-    intersticial.show(False);
-    {$ENDIF}
 
     TabControl.GotoVisibleTab(0);
 end;

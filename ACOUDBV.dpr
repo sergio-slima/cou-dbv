@@ -14,7 +14,6 @@ uses
   {$ENDIF }
   uFancyDialog in 'Units\uFancyDialog.pas',
   Unitinicial in 'Unitinicial.pas' {FrmInicial},
-  AdMob in 'Units\AdMob.pas',
   FMX.BitmapHelper in 'Units\FMX.BitmapHelper.pas',
   AnonThread in 'Units\AnonThread.pas';
 
