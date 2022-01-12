@@ -8,7 +8,8 @@ uses
   FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Phys.SQLite,
   FireDAC.Phys.SQLiteDef, FireDAC.Stan.ExprFuncs, FireDAC.FMXUI.Wait, Data.DB,
   FireDAC.Comp.Client, System.IOUtils, FireDAC.Stan.Param, FireDAC.DatS,
-  FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Comp.DataSet;
+  FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Comp.DataSet,
+  FireDAC.Phys.SQLiteWrapper.Stat;
 
 type
   Tdm = class(TDataModule)
@@ -116,9 +117,9 @@ begin
     conn.DriverName := 'SQLite';
 
     {$IFDEF MSWINDOWS}
-    conn.Params.Values['Database'] := System.SysUtils.GetCurrentDir + '\ACOUDBV3.db';
+    conn.Params.Values['Database'] := System.SysUtils.GetCurrentDir + '\ACOUDBV4.db';
     {$ELSE}
-    conn.Params.Values['Database'] := TPath.Combine(TPath.GetDocumentsPath, 'ACOUDBV3.db');
+    conn.Params.Values['Database'] := TPath.Combine(TPath.GetDocumentsPath, 'ACOUDBV4.db');
     {$ENDIF}
 end;
 
