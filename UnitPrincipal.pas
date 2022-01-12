@@ -1760,7 +1760,8 @@ begin
   PermissaoReadStorage := JStringToString(TJManifest_permission.JavaClass.READ_EXTERNAL_STORAGE);
   PermissaoWriteStorage := JStringToString(TJManifest_permission.JavaClass.WRITE_EXTERNAL_STORAGE);
 
-  BannerAd1.AdUnitID := 'ca-app-pub-5318830765545492/11408406';
+  BannerAd1.AdUnitID := 'ca-app-pub-5318830765545492/1140840672'; // 'ca-app-pub-5318830765545492/11408406';
+
   {$ENDIF}
 end;
 
