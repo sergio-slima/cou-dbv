@@ -292,6 +292,7 @@ type
     AnimaAddAvaliadores: TFloatAnimation;
     BannerAd1: TBannerAd;
     img_no_clube: TImage;
+    Label9: TLabel;
     procedure imgAbaOSClick(Sender: TObject);
     procedure lblMenuFecharClick(Sender: TObject);
     procedure lblMenuAlterarClick(Sender: TObject);
@@ -389,6 +390,7 @@ type
     procedure AnimaMenuClubeFinish(Sender: TObject);
     procedure rectMenuFecharClick(Sender: TObject);
     procedure AnimaAddAvaliadoresFinish(Sender: TObject);
+    procedure Label9Click(Sender: TObject);
   private
     fancy : TFancyDialog;
     posicao_final: Integer;
@@ -506,7 +508,7 @@ end;
 
 procedure TFrmPrincipal.ImgSalvarClick(Sender: TObject);
 begin
-    fancy.Show(TIconDialog.Question, 'Atenção', 'Deseja salvar avaliação?', 'Sim', ClickSalvar, 'Não');
+    fancy.Show(TIconDialog.Question, 'Atenção', 'Deseja finalizar avaliação?', 'Sim', ClickSalvar, 'Não');
 
 end;
 
@@ -523,7 +525,15 @@ end;
 
 procedure TFrmPrincipal.ImgVoltarClick(Sender: TObject);
 begin
-  fancy.Show(TIconDialog.Question, 'Ops!', 'Deseja sair da avaliação?', 'Sim', ClickVoltar, 'Não');
+  if RtgFundoBasico.Visible or
+     RtgFundoMovimento.Visible or
+     RtgFundoAvancado.Visible or
+     RtgFundoInstrutor.Visible then
+  begin
+      ConsultarClube;
+      TabControl.GotoVisibleTab(1);
+  end else
+      fancy.Show(TIconDialog.Question, 'Ops!', 'Deseja sair da avaliação?', 'Sim', ClickVoltar, 'Não');
 end;
 
 procedure TFrmPrincipal.ImgVotarClick(Sender: TObject);
@@ -554,11 +564,11 @@ begin
     if dm.qryConsOS.RecordCount > 0 then
     begin
         relatorio := '';
-        relatorio :=             'AVALIAÇÃO CONCURSO DE ORDEM UNIDA' + sLineBreak + sLineBreak;
+        relatorio :=             'CONCURSO DE ORDEM UNIDA' + sLineBreak;
         relatorio := relatorio + '(Resultado Detalhado Individual)' + sLineBreak;
         relatorio := relatorio + 'Avaliador: ' + Nome_Usuario + sLineBreak;
         relatorio := relatorio + 'Avaliação: ' + Item_Avaliar + sLineBreak;
-        relatorio := relatorio + '---------------------------------' + sLineBreak;
+        relatorio := relatorio + '--------------------------------------' + sLineBreak;
 
         relatorio := relatorio + 'Clube: ' + dm.qryConsOS.FieldByName('NOME').AsString + sLineBreak;
         relatorio := relatorio + 'Total: ' + FloatToStr(dm.qryConsOS.FieldByName('TOTAL').Value) + sLineBreak;
@@ -580,7 +590,7 @@ begin
           relatorio := relatorio + 'Descansar = ' + dm.qryGeral.FieldByName('PTS_B1').AsString;
           relatorio := relatorio + ' |  Sentido = ' + dm.qryGeral.FieldByName('PTS_B2').AsString + sLineBreak;
           relatorio := relatorio + 'Cobrir = ' + dm.qryGeral.FieldByName('PTS_B3').AsString;
-          relatorio := relatorio + '        |  Firme = ' + dm.qryGeral.FieldByName('PTS_B4').AsString + sLineBreak;
+          relatorio := relatorio + '       |  Firme = ' + dm.qryGeral.FieldByName('PTS_B4').AsString + sLineBreak;
 
           relatorio := relatorio + 'Oitava Dir = ' + dm.qryGeral.FieldByName('PTS_B6').AsString;
           relatorio := relatorio + '  |  Oitava Esq = ' + dm.qryGeral.FieldByName('PTS_B7').AsString + sLineBreak;
@@ -592,7 +602,7 @@ begin
           relatorio := relatorio + sLineBreak;
           relatorio := relatorio + '## Movimento ##' + sLineBreak;
           relatorio := relatorio + 'Ord. Marche = ' + dm.qryGeral.FieldByName('PTS_M1').AsString;
-          relatorio := relatorio + '     | MarcarPasso = ' + dm.qryGeral.FieldByName('PTS_M2').AsString + sLineBreak;
+          relatorio := relatorio + '   | MarcarPasso = ' + dm.qryGeral.FieldByName('PTS_M2').AsString + sLineBreak;
           relatorio := relatorio + 'Direita Volver = ' + dm.qryGeral.FieldByName('PTS_M3').AsString;
           relatorio := relatorio + '  | EsquerdVolver= ' + dm.qryGeral.FieldByName('PTS_M4').AsString + sLineBreak;
 
@@ -626,7 +636,7 @@ begin
           relatorio := relatorio + 'PosturaInstr= '+dm.qryGeral.FieldByName('PTS_T3').AsString;
           relatorio := relatorio + '  | Tempo = '+dm.qryGeral.FieldByName('PTS_T4').AsString + sLineBreak;
         end;
-        relatorio := relatorio + '---------------------------------' + sLineBreak;
+        relatorio := relatorio + '--------------------------------------' + sLineBreak;
     end else
     begin
       fancy.Show(TIconDialog.Info, '', 'Clube sem pontuação. Avalie ou Exclua!', 'OK');
@@ -646,9 +656,9 @@ begin
     end;
 
     relatorio := '';
-    relatorio :=             'AVALIAÇÃO CONCURSO DE ORDEM UNIDA' + sLineBreak;
+    relatorio :=             'CONCURSO DE ORDEM UNIDA' + sLineBreak;
     relatorio := relatorio + '(Resultado Final)' + sLineBreak;
-    relatorio := relatorio + '---------------------------------' + sLineBreak;
+    relatorio := relatorio + '--------------------------------------' + sLineBreak;
 
     TabResultado.Open;
     TabResultado.First;
@@ -657,7 +667,7 @@ begin
         relatorio := relatorio + IntToStr(TabResultadoPosicao.Value) + 'º Lugar' + sLineBreak;
         relatorio := relatorio + 'Clube: ' + TabResultadoNom_Clube.AsString + sLineBreak;
         relatorio := relatorio + 'Total: ' + FloatToStr(TabResultadoTotal.Value) + sLineBreak;
-        relatorio := relatorio + '---------------------------------' + sLineBreak;
+        relatorio := relatorio + '--------------------------------------' + sLineBreak;
 
         TabResultado.Next;
     end;
@@ -676,7 +686,7 @@ begin
     end;
 
     relatorio := '';
-    relatorio :=             'AVALIAÇÃO CONCURSO DE ORDEM UNIDA' + sLineBreak;
+    relatorio :=             'CONCURSO DE ORDEM UNIDA' + sLineBreak;
     relatorio := relatorio + '(Resultado Parcial)' + sLineBreak;
     relatorio := relatorio + 'Avaliador: ' + Nome_Usuario + sLineBreak;
     relatorio := relatorio + 'Avaliação: ' + Item_Avaliar + sLineBreak;
@@ -692,7 +702,7 @@ begin
     begin
         relatorio := relatorio + 'Clube: ' + dm.qryConsOS.FieldByName('NOME').AsString + sLineBreak;
         relatorio := relatorio + 'Total: ' + FloatToStr(dm.qryConsOS.FieldByName('TOTAL').Value) + sLineBreak;
-        relatorio := relatorio + '---------------------------------' + sLineBreak;
+        relatorio := relatorio + '--------------------------------------' + sLineBreak;
 
         dm.qryGeral.Active := false;
         dm.qryGeral.SQL.Clear;
@@ -871,6 +881,11 @@ begin
 //    lPdf.Free;
 //  end;
 //{$ENDIF}
+end;
+
+procedure TFrmPrincipal.Label9Click(Sender: TObject);
+begin
+  EdtResultadoAvaliador.Text:='';
 end;
 
 procedure TFrmPrincipal.lblMenuFecharClick(Sender: TObject);
@@ -1639,7 +1654,7 @@ begin
     dm.qryConsOS.Active := false;
     dm.qryConsOS.SQL.Clear;
     dm.qryConsOS.SQL.Add('SELECT COD_CLUBE, NOME, TOTAL FROM TAB_CLUBES');
-    dm.qryConsOS.SQL.Add('ORDER BY NOME');
+    dm.qryConsOS.SQL.Add('ORDER BY SEQUENCIA, NOME');
     dm.qryConsOS.Active := true;
 
     while NOT dm.qryConsOS.Eof do

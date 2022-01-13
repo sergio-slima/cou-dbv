@@ -237,11 +237,11 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Android64)'!=''">
         <BT_BuildType>AppStore</BT_BuildType>
-        <VerInfo_Build>5</VerInfo_Build>
+        <VerInfo_Build>6</VerInfo_Build>
         <PF_KeyStorePass>851C47CC5F85078DCF78E53AA4067BF7E41308197EE797C397B90FE18E103C82DB0CA39AE3191C25C1B0572EFACEC331BAF736500464228B162345F0E58822DEC90BF31ED507FA8EBFE9AF23071E1D4492563E441DF9</PF_KeyStorePass>
         <PF_AliasKey>acoudbv</PF_AliasKey>
         <PF_AliasKeyPass>851C47CC5F85078DCF78E53AA4067BF7E41308197EE797C397B90FE18E103C82DB0CA39AE3191C25C1B0572EFACEC331BAF736500464228B162345F0E58822DEC90BF31ED507FA8EBFE9AF23071E1D4492563E441DF9</PF_AliasKeyPass>
-        <VerInfo_Keys>package=com.br.ACOUDBV;label=ACOUDBV;versionCode=5;versionName=1.4;persistent=False;restoreAnyVersion=False;installLocation=auto;largeHeap=False;theme=TitleBar;hardwareAccelerated=true;apiKey=</VerInfo_Keys>
+        <VerInfo_Keys>package=com.br.ACOUDBV;label=ACOUDBV;versionCode=6;versionName=1.5;persistent=False;restoreAnyVersion=False;installLocation=auto;largeHeap=False;theme=TitleBar;hardwareAccelerated=true;apiKey=</VerInfo_Keys>
         <DCC_GenerateAndroidAppBundleFile>true</DCC_GenerateAndroidAppBundleFile>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
