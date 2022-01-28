@@ -13,7 +13,6 @@ type
     Layout1: TLayout;
     rectAcessar: TRectangle;
     Label1: TLabel;
-    Image1: TImage;
     Label2: TLabel;
     ImgLogo: TImage;
     EdtUsuario: TEdit;
@@ -40,6 +39,7 @@ type
     ImgLogin: TImage;
     FloatAnimation1: TFloatAnimation;
     FloatAnimation2: TFloatAnimation;
+    Image1: TImage;
     procedure rectAcessarClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
