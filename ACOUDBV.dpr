@@ -15,7 +15,11 @@ uses
   uFancyDialog in 'Units\uFancyDialog.pas',
   Unitinicial in 'Unitinicial.pas' {FrmInicial},
   FMX.BitmapHelper in 'Units\FMX.BitmapHelper.pas',
-  AnonThread in 'Units\AnonThread.pas';
+  AnonThread in 'Units\AnonThread.pas',
+  Firebase.Auth in 'Units\Firebase.Auth.pas',
+  Firebase.Interfaces in 'Units\Firebase.Interfaces.pas',
+  Firebase.Request in 'Units\Firebase.Request.pas',
+  Firebase.Response in 'Units\Firebase.Response.pas';
 
 {$R *.res}
 

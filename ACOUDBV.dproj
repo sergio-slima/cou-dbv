@@ -283,6 +283,10 @@
         </DCCReference>
         <DCCReference Include="Units\FMX.BitmapHelper.pas"/>
         <DCCReference Include="Units\AnonThread.pas"/>
+        <DCCReference Include="Units\Firebase.Auth.pas"/>
+        <DCCReference Include="Units\Firebase.Interfaces.pas"/>
+        <DCCReference Include="Units\Firebase.Request.pas"/>
+        <DCCReference Include="Units\Firebase.Response.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -724,6 +728,12 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="$(BDS)\bin\Artwork\Android\FM_LauncherIcon_192x192.png" Configuration="Release" Class="Android_LauncherIcon192">
+                    <Platform Name="Android64">
+                        <RemoteName>ic_launcher.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="Win32\Debug\ACOUDBV.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>ACOUDBV.exe</RemoteName>
@@ -797,6 +807,7 @@
                 </DeployFile>
                 <DeployFile LocalName="Android\Release\libACOUDBV.so" Configuration="Release" Class="ProjectOutput_Android32">
                     <Platform Name="Android64">
+                        <RemoteName>libACOUDBV.so</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

@@ -40,6 +40,13 @@ type
     FloatAnimation1: TFloatAnimation;
     FloatAnimation2: TFloatAnimation;
     Image1: TImage;
+    Rectangle1: TRectangle;
+    Label8: TLabel;
+    Label10: TLabel;
+    Layout5: TLayout;
+    EdtEmail: TEdit;
+    Layout6: TLayout;
+    EdtSenha: TEdit;
     procedure rectAcessarClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
