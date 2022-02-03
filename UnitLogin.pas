@@ -6,7 +6,12 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
   FMX.Layouts, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Edit, uFancyDialog,
-  FMX.Ani;
+  FMX.Ani,
+  System.JSON,
+  Firebase.Auth,
+  Firebase.Interfaces,
+  Firebase.Request,
+  Firebase.Response;
 
 type
   TFrmLogin = class(TForm)
@@ -40,7 +45,7 @@ type
     FloatAnimation1: TFloatAnimation;
     FloatAnimation2: TFloatAnimation;
     Image1: TImage;
-    Rectangle1: TRectangle;
+    rectCriarConta: TRectangle;
     Label8: TLabel;
     Label10: TLabel;
     Layout5: TLayout;
@@ -56,16 +61,22 @@ type
     procedure imgTodasClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure AnimaLoginFinish(Sender: TObject);
+    procedure rectCriarContaClick(Sender: TObject);
   private
     { Private declarations }
     fancy : TFancyDialog;
     foco: TControl;
+    function CriarConta(email, senha: String; out idUsuario,
+      erro: String): Boolean;
   public
     { Public declarations }
   end;
 
 var
   FrmLogin: TFrmLogin;
+
+const
+  api_firebase = 'AIzaSyDxBw4DRgQExvdlyoeA9MwfPMrCaaTyDVI';
 
 implementation
 
@@ -100,6 +111,55 @@ begin
     cloSelecao.AnimateFloat('Position.X', TImage(Sender).Position.X + 20, 0.2);
   end;
 
+end;
+
+function TFrmLogin.CriarConta(email, senha: String; out idUsuario, erro: String):Boolean;
+var
+  fbAuth: IFirebaseAuth;
+  resp: IFirebaseResponse;
+  json, jsonRet: TJSONObject;
+begin
+  try
+    erro:='';
+    fbAuth:= TFirebaseAuth.Create;
+    fbAuth.SetApiKey(api_firebase);
+
+    resp := fbAuth.SignInWithEmailAndPassword(email, senha);
+
+    try
+      json := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(resp.ContentAsString),0) as TJSONObject;
+
+      if not Assigned(json) then
+      begin
+        Result:=False;
+        erro:= 'Não foi possivel verificar o servidor';
+        Exit;
+      end;
+    except on ex:exception do
+      begin
+        Result:=False;
+        erro:= ex.Message;
+        Exit;
+      end;
+    end;
+    if json.TryGetValue('error', jsonRet) then
+    begin
+      erro:= jsonRet.Values['message'].Value;
+      Result:=False;
+    end else
+    if json.TryGetValue('localId', jsonRet) then
+    begin
+      idUsuario:= jsonRet.Values['localId'].Value;
+      Result:=True;
+    end else
+    begin
+      erro:= 'Retorno Desconhecido';
+      Result:=False;
+    end;
+  finally
+    if Assigned(json) then
+      json.DisposeOf;
+  end;
 end;
 
 procedure TFrmLogin.AnimaLoginFinish(Sender: TObject);
@@ -179,6 +239,17 @@ begin
   FrmPrincipal.Item_Avaliar:= avaliar;
   FrmPrincipal.Show;
   FrmLogin.Close;
+end;
+
+procedure TFrmLogin.rectCriarContaClick(Sender: TObject);
+var
+  idUsuario, erro: String;
+begin
+  if not CriarConta(EdtEmail.Text,EdtSenha.Text,idUsuario,erro) then
+    fancy.Show(TIconDialog.Error, '', erro, 'OK')
+  else
+    fancy.Show(TIconDialog.Success, '', 'Conta criada com sucesso! Id: '+idUsuario, 'OK');
+
 end;
 
 end.
