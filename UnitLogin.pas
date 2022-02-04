@@ -68,6 +68,9 @@ type
     foco: TControl;
     function CriarConta(email, senha: String; out idUsuario,
       erro: String): Boolean;
+    function ErrorMessages(erro: string): string;
+    function AcessarConta(email, senha: String; out idUsuario,
+      erro: String): Boolean;
   public
     { Public declarations }
   end;
@@ -113,11 +116,25 @@ begin
 
 end;
 
-function TFrmLogin.CriarConta(email, senha: String; out idUsuario, erro: String):Boolean;
+function TFrmLogin.ErrorMessages(erro: string): string;
+begin
+  erro := erro.Replace('EMAIL_NOT_FOUND', 'Email não encontrado');
+  erro := erro.Replace('INVALID_PASSWORD', 'Senha inválida');
+  erro := erro.Replace('INVALID_EMAIL', 'Email inválido');
+  erro := erro.Replace('MISSING_PASSWORD', 'Informe a senha');
+  erro := erro.Replace('MISSING_EMAIL', 'Informe o email');
+  erro := erro.Replace('WEAK_PASSWORD', 'Senha fraca');
+  erro := erro.Replace('EMAIL_EXISTS', 'Email já existe');
+
+  Result:=erro;
+end;
+
+function TFrmLogin.AcessarConta(email, senha: String; out idUsuario, erro: String):Boolean;
 var
   fbAuth: IFirebaseAuth;
   resp: IFirebaseResponse;
   json, jsonRet: TJSONObject;
+  jsonValue: TJSONValue;
 begin
   try
     erro:='';
@@ -147,15 +164,67 @@ begin
       erro:= jsonRet.Values['message'].Value;
       Result:=False;
     end else
-    if json.TryGetValue('localId', jsonRet) then
+    if json.TryGetValue('localId', jsonValue) then
     begin
-      idUsuario:= jsonRet.Values['localId'].Value;
+      idUsuario:= jsonValue.Value;
       Result:=True;
     end else
     begin
       erro:= 'Retorno Desconhecido';
       Result:=False;
     end;
+    erro := ErrorMessages(erro);
+  finally
+    if Assigned(json) then
+      json.DisposeOf;
+  end;
+end;
+
+function TFrmLogin.CriarConta(email, senha: String; out idUsuario, erro: String):Boolean;
+var
+  fbAuth: IFirebaseAuth;
+  resp: IFirebaseResponse;
+  json, jsonRet: TJSONObject;
+  jsonValue: TJSONValue;
+begin
+  try
+    erro:='';
+    fbAuth:= TFirebaseAuth.Create;
+    fbAuth.SetApiKey(api_firebase);
+
+    resp := fbAuth.CreateUserWithEmailAndPassword(email, senha);
+
+    try
+      json := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(resp.ContentAsString),0) as TJSONObject;
+
+      if not Assigned(json) then
+      begin
+        Result:=False;
+        erro:= 'Não foi possivel verificar o servidor';
+        Exit;
+      end;
+    except on ex:exception do
+      begin
+        Result:=False;
+        erro:= ex.Message;
+        Exit;
+      end;
+    end;
+    if json.TryGetValue('error', jsonRet) then
+    begin
+      erro:= jsonRet.Values['message'].Value;
+      Result:=False;
+    end else
+    if json.TryGetValue('localId', jsonValue) then
+    begin
+      idUsuario:= jsonValue.Value;
+      Result:=True;
+    end else
+    begin
+      erro:= 'Retorno Desconhecido';
+      Result:=False;
+    end;
+    erro := ErrorMessages(erro);
   finally
     if Assigned(json) then
       json.DisposeOf;
@@ -205,11 +274,11 @@ end;
 
 procedure TFrmLogin.rectAcessarClick(Sender: TObject);
 var
-  avaliar: String;
+  avaliar, idUsuario, erro: String;
 begin
   if EdtUsuario.Text = '' then
   begin
-    fancy.Show(TIconDialog.Info, '', 'Informe seu nome!', 'OK');
+    fancy.Show(TIconDialog.Info, '', 'Informe seu nome de avaliador!', 'OK');
     Exit;
   end;
 
@@ -231,6 +300,13 @@ begin
   if imgAvancado.Tag = 1 then avaliar := 'Avançado';
   if imgInstrutor.Tag = 1 then avaliar := 'Instrutor';
 
+  if not AcessarConta(EdtEmail.Text,EdtSenha.Text,idUsuario,erro) then
+  begin
+    fancy.Show(TIconDialog.Error, '', erro, 'OK');
+    Exit;
+  end else
+    fancy.Show(TIconDialog.Success, '', 'Login OK! Id: '+idUsuario, 'OK');
+
   if not Assigned(FrmPrincipal) then
       Application.CreateForm(TFrmPrincipal, FrmPrincipal);
 
@@ -245,6 +321,12 @@ procedure TFrmLogin.rectCriarContaClick(Sender: TObject);
 var
   idUsuario, erro: String;
 begin
+  if EdtUsuario.Text = '' then
+  begin
+    fancy.Show(TIconDialog.Info, '', 'Informe seu nome de avaliador!', 'OK');
+    Exit;
+  end;
+
   if not CriarConta(EdtEmail.Text,EdtSenha.Text,idUsuario,erro) then
     fancy.Show(TIconDialog.Error, '', erro, 'OK')
   else

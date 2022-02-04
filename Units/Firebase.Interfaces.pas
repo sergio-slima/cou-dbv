@@ -1,12 +1,9 @@
 { *******************************************************************************
   Copyright 2015 Daniele Spinetti
-
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
-
   http://www.apache.org/licenses/LICENSE-2.0
-
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +23,7 @@ uses
 type
 
   TFirebaseCommand = (fcPut, fcPatch, fcPost, fcGet, fcRemove);
+  QueryParams =TDictionary < string, string >;
 
   IFirebaseResponse = interface(IInterface)
     ['{28CE1C37-DE9E-47C2-8764-2FB073B93FB8}']
@@ -38,7 +36,7 @@ type
     procedure SetToken(const AToken: string);
     function SendData(const AResourceParams: array of string;
       const ACommand: TFirebaseCommand; AData: TJSONValue = nil;
-      AQueryParams: TDictionary < string, string >= nil;
+      AQueryParams: QueryParams= nil;
       ADataOwner: boolean = true): IFirebaseResponse;
   end;
 
@@ -65,6 +63,8 @@ type
     ['{74CEDE48-B2BD-4CB4-BD5F-34A60BEDF8C3}']
     procedure SetApiKey(const AValue: string);
     function SignInWithEmailAndPassword(AEmail: string; APassword: string): IFirebaseResponse;
+    function CreateUserWithEmailAndPassword(AEmail, APassword: string): IFirebaseResponse;
+    function SendResetPassword(AEmail:string):IFirebaseResponse;
   end;
 
 implementation
