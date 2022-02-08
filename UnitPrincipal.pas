@@ -290,7 +290,6 @@ type
     AnimaCadClube: TFloatAnimation;
     AnimaMenuClube: TFloatAnimation;
     AnimaAddAvaliadores: TFloatAnimation;
-    BannerAd1: TBannerAd;
     img_no_clube: TImage;
     Label9: TLabel;
     procedure imgAbaOSClick(Sender: TObject);
@@ -1775,7 +1774,7 @@ begin
   PermissaoReadStorage := JStringToString(TJManifest_permission.JavaClass.READ_EXTERNAL_STORAGE);
   PermissaoWriteStorage := JStringToString(TJManifest_permission.JavaClass.WRITE_EXTERNAL_STORAGE);
 
-  BannerAd1.AdUnitID := 'ca-app-pub-5318830765545492/1140840672'; // 'ca-app-pub-5318830765545492/11408406';
+  //BannerAd1.AdUnitID := 'ca-app-pub-5318830765545492/1140840672'; // 'ca-app-pub-5318830765545492/11408406';
 
   {$ENDIF}
 end;
@@ -1821,7 +1820,7 @@ begin
     ConsultarClube;
 
     {$IFDEF ANDROID}
-    BannerAd1.LoadAd;
+    //BannerAd1.LoadAd;
     {$ENDIF}
 end;
 

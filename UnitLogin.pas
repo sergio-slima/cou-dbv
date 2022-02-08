@@ -52,6 +52,7 @@ type
     EdtEmail: TEdit;
     Layout6: TLayout;
     EdtSenha: TEdit;
+    LblRecuperarSenha: TLabel;
     procedure rectAcessarClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -62,6 +63,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure AnimaLoginFinish(Sender: TObject);
     procedure rectCriarContaClick(Sender: TObject);
+    procedure LblRecuperarSenhaClick(Sender: TObject);
   private
     { Private declarations }
     fancy : TFancyDialog;
@@ -71,6 +73,7 @@ type
     function ErrorMessages(erro: string): string;
     function AcessarConta(email, senha: String; out idUsuario,
       erro: String): Boolean;
+    function RecuperarSenha(email: String; out erro: String): Boolean;
   public
     { Public declarations }
   end;
@@ -231,6 +234,55 @@ begin
   end;
 end;
 
+function TFrmLogin.RecuperarSenha(email: String; out erro: String):Boolean;
+var
+  fbAuth: IFirebaseAuth;
+  resp: IFirebaseResponse;
+  json, jsonRet: TJSONObject;
+  jsonValue: TJSONValue;
+begin
+  try
+    erro:='';
+    fbAuth:= TFirebaseAuth.Create;
+    fbAuth.SetApiKey(api_firebase);
+
+    resp := fbAuth.SendResetPassword(email);
+
+    try
+      json := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(resp.ContentAsString),0) as TJSONObject;
+
+      if not Assigned(json) then
+      begin
+        Result:=False;
+        erro:= 'Não foi possivel verificar o servidor';
+        Exit;
+      end;
+    except on ex:exception do
+      begin
+        Result:=False;
+        erro:= ex.Message;
+        Exit;
+      end;
+    end;
+    if json.TryGetValue('error', jsonRet) then
+    begin
+      erro:= jsonRet.Values['message'].Value;
+      Result:=False;
+    end else
+    if json.TryGetValue('email', jsonValue) then
+      Result:=True
+    else
+    begin
+      erro:= 'Retorno Desconhecido';
+      Result:=False;
+    end;
+    erro := ErrorMessages(erro);
+  finally
+    if Assigned(json) then
+      json.DisposeOf;
+  end;
+end;
+
 procedure TFrmLogin.AnimaLoginFinish(Sender: TObject);
 begin
   lytLogin.Visible:=False;
@@ -270,6 +322,16 @@ end;
 procedure TFrmLogin.imgTodasClick(Sender: TObject);
 begin
     SelecionaIcone(Sender);
+end;
+
+procedure TFrmLogin.LblRecuperarSenhaClick(Sender: TObject);
+var
+  erro: String;
+begin
+  if not RecuperarSenha(EdtEmail.Text, erro) then
+    fancy.Show(TIconDialog.Error, '', erro, 'OK')
+  else
+    fancy.Show(TIconDialog.Success, '', 'Link para recuperação de senha enviado para seu email.', 'OK');
 end;
 
 procedure TFrmLogin.rectAcessarClick(Sender: TObject);
