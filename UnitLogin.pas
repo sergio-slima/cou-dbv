@@ -11,12 +11,12 @@ uses
   Firebase.Auth,
   Firebase.Interfaces,
   Firebase.Request,
-  Firebase.Response;
+  Firebase.Response, FMX.TabControl;
 
 type
   TFrmLogin = class(TForm)
     Layout1: TLayout;
-    rectAcessar: TRectangle;
+    rectAcessarOnline: TRectangle;
     Label1: TLabel;
     Label2: TLabel;
     ImgLogo: TImage;
@@ -45,14 +45,53 @@ type
     FloatAnimation1: TFloatAnimation;
     FloatAnimation2: TFloatAnimation;
     Image1: TImage;
-    rectCriarConta: TRectangle;
+    rectAcessarLocal: TRectangle;
     Label8: TLabel;
-    Label10: TLabel;
-    Layout5: TLayout;
+    TabControl: TTabControl;
+    TabMenu: TTabItem;
+    TabLocal: TTabItem;
+    TabOnline: TTabItem;
+    VertScrollBox1: TVertScrollBox;
+    Layout7: TLayout;
+    Layout8: TLayout;
+    Image2: TImage;
+    Label11: TLabel;
+    Layout10: TLayout;
+    Layout11: TLayout;
+    rectAcessar: TRectangle;
+    Label18: TLabel;
+    FloatAnimation3: TFloatAnimation;
+    rectCriarConta: TRectangle;
+    Label19: TLabel;
+    Label20: TLabel;
+    Layout15: TLayout;
     EdtEmail: TEdit;
-    Layout6: TLayout;
+    Layout16: TLayout;
     EdtSenha: TEdit;
     LblRecuperarSenha: TLabel;
+    Image8: TImage;
+    FloatAnimation4: TFloatAnimation;
+    FloatAnimation5: TFloatAnimation;
+    VertScrollBox2: TVertScrollBox;
+    Layout17: TLayout;
+    Layout18: TLayout;
+    Image9: TImage;
+    Label22: TLabel;
+    Layout19: TLayout;
+    Layout20: TLayout;
+    Layout23: TLayout;
+    EdtCod_Server: TEdit;
+    Rectangle3: TRectangle;
+    Label29: TLabel;
+    FloatAnimation6: TFloatAnimation;
+    Rectangle4: TRectangle;
+    Label30: TLabel;
+    Image15: TImage;
+    FloatAnimation7: TFloatAnimation;
+    FloatAnimation8: TFloatAnimation;
+    rectLogin: TRectangle;
+    Label10: TLabel;
+    Layout5: TLayout;
     procedure rectAcessarClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -64,6 +103,9 @@ type
     procedure AnimaLoginFinish(Sender: TObject);
     procedure rectCriarContaClick(Sender: TObject);
     procedure LblRecuperarSenhaClick(Sender: TObject);
+    procedure rectAcessarOnlineClick(Sender: TObject);
+    procedure rectAcessarLocalClick(Sender: TObject);
+    procedure rectLoginClick(Sender: TObject);
   private
     { Private declarations }
     fancy : TFancyDialog;
@@ -338,12 +380,6 @@ procedure TFrmLogin.rectAcessarClick(Sender: TObject);
 var
   avaliar, idUsuario, erro: String;
 begin
-  if EdtUsuario.Text = '' then
-  begin
-    fancy.Show(TIconDialog.Info, '', 'Informe seu nome de avaliador!', 'OK');
-    Exit;
-  end;
-
   with DM.qryConsCliente do
   begin
     Close;
@@ -355,33 +391,18 @@ begin
     Execute;
   end;
 
-  // Icone selecionado
-  if imgTodas.Tag = 1 then avaliar := 'Todas';
-  if imgBasico.Tag = 1 then avaliar := 'Básico';
-  if imgMovimento.Tag = 1 then avaliar := 'Movimento';
-  if imgAvancado.Tag = 1 then avaliar := 'Avançado';
-  if imgInstrutor.Tag = 1 then avaliar := 'Instrutor';
-
   if not AcessarConta(EdtEmail.Text,EdtSenha.Text,idUsuario,erro) then
   begin
     fancy.Show(TIconDialog.Error, '', erro, 'OK');
     Exit;
   end else
-    fancy.Show(TIconDialog.Success, '', 'Login OK! Id: '+idUsuario, 'OK');
+    TabControl.GotoVisibleTab(2);//fancy.Show(TIconDialog.Success, '', 'Login OK! Id: '+idUsuario, 'OK');
 
-  if not Assigned(FrmPrincipal) then
-      Application.CreateForm(TFrmPrincipal, FrmPrincipal);
-
-  Application.MainForm := FrmPrincipal;
-  FrmPrincipal.Nome_Usuario:= EdtUsuario.Text;
-  FrmPrincipal.Item_Avaliar:= avaliar;
-  FrmPrincipal.Show;
-  FrmLogin.Close;
 end;
 
-procedure TFrmLogin.rectCriarContaClick(Sender: TObject);
+procedure TFrmLogin.rectAcessarLocalClick(Sender: TObject);
 var
-  idUsuario, erro: String;
+  avaliar: String;
 begin
   if EdtUsuario.Text = '' then
   begin
@@ -389,10 +410,67 @@ begin
     Exit;
   end;
 
+  // Icone selecionado
+  if imgTodas.Tag = 1 then avaliar := 'Todas';
+  if imgBasico.Tag = 1 then avaliar := 'Básico';
+  if imgMovimento.Tag = 1 then avaliar := 'Movimento';
+  if imgAvancado.Tag = 1 then avaliar := 'Avançado';
+  if imgInstrutor.Tag = 1 then avaliar := 'Instrutor';
+
+  if not Assigned(FrmPrincipal) then
+      Application.CreateForm(TFrmPrincipal, FrmPrincipal);
+
+  Application.MainForm := FrmPrincipal;
+  FrmPrincipal.Nome_Usuario:= EdtUsuario.Text;
+  FrmPrincipal.Item_Avaliar:= avaliar;
+  FrmPrincipal.Cod_Server:= 'Local';
+  FrmPrincipal.Show;
+  FrmLogin.Close;
+end;
+
+procedure TFrmLogin.rectAcessarOnlineClick(Sender: TObject);
+begin
+  if EdtUsuario.Text = '' then
+  begin
+    fancy.Show(TIconDialog.Info, '', 'Informe seu nome de avaliador!', 'OK');
+    Exit;
+  end;
+
+  TabControl.GotoVisibleTab(1);
+end;
+
+procedure TFrmLogin.rectCriarContaClick(Sender: TObject);
+var
+  idUsuario, erro: String;
+begin
   if not CriarConta(EdtEmail.Text,EdtSenha.Text,idUsuario,erro) then
     fancy.Show(TIconDialog.Error, '', erro, 'OK')
   else
     fancy.Show(TIconDialog.Success, '', 'Conta criada com sucesso! Id: '+idUsuario, 'OK');
+
+end;
+
+procedure TFrmLogin.rectLoginClick(Sender: TObject);
+var
+  avaliar: String;
+begin
+
+  // Icone selecionado
+  if imgTodas.Tag = 1 then avaliar := 'Todas';
+  if imgBasico.Tag = 1 then avaliar := 'Básico';
+  if imgMovimento.Tag = 1 then avaliar := 'Movimento';
+  if imgAvancado.Tag = 1 then avaliar := 'Avançado';
+  if imgInstrutor.Tag = 1 then avaliar := 'Instrutor';
+
+  if not Assigned(FrmPrincipal) then
+      Application.CreateForm(TFrmPrincipal, FrmPrincipal);
+
+  Application.MainForm := FrmPrincipal;
+  FrmPrincipal.Nome_Usuario:= EdtUsuario.Text;
+  FrmPrincipal.Item_Avaliar:= avaliar;
+  FrmPrincipal.Cod_Server:= EdtCod_Server.Text;
+  FrmPrincipal.Show;
+  FrmLogin.Close;
 
 end;
 

@@ -428,6 +428,7 @@ type
   public
     { Public declarations }
     CodClube: string;
+    Cod_Server: String;
     Nome_Usuario: String;
     Item_Avaliar: String;
     Status_Clube: String;
@@ -1814,7 +1815,10 @@ end;
 
 procedure TFrmPrincipal.FormShow(Sender: TObject);
 begin
-    LblNomeAvaliador.Text:= 'Avaliador: '+Nome_Usuario;
+    if Cod_Server = 'Local' then
+      LblNomeAvaliador.Text:= 'Avaliador: '+Nome_Usuario+ ' | '+'User: '+Cod_Server
+    else
+      LblNomeAvaliador.Text:= 'Avaliador: '+Nome_Usuario+ ' | '+'Server: '+Cod_Server;
     TabControl.GotoVisibleTab(1);
     AjustarTabRequisitos;
     ConsultarClube;
