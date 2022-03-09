@@ -7,10 +7,14 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
   FMX.Layouts, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Edit, uFancyDialog,
   FMX.Ani,
+  DateUtils,
   System.JSON,
+  System.JSON.Writers,
+  System.JSON.Types,
   Firebase.Auth,
   Firebase.Interfaces,
   Firebase.Request,
+  Firebase.Database,
   Firebase.Response, FMX.TabControl;
 
 type
@@ -81,10 +85,10 @@ type
     Layout20: TLayout;
     Layout23: TLayout;
     EdtCod_Server: TEdit;
-    Rectangle3: TRectangle;
+    rectCriarAvaliacao: TRectangle;
     Label29: TLabel;
     FloatAnimation6: TFloatAnimation;
-    Rectangle4: TRectangle;
+    rectUsarCodigo: TRectangle;
     Label30: TLabel;
     Image15: TImage;
     FloatAnimation7: TFloatAnimation;
@@ -106,10 +110,12 @@ type
     procedure rectAcessarOnlineClick(Sender: TObject);
     procedure rectAcessarLocalClick(Sender: TObject);
     procedure rectLoginClick(Sender: TObject);
+    procedure rectCriarAvaliacaoClick(Sender: TObject);
   private
     { Private declarations }
     fancy : TFancyDialog;
     foco: TControl;
+    token_firebase: String;
     function CriarConta(email, senha: String; out idUsuario,
       erro: String): Boolean;
     function ErrorMessages(erro: string): string;
@@ -124,7 +130,9 @@ var
   FrmLogin: TFrmLogin;
 
 const
-  api_firebase = 'AIzaSyDxBw4DRgQExvdlyoeA9MwfPMrCaaTyDVI';
+  key_firebase = 'AIzaSyDxBw4DRgQExvdlyoeA9MwfPMrCaaTyDVI';
+  domain_firebase = 'https://acoudbv-default-rtdb.firebaseio.com/';
+  node_firebase = '/acoudbv';
 
 implementation
 
@@ -184,7 +192,7 @@ begin
   try
     erro:='';
     fbAuth:= TFirebaseAuth.Create;
-    fbAuth.SetApiKey(api_firebase);
+    fbAuth.SetApiKey(key_firebase);
 
     resp := fbAuth.SignInWithEmailAndPassword(email, senha);
 
@@ -235,7 +243,7 @@ begin
   try
     erro:='';
     fbAuth:= TFirebaseAuth.Create;
-    fbAuth.SetApiKey(api_firebase);
+    fbAuth.SetApiKey(key_firebase);
 
     resp := fbAuth.CreateUserWithEmailAndPassword(email, senha);
 
@@ -286,7 +294,7 @@ begin
   try
     erro:='';
     fbAuth:= TFirebaseAuth.Create;
-    fbAuth.SetApiKey(api_firebase);
+    fbAuth.SetApiKey(key_firebase);
 
     resp := fbAuth.SendResetPassword(email);
 
@@ -353,6 +361,7 @@ end;
 procedure TFrmLogin.FormShow(Sender: TObject);
 begin
    imgTodas.Tag := 1;
+   TabControl.GotoVisibleTab(0);
 end;
 
 procedure TFrmLogin.FormVirtualKeyboardHidden(Sender: TObject;
@@ -437,6 +446,89 @@ begin
   end;
 
   TabControl.GotoVisibleTab(1);
+end;
+
+procedure TFrmLogin.rectCriarAvaliacaoClick(Sender: TObject);
+var
+  Auth: IFirebaseAuth;
+  AResponse: IFirebaseResponse;
+  JSONReq: TJSONObject;
+  JSONResp: TJSONValue;
+  Obj: TJSONObject;
+  ADatabase: TFirebaseDatabase;
+  Writer: TJsonTextWriter;
+  StringWriter: TStringWriter;
+  horamin: String;
+begin
+  //Gerar Token de Autenticação
+  Auth := TFirebaseAuth.Create;
+  Auth.SetApiKey(key_firebase);
+  AResponse := Auth.SignInWithEmailAndPassword(edtEmail.Text, edtSenha.Text);
+  JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
+  if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
+  begin
+    if Assigned(JSONResp) then
+    begin
+      JSONResp.Free;
+    end;
+    Exit;
+  end;
+  Obj := JSONResp as TJSONObject;
+  Obj.Values['idToken'].Value;
+  token_firebase := Obj.Values['idToken'].Value;
+
+  ////////
+  //Enviar Dados para Firebase
+  StringWriter := TStringWriter.Create();
+  Writer := TJsonTextWriter.Create(StringWriter);
+  Writer.Formatting := TJsonFormatting.None;
+
+  horamin:= IntToStr(HourOf(Now))+IntToStr(MinuteOf(Now));
+
+  Writer.WriteStartObject;
+  Writer.WritePropertyName(Copy(EdtUsuario.Text,1,3)+horamin);
+
+  Writer.WriteStartObject;
+  Writer.WritePropertyName('clubes');
+  Writer.WriteValue('1');
+
+//  Writer.WriteStartObject;
+//  Writer.WritePropertyName('cod');
+//  Writer.WriteValue('1');
+//  Writer.WritePropertyName('clube');
+//  Writer.WriteValue('Herois da Fe');
+//  Writer.WriteEndObject;
+//
+  Writer.WriteEndObject;
+  Writer.WriteEndObject;
+
+  JSONReq := TJSONObject.ParseJSONValue(StringWriter.ToString) as TJSONObject;
+
+//  memoResp.Text := StringWriter.ToString;
+
+  ADatabase := TFirebaseDatabase.Create;
+  ADatabase.SetBaseURI(domain_firebase);
+  ADatabase.SetToken(token_firebase);
+  try
+    //AResponse := ADatabase.Post([node_firebase + '.json'], JSONReq);
+    //AResponse := ADatabase.Put([edtNode.Text + '.json'], JSONReq);
+    AResponse := ADatabase.Patch([node_firebase + '.json'], JSONReq);
+    //AResponse := ADatabase.Delete([node_firebase + '.json']);
+
+
+    JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
+    if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
+    begin
+      if Assigned(JSONResp) then
+      begin
+        JSONResp.Free;
+      end;
+      Exit;
+    end;
+    //memoResp.Text := JSONResp.ToString;
+  finally
+    ADatabase.Free;
+  end;
 end;
 
 procedure TFrmLogin.rectCriarContaClick(Sender: TObject);

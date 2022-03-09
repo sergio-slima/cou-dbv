@@ -287,6 +287,7 @@
         <DCCReference Include="Units\Firebase.Interfaces.pas"/>
         <DCCReference Include="Units\Firebase.Request.pas"/>
         <DCCReference Include="Units\Firebase.Response.pas"/>
+        <DCCReference Include="Units\Firebase.Database.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

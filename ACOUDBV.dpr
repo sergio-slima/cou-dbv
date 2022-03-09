@@ -19,7 +19,8 @@ uses
   Firebase.Auth in 'Units\Firebase.Auth.pas',
   Firebase.Interfaces in 'Units\Firebase.Interfaces.pas',
   Firebase.Request in 'Units\Firebase.Request.pas',
-  Firebase.Response in 'Units\Firebase.Response.pas';
+  Firebase.Response in 'Units\Firebase.Response.pas',
+  Firebase.Database in 'Units\Firebase.Database.pas';
 
 {$R *.res}
 
