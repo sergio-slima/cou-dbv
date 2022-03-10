@@ -433,6 +433,7 @@ type
     Item_Avaliar: String;
     Status_Clube: String;
     Tela_Imprimir: String;
+    Status_App: String;
     procedure EditarCampo(objeto: TObject;
                           tipo_campo, titulo, subtitulo, textprompt, ind_obrigatorio,
                           texto_padrao: string; tam_maximo: integer;
@@ -1818,7 +1819,13 @@ begin
     if Cod_Server = 'Local' then
       LblNomeAvaliador.Text:= 'Avaliador: '+Nome_Usuario+ ' | '+'User: '+Cod_Server
     else
-      LblNomeAvaliador.Text:= 'Avaliador: '+Nome_Usuario+ ' | '+'Server: '+Cod_Server;
+    begin
+      if Status_App = 'ON' then
+        LblNomeAvaliador.Text:= 'Avaliador: '+Nome_Usuario+ ' | '+'Master: '+Cod_Server
+      else
+        LblNomeAvaliador.Text:= 'Avaliador: '+Nome_Usuario+ ' | '+'User: '+Cod_Server;
+    end;
+
     TabControl.GotoVisibleTab(1);
     AjustarTabRequisitos;
     ConsultarClube;

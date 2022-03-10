@@ -81,7 +81,7 @@ type
     Layout18: TLayout;
     Image9: TImage;
     Label22: TLabel;
-    Layout19: TLayout;
+    lytCod_Server: TLayout;
     Layout20: TLayout;
     Layout23: TLayout;
     EdtCod_Server: TEdit;
@@ -96,6 +96,8 @@ type
     rectLogin: TRectangle;
     Label10: TLabel;
     Layout5: TLayout;
+    Label12: TLabel;
+    Rectangle1: TRectangle;
     procedure rectAcessarClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -111,17 +113,25 @@ type
     procedure rectAcessarLocalClick(Sender: TObject);
     procedure rectLoginClick(Sender: TObject);
     procedure rectCriarAvaliacaoClick(Sender: TObject);
+    procedure rectUsarCodigoClick(Sender: TObject);
   private
     { Private declarations }
     fancy : TFancyDialog;
     foco: TControl;
     token_firebase: String;
+    nome_usuario: String;
+    nome_server: String;
+    status: String;
+    local: Boolean;
+    apagar_avaliacoes: Boolean;
     function CriarConta(email, senha: String; out idUsuario,
       erro: String): Boolean;
     function ErrorMessages(erro: string): string;
     function AcessarConta(email, senha: String; out idUsuario,
       erro: String): Boolean;
     function RecuperarSenha(email: String; out erro: String): Boolean;
+    procedure ValidarNomeUsuario(Sender: TObject);
+    procedure ValidarEmailSenha;
   public
     { Public declarations }
   end;
@@ -333,6 +343,88 @@ begin
   end;
 end;
 
+procedure TFrmLogin.ValidarEmailSenha;
+begin
+  with DM.qryConsCliente do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Add('UPDATE TAB_USUARIO SET EMAIL=:EMAIL, SENHA=:SENHA');
+    SQL.Add('WHERE NOME_USUARIO=:NOME_USUARIO');
+    ParamByName('EMAIL').Value := EdtEmail.Text;
+    ParamByName('SENHA').Value := EdtSenha.Text;
+    ParamByName('NOME_USUARIO').Value := EdtUsuario.Text;
+    Execute;
+  end;
+end;
+
+procedure TFrmLogin.ValidarNomeUsuario(Sender: TObject);
+var
+  avaliar: String;
+begin
+  // Validar Usuario
+  begin
+    with DM.qryConsCliente do
+    begin
+      if apagar_avaliacoes then
+      begin
+        Close;
+        SQL.Clear;
+        SQL.Add('DELETE FROM TAB_CLUBES');
+        ExecSQL;
+
+        Close;
+        SQL.Clear;
+        SQL.Add('DELETE FROM TAB_PONTOS');
+        ExecSQL;
+
+        Close;
+        SQL.Clear;
+        SQL.Add('DELETE FROM TAB_RESULTADO');
+        ExecSQL;
+      end;
+
+      Close;
+      SQL.Clear;
+      SQL.Add('DELETE FROM TAB_USUARIO');
+      Execute;
+
+      // DELETAR REGISTRO FIREBASE
+
+      Close;
+      SQL.Clear;
+      SQL.Add('INSERT INTO TAB_USUARIO (COD_USUARIO, NOME_USUARIO, NOME_SERVER)');
+      SQL.Add('VALUES (:COD_USUARIO, :NOME_USUARIO, :NOME_SERVER)');
+      ParamByName('COD_USUARIO').AsString:=GeraCodUsuario;
+      ParamByName('NOME_USUARIO').AsString:=EdtUsuario.Text;
+      ParamByName('NOME_SERVER').AsString:=nome_server;
+      Execute;
+    end;
+
+    if not local then
+      TabControl.GotoVisibleTab(1)
+    else
+    begin
+      // Icone selecionado
+      if imgTodas.Tag = 1 then avaliar := 'Todas';
+      if imgBasico.Tag = 1 then avaliar := 'Básico';
+      if imgMovimento.Tag = 1 then avaliar := 'Movimento';
+      if imgAvancado.Tag = 1 then avaliar := 'Avançado';
+      if imgInstrutor.Tag = 1 then avaliar := 'Instrutor';
+
+      if not Assigned(FrmPrincipal) then
+          Application.CreateForm(TFrmPrincipal, FrmPrincipal);
+
+      Application.MainForm := FrmPrincipal;
+      FrmPrincipal.Nome_Usuario:= EdtUsuario.Text;
+      FrmPrincipal.Item_Avaliar:= avaliar;
+      FrmPrincipal.Cod_Server:= 'Local';
+      FrmPrincipal.Show;
+      FrmLogin.Close;
+    end;
+  end;
+end;
+
 procedure TFrmLogin.AnimaLoginFinish(Sender: TObject);
 begin
   lytLogin.Visible:=False;
@@ -360,8 +452,25 @@ end;
 
 procedure TFrmLogin.FormShow(Sender: TObject);
 begin
-   imgTodas.Tag := 1;
-   TabControl.GotoVisibleTab(0);
+  imgTodas.Tag := 1;
+  TabControl.GotoVisibleTab(0);
+  nome_server:='';
+
+  with DM.qryConsCliente do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Add('SELECT * FROM TAB_USUARIO');
+    Open;
+    if RowsAffected > 0 then
+    begin
+      nome_usuario:= FieldByName('NOME_USUARIO').AsString;
+      nome_server:= FieldByName('NOME_SERVER').AsString;
+      EdtEmail.Text:= FieldByName('EMAIL').AsString;
+    end;
+
+    EdtUsuario.Text:=nome_usuario;
+  end;
 end;
 
 procedure TFrmLogin.FormVirtualKeyboardHidden(Sender: TObject;
@@ -389,29 +498,20 @@ procedure TFrmLogin.rectAcessarClick(Sender: TObject);
 var
   avaliar, idUsuario, erro: String;
 begin
-  with DM.qryConsCliente do
-  begin
-    Close;
-    SQL.Clear;
-    SQL.Add('INSERT INTO TAB_USUARIO (COD_USUARIO, NOME_USUARIO)');
-    SQL.Add('VALUES (:COD_USUARIO, :NOME_USUARIO)');
-    ParamByName('COD_USUARIO').AsString:=GeraCodUsuario;
-    ParamByName('NOME_USUARIO').AsString:=EdtUsuario.Text;
-    Execute;
-  end;
-
   if not AcessarConta(EdtEmail.Text,EdtSenha.Text,idUsuario,erro) then
   begin
     fancy.Show(TIconDialog.Error, '', erro, 'OK');
     Exit;
   end else
+  begin
+    ValidarEmailSenha;
     TabControl.GotoVisibleTab(2);//fancy.Show(TIconDialog.Success, '', 'Login OK! Id: '+idUsuario, 'OK');
+    lytCod_Server.Visible:= False;
+  end;
 
 end;
 
 procedure TFrmLogin.rectAcessarLocalClick(Sender: TObject);
-var
-  avaliar: String;
 begin
   if EdtUsuario.Text = '' then
   begin
@@ -419,22 +519,16 @@ begin
     Exit;
   end;
 
-  // Icone selecionado
-  if imgTodas.Tag = 1 then avaliar := 'Todas';
-  if imgBasico.Tag = 1 then avaliar := 'Básico';
-  if imgMovimento.Tag = 1 then avaliar := 'Movimento';
-  if imgAvancado.Tag = 1 then avaliar := 'Avançado';
-  if imgInstrutor.Tag = 1 then avaliar := 'Instrutor';
+  local:=True;
+  apagar_avaliacoes:=False;
+  if (nome_usuario <> EdtUsuario.Text) and (nome_usuario <> '') then
+  begin
+    nome_server:= Copy(EdtUsuario.Text,1,3) + IntToStr(HourOf(Now))+IntToStr(MinuteOf(Now));
+    apagar_avaliacoes:= True;
+    fancy.Show(TIconDialog.Question, nome_usuario+'<->'+EdtUsuario.Text, 'Deseja mudar o avaliador? Isso irá apagar as avaliações existentes.', 'Sim', ValidarNomeUsuario, 'Não');
+  end else
+    ValidarNomeUsuario(Sender);
 
-  if not Assigned(FrmPrincipal) then
-      Application.CreateForm(TFrmPrincipal, FrmPrincipal);
-
-  Application.MainForm := FrmPrincipal;
-  FrmPrincipal.Nome_Usuario:= EdtUsuario.Text;
-  FrmPrincipal.Item_Avaliar:= avaliar;
-  FrmPrincipal.Cod_Server:= 'Local';
-  FrmPrincipal.Show;
-  FrmLogin.Close;
 end;
 
 procedure TFrmLogin.rectAcessarOnlineClick(Sender: TObject);
@@ -445,7 +539,19 @@ begin
     Exit;
   end;
 
-  TabControl.GotoVisibleTab(1);
+  local:=False;
+  apagar_avaliacoes:=False;
+
+  if nome_server = '' then
+    nome_server:= Copy(EdtUsuario.Text,1,3) + IntToStr(HourOf(Now))+IntToStr(MinuteOf(Now));
+
+  if (nome_usuario <> EdtUsuario.Text) and (nome_usuario <> '') then
+  begin
+    apagar_avaliacoes:= True;
+    fancy.Show(TIconDialog.Question, nome_usuario+'<->'+EdtUsuario.Text, 'Deseja mudar o avaliador? Isso irá apagar as avaliações existentes.', 'Sim', ValidarNomeUsuario, 'Não');
+  end else
+    ValidarNomeUsuario(Sender);
+
 end;
 
 procedure TFrmLogin.rectCriarAvaliacaoClick(Sender: TObject);
@@ -458,40 +564,37 @@ var
   ADatabase: TFirebaseDatabase;
   Writer: TJsonTextWriter;
   StringWriter: TStringWriter;
-  horamin: String;
 begin
-  //Gerar Token de Autenticação
-  Auth := TFirebaseAuth.Create;
-  Auth.SetApiKey(key_firebase);
-  AResponse := Auth.SignInWithEmailAndPassword(edtEmail.Text, edtSenha.Text);
-  JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
-  if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
-  begin
-    if Assigned(JSONResp) then
-    begin
-      JSONResp.Free;
-    end;
-    Exit;
-  end;
-  Obj := JSONResp as TJSONObject;
-  Obj.Values['idToken'].Value;
-  token_firebase := Obj.Values['idToken'].Value;
+  EdtCod_Server.Text:= nome_server;
+  EdtCod_Server.ReadOnly:= True;
+  LytCod_Server.Visible:= True;
+  status:='ON';
 
-  ////////
-  //Enviar Dados para Firebase
-  StringWriter := TStringWriter.Create();
-  Writer := TJsonTextWriter.Create(StringWriter);
-  Writer.Formatting := TJsonFormatting.None;
-
-  horamin:= IntToStr(HourOf(Now))+IntToStr(MinuteOf(Now));
-
-  Writer.WriteStartObject;
-  Writer.WritePropertyName(Copy(EdtUsuario.Text,1,3)+horamin);
-
-  Writer.WriteStartObject;
-  Writer.WritePropertyName('clubes');
-  Writer.WriteValue('1');
-
+//  //Gerar Token de Autenticação
+//  Auth := TFirebaseAuth.Create;
+//  Auth.SetApiKey(key_firebase);
+//  AResponse := Auth.SignInWithEmailAndPassword(edtEmail.Text, edtSenha.Text);
+//  JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
+//  if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
+//  begin
+//    if Assigned(JSONResp) then
+//    begin
+//      JSONResp.Free;
+//    end;
+//    Exit;
+//  end;
+//  Obj := JSONResp as TJSONObject;
+//  Obj.Values['idToken'].Value;
+//  token_firebase := Obj.Values['idToken'].Value;
+//
+//  ////////
+//  //Enviar Dados para Firebase
+//  StringWriter := TStringWriter.Create();
+//  Writer := TJsonTextWriter.Create(StringWriter);
+//  Writer.Formatting := TJsonFormatting.None;
+//
+//  Writer.WriteStartObject;
+//  Writer.WritePropertyName(nome_server);
 //  Writer.WriteStartObject;
 //  Writer.WritePropertyName('cod');
 //  Writer.WriteValue('1');
@@ -499,36 +602,30 @@ begin
 //  Writer.WriteValue('Herois da Fe');
 //  Writer.WriteEndObject;
 //
-  Writer.WriteEndObject;
-  Writer.WriteEndObject;
-
-  JSONReq := TJSONObject.ParseJSONValue(StringWriter.ToString) as TJSONObject;
-
-//  memoResp.Text := StringWriter.ToString;
-
-  ADatabase := TFirebaseDatabase.Create;
-  ADatabase.SetBaseURI(domain_firebase);
-  ADatabase.SetToken(token_firebase);
-  try
-    //AResponse := ADatabase.Post([node_firebase + '.json'], JSONReq);
-    //AResponse := ADatabase.Put([edtNode.Text + '.json'], JSONReq);
-    AResponse := ADatabase.Patch([node_firebase + '.json'], JSONReq);
-    //AResponse := ADatabase.Delete([node_firebase + '.json']);
-
-
-    JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
-    if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
-    begin
-      if Assigned(JSONResp) then
-      begin
-        JSONResp.Free;
-      end;
-      Exit;
-    end;
-    //memoResp.Text := JSONResp.ToString;
-  finally
-    ADatabase.Free;
-  end;
+//  Writer.WriteEndObject;
+//  JSONReq := TJSONObject.ParseJSONValue(StringWriter.ToString) as TJSONObject;
+//
+//  ADatabase := TFirebaseDatabase.Create;
+//  ADatabase.SetBaseURI(domain_firebase);
+//  ADatabase.SetToken(token_firebase);
+//  try
+//    //AResponse := ADatabase.Post([node_firebase + '.json'], JSONReq);
+//    //AResponse := ADatabase.Put([edtNode.Text + '.json'], JSONReq);
+//    AResponse := ADatabase.Patch([node_firebase + '.json'], JSONReq);
+//    //AResponse := ADatabase.Delete([node_firebase + '.json']);
+//
+//    JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
+//    if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
+//    begin
+//      if Assigned(JSONResp) then
+//      begin
+//        JSONResp.Free;
+//      end;
+//      Exit;
+//    end;
+//  finally
+//    ADatabase.Free;
+//  end;
 end;
 
 procedure TFrmLogin.rectCriarContaClick(Sender: TObject);
@@ -560,10 +657,19 @@ begin
   Application.MainForm := FrmPrincipal;
   FrmPrincipal.Nome_Usuario:= EdtUsuario.Text;
   FrmPrincipal.Item_Avaliar:= avaliar;
+  FrmPrincipal.Status_App:= status;
   FrmPrincipal.Cod_Server:= EdtCod_Server.Text;
   FrmPrincipal.Show;
   FrmLogin.Close;
 
+end;
+
+procedure TFrmLogin.rectUsarCodigoClick(Sender: TObject);
+begin
+  EdtCod_Server.Text:= '';
+  EdtCod_Server.ReadOnly:= False;
+  LytCod_Server.Visible:= True;
+  status:='OFF';
 end;
 
 end.

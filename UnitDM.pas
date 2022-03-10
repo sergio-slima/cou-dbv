@@ -47,7 +47,10 @@ begin
     // Cria tabela de Usuario...
     conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_USUARIO(' +
                  'COD_USUARIO VARCHAR(20) PRIMARY KEY,' +
-                 'NOME_USUARIO VARCHAR(50)' +
+                 'NOME_USUARIO VARCHAR(50),' +
+                 'NOME_SERVER VARCHAR(10),' +
+                 'EMAIL VARCHAR(100),' +
+                 'SENHA VARCHAR(50)' +
                  ')' );
 
     // Cria tabela de Clubes...
@@ -117,9 +120,9 @@ begin
     conn.DriverName := 'SQLite';
 
     {$IFDEF MSWINDOWS}
-    conn.Params.Values['Database'] := System.SysUtils.GetCurrentDir + '\ACOUDBV4.db';
+    conn.Params.Values['Database'] := System.SysUtils.GetCurrentDir + '\ACOUDBV5.db';
     {$ELSE}
-    conn.Params.Values['Database'] := TPath.Combine(TPath.GetDocumentsPath, 'ACOUDBV4.db');
+    conn.Params.Values['Database'] := TPath.Combine(TPath.GetDocumentsPath, 'ACOUDBV5.db');
     {$ENDIF}
 end;
 
