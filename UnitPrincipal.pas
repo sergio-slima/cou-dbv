@@ -24,7 +24,16 @@ uses
   System.Actions, FMX.ActnList, FMX.StdActns, FMX.MediaLibrary.Actions,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
-  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, FMX.Advertising, FMX.Ani;
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, FMX.Advertising, FMX.Ani,
+
+  System.JSON,
+  System.JSON.Writers,
+  System.JSON.Types,
+  Firebase.Auth,
+  Firebase.Interfaces,
+  Firebase.Request,
+  Firebase.Database,
+  Firebase.Response;
 
 type
   TExecutaClick = procedure(Sender: TObject) of Object;
@@ -424,16 +433,19 @@ type
     function ValidaClubesPonto: Boolean;
     function CMToPixel(const Acentimeter: Double): Double;
     procedure EscondeMenuClube;
+    procedure SalvarClubeFirebase;
     { Private declarations }
   public
     { Public declarations }
     CodClube: string;
+    token_firebase: String;
     Cod_Server: String;
     Nome_Usuario: String;
     Item_Avaliar: String;
     Status_Clube: String;
     Tela_Imprimir: String;
     Status_App: String;
+    Node_Clube: String;
     procedure EditarCampo(objeto: TObject;
                           tipo_campo, titulo, subtitulo, textprompt, ind_obrigatorio,
                           texto_padrao: string; tam_maximo: integer;
@@ -442,6 +454,10 @@ type
 
 var
   FrmPrincipal: TFrmPrincipal;
+
+const
+  key_firebase = 'AIzaSyDxBw4DRgQExvdlyoeA9MwfPMrCaaTyDVI';
+  domain_firebase = 'https://acoudbv-default-rtdb.firebaseio.com/';
 
 implementation
 
@@ -1829,6 +1845,7 @@ begin
     TabControl.GotoVisibleTab(1);
     AjustarTabRequisitos;
     ConsultarClube;
+    Node_Clube:= '/clubes/'+Cod_Server;
 
     {$IFDEF ANDROID}
     //BannerAd1.LoadAd;
@@ -2136,6 +2153,8 @@ begin
 
   t.OnTerminate := ThreadFim;
   t.Start;
+
+  SalvarClubeFirebase;
 end;
 
 procedure TFrmPrincipal.ClickVoltar(Sender: TObject);
@@ -2307,6 +2326,9 @@ begin
 end;
 
 procedure TFrmPrincipal.RtgSalvarClubeClick(Sender: TObject);
+var
+  sCod: Integer;
+  sNom: String;
 begin
     if EdtNome.Text = '' then
     begin
@@ -2334,10 +2356,12 @@ begin
 
         ParamByName('COD_CLUBE').Value := CodClube;
         ParamByName('NOME').Value := EdtNome.Text;
+        sNom:=EdtNome.Text;
         if EdtOrdem.Text<>'' then
-          ParamByName('SEQUENCIA').Value := StrToInt(EdtOrdem.Text)
+          sCod := StrToInt(EdtOrdem.Text)
         else
-          ParamByName('SEQUENCIA').Value := 0;
+          sCod := 0;
+        ParamByName('SEQUENCIA').Value := sCod;
         ParamByName('DIRETOR').Value := EdtInstrutor.Text;
         ParamByName('PONTOS').Value := '0,0';
 
@@ -2352,7 +2376,110 @@ begin
     imgAdd.AnimateFloat('RotationAngle', 0, 0.5, TAnimationType.InOut, TInterpolationType.Circular);
 
     ConsultarClube;
+
+    SalvarClubeFirebase;
 //    lytCadClube.Visible:=False;
+end;
+
+procedure TFrmPrincipal.SalvarClubeFirebase;
+var
+  Auth: IFirebaseAuth;
+  AResponse: IFirebaseResponse;
+  JSONReq: TJSONObject;
+  JSONResp: TJSONValue;
+  Obj: TJSONObject;
+  ADatabase: TFirebaseDatabase;
+  Writer: TJsonTextWriter;
+  StringWriter: TStringWriter;
+  sEmail, sSenha: String;
+begin
+  with DM.qryConsCliente do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Add('SELECT * FROM TAB_USUARIO');
+    Open;
+    if RowsAffected > 0 then
+    begin
+      sEmail:= FieldByName('EMAIL').AsString;
+      sSenha:= FieldByName('SENHA').AsString;
+    end;
+  end;
+
+  //Gerar Token de Autenticação
+  Auth := TFirebaseAuth.Create;
+  Auth.SetApiKey(key_firebase);
+  AResponse := Auth.SignInWithEmailAndPassword(sEmail, sSenha);
+  JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
+  if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
+  begin
+    if Assigned(JSONResp) then
+    begin
+      JSONResp.Free;
+    end;
+    Exit;
+  end;
+  Obj := JSONResp as TJSONObject;
+  Obj.Values['idToken'].Value;
+  token_firebase := Obj.Values['idToken'].Value;
+
+  ////////
+  //Enviar Dados para Firebase
+  with DM.qryConsCliente do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Add('SELECT * FROM TAB_CLUBES');
+    Open;
+    if RowsAffected > 0 then
+    begin
+      First;
+      while not Eof do
+      begin
+        StringWriter := TStringWriter.Create();
+        Writer := TJsonTextWriter.Create(StringWriter);
+        Writer.Formatting := TJsonFormatting.None;
+
+        Writer.WriteStartObject;
+        Writer.WritePropertyName(FieldByName('COD_CLUBE').AsString);
+
+        Writer.WriteStartObject;
+        Writer.WritePropertyName('cod');
+        Writer.WriteValue(FieldByName('SEQUENCIA').AsString); //'1'
+        Writer.WritePropertyName('clube');
+        Writer.WriteValue(FieldByName('NOME').AsString); //'Herois da Fé'
+        Writer.WriteEndObject;
+
+        Writer.WriteEndObject;
+
+        JSONReq := TJSONObject.ParseJSONValue(StringWriter.ToString) as TJSONObject;
+
+        ADatabase := TFirebaseDatabase.Create;
+        ADatabase.SetBaseURI(domain_firebase);
+        ADatabase.SetToken(token_firebase);
+        try
+          //AResponse := ADatabase.Post([Node_Clube + '.json'], JSONReq);
+          //AResponse := ADatabase.Put([Node_Clube + '.json'], JSONReq);
+          AResponse := ADatabase.Patch([Node_Clube + '.json'], JSONReq);
+          //AResponse := ADatabase.Delete([Node_Clube + '.json']);
+
+          JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
+          if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
+          begin
+            if Assigned(JSONResp) then
+            begin
+              JSONResp.Free;
+            end;
+            Exit;
+          end;
+        finally
+          ADatabase.Free;
+        end;
+
+        Next;
+      end;
+    end;
+  end;
 end;
 
 procedure TFrmPrincipal.ThreadFim(Sender: TObject);

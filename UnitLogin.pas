@@ -139,11 +139,6 @@ type
 var
   FrmLogin: TFrmLogin;
 
-const
-  key_firebase = 'AIzaSyDxBw4DRgQExvdlyoeA9MwfPMrCaaTyDVI';
-  domain_firebase = 'https://acoudbv-default-rtdb.firebaseio.com/';
-  node_firebase = '/acoudbv';
-
 implementation
 
 {$R *.fmx}
@@ -505,8 +500,8 @@ begin
   end else
   begin
     ValidarEmailSenha;
-    TabControl.GotoVisibleTab(2);//fancy.Show(TIconDialog.Success, '', 'Login OK! Id: '+idUsuario, 'OK');
     lytCod_Server.Visible:= False;
+    TabControl.GotoVisibleTab(2);//fancy.Show(TIconDialog.Success, '', 'Login OK! Id: '+idUsuario, 'OK');
   end;
 
 end;
@@ -542,12 +537,13 @@ begin
   local:=False;
   apagar_avaliacoes:=False;
 
-  if nome_server = '' then
+  if (nome_server = '') or (nome_usuario <> EdtUsuario.Text) then
     nome_server:= Copy(EdtUsuario.Text,1,3) + IntToStr(HourOf(Now))+IntToStr(MinuteOf(Now));
 
   if (nome_usuario <> EdtUsuario.Text) and (nome_usuario <> '') then
   begin
     apagar_avaliacoes:= True;
+    EdtEmail.Text:= '';
     fancy.Show(TIconDialog.Question, nome_usuario+'<->'+EdtUsuario.Text, 'Deseja mudar o avaliador? Isso irá apagar as avaliações existentes.', 'Sim', ValidarNomeUsuario, 'Não');
   end else
     ValidarNomeUsuario(Sender);
@@ -555,77 +551,11 @@ begin
 end;
 
 procedure TFrmLogin.rectCriarAvaliacaoClick(Sender: TObject);
-var
-  Auth: IFirebaseAuth;
-  AResponse: IFirebaseResponse;
-  JSONReq: TJSONObject;
-  JSONResp: TJSONValue;
-  Obj: TJSONObject;
-  ADatabase: TFirebaseDatabase;
-  Writer: TJsonTextWriter;
-  StringWriter: TStringWriter;
 begin
   EdtCod_Server.Text:= nome_server;
   EdtCod_Server.ReadOnly:= True;
   LytCod_Server.Visible:= True;
   status:='ON';
-
-//  //Gerar Token de Autenticação
-//  Auth := TFirebaseAuth.Create;
-//  Auth.SetApiKey(key_firebase);
-//  AResponse := Auth.SignInWithEmailAndPassword(edtEmail.Text, edtSenha.Text);
-//  JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
-//  if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
-//  begin
-//    if Assigned(JSONResp) then
-//    begin
-//      JSONResp.Free;
-//    end;
-//    Exit;
-//  end;
-//  Obj := JSONResp as TJSONObject;
-//  Obj.Values['idToken'].Value;
-//  token_firebase := Obj.Values['idToken'].Value;
-//
-//  ////////
-//  //Enviar Dados para Firebase
-//  StringWriter := TStringWriter.Create();
-//  Writer := TJsonTextWriter.Create(StringWriter);
-//  Writer.Formatting := TJsonFormatting.None;
-//
-//  Writer.WriteStartObject;
-//  Writer.WritePropertyName(nome_server);
-//  Writer.WriteStartObject;
-//  Writer.WritePropertyName('cod');
-//  Writer.WriteValue('1');
-//  Writer.WritePropertyName('clube');
-//  Writer.WriteValue('Herois da Fe');
-//  Writer.WriteEndObject;
-//
-//  Writer.WriteEndObject;
-//  JSONReq := TJSONObject.ParseJSONValue(StringWriter.ToString) as TJSONObject;
-//
-//  ADatabase := TFirebaseDatabase.Create;
-//  ADatabase.SetBaseURI(domain_firebase);
-//  ADatabase.SetToken(token_firebase);
-//  try
-//    //AResponse := ADatabase.Post([node_firebase + '.json'], JSONReq);
-//    //AResponse := ADatabase.Put([edtNode.Text + '.json'], JSONReq);
-//    AResponse := ADatabase.Patch([node_firebase + '.json'], JSONReq);
-//    //AResponse := ADatabase.Delete([node_firebase + '.json']);
-//
-//    JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
-//    if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
-//    begin
-//      if Assigned(JSONResp) then
-//      begin
-//        JSONResp.Free;
-//      end;
-//      Exit;
-//    end;
-//  finally
-//    ADatabase.Free;
-//  end;
 end;
 
 procedure TFrmLogin.rectCriarContaClick(Sender: TObject);
