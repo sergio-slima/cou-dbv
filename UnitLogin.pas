@@ -121,6 +121,7 @@ type
     token_firebase: String;
     nome_usuario: String;
     nome_server: String;
+    node_server: String;
     status: String;
     local: Boolean;
     apagar_avaliacoes: Boolean;
@@ -132,6 +133,7 @@ type
     function RecuperarSenha(email: String; out erro: String): Boolean;
     procedure ValidarNomeUsuario(Sender: TObject);
     procedure ValidarEmailSenha;
+    procedure ExcluirClubeFirebase;
   public
     { Public declarations }
   end;
@@ -185,6 +187,78 @@ begin
   erro := erro.Replace('EMAIL_EXISTS', 'Email já existe');
 
   Result:=erro;
+end;
+
+procedure TFrmLogin.ExcluirClubeFirebase;
+var
+  Auth: IFirebaseAuth;
+  AResponse: IFirebaseResponse;
+  JSONReq: TJSONObject;
+  JSONResp: TJSONValue;
+  Obj: TJSONObject;
+  ADatabase: TFirebaseDatabase;
+  Writer: TJsonTextWriter;
+  StringWriter: TStringWriter;
+  sEmail, sSenha: String;
+  Node_Clube: String;
+begin
+  with DM.qryConsCliente do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Add('SELECT * FROM TAB_USUARIO');
+    Open;
+    if RowsAffected > 0 then
+    begin
+      sEmail:= FieldByName('EMAIL').AsString;
+      sSenha:= FieldByName('SENHA').AsString;
+    end;
+  end;
+
+  //Gerar Token de Autenticação
+  Auth := TFirebaseAuth.Create;
+  Auth.SetApiKey(key_firebase);
+  AResponse := Auth.SignInWithEmailAndPassword(sEmail, sSenha);
+  JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
+  if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
+  begin
+    if Assigned(JSONResp) then
+    begin
+      JSONResp.Free;
+    end;
+    Exit;
+  end;
+  Obj := JSONResp as TJSONObject;
+  Obj.Values['idToken'].Value;
+  token_firebase := Obj.Values['idToken'].Value;
+
+  ////////
+  //Enviar Dados para Firebase
+  StringWriter := TStringWriter.Create();
+  Writer := TJsonTextWriter.Create(StringWriter);
+  Writer.Formatting := TJsonFormatting.None;
+
+  JSONReq := TJSONObject.ParseJSONValue(StringWriter.ToString) as TJSONObject;
+
+  ADatabase := TFirebaseDatabase.Create;
+  ADatabase.SetBaseURI(domain_firebase);
+  ADatabase.SetToken(token_firebase);
+  try
+    Node_Clube:= '/clubes/'+node_server;
+    AResponse := ADatabase.Delete([Node_Clube + '.json']);
+
+    JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
+    if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
+    begin
+      if Assigned(JSONResp) then
+      begin
+        JSONResp.Free;
+      end;
+      Exit;
+    end;
+  finally
+    ADatabase.Free;
+  end;
 end;
 
 function TFrmLogin.AcessarConta(email, senha: String; out idUsuario, erro: String):Boolean;
@@ -377,14 +451,14 @@ begin
         SQL.Clear;
         SQL.Add('DELETE FROM TAB_RESULTADO');
         ExecSQL;
+
+        ExcluirClubeFirebase;
       end;
 
       Close;
       SQL.Clear;
       SQL.Add('DELETE FROM TAB_USUARIO');
       Execute;
-
-      // DELETAR REGISTRO FIREBASE
 
       Close;
       SQL.Clear;
@@ -461,6 +535,7 @@ begin
     begin
       nome_usuario:= FieldByName('NOME_USUARIO').AsString;
       nome_server:= FieldByName('NOME_SERVER').AsString;
+      node_server:= FieldByName('NOME_SERVER').AsString;
       EdtEmail.Text:= FieldByName('EMAIL').AsString;
     end;
 
@@ -537,6 +612,7 @@ begin
   local:=False;
   apagar_avaliacoes:=False;
 
+  node_server:= nome_server;
   if (nome_server = '') or (nome_usuario <> EdtUsuario.Text) then
     nome_server:= Copy(EdtUsuario.Text,1,3) + IntToStr(HourOf(Now))+IntToStr(MinuteOf(Now));
 

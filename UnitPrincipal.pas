@@ -434,6 +434,7 @@ type
     function CMToPixel(const Acentimeter: Double): Double;
     procedure EscondeMenuClube;
     procedure SalvarClubeFirebase;
+    procedure ExcluirClubeFirebase(clube: String; tipo: integer);
     { Private declarations }
   public
     { Public declarations }
@@ -1778,6 +1779,79 @@ begin
   AnimaMenuClube.Start;
 end;
 
+procedure TFrmPrincipal.ExcluirClubeFirebase(clube: String; tipo: integer);
+var
+  Auth: IFirebaseAuth;
+  AResponse: IFirebaseResponse;
+  JSONReq: TJSONObject;
+  JSONResp: TJSONValue;
+  Obj: TJSONObject;
+  ADatabase: TFirebaseDatabase;
+  Writer: TJsonTextWriter;
+  StringWriter: TStringWriter;
+  sEmail, sSenha: String;
+begin
+  with DM.qryConsCliente do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Add('SELECT * FROM TAB_USUARIO');
+    Open;
+    if RowsAffected > 0 then
+    begin
+      sEmail:= FieldByName('EMAIL').AsString;
+      sSenha:= FieldByName('SENHA').AsString;
+    end;
+  end;
+
+  //Gerar Token de Autenticação
+  Auth := TFirebaseAuth.Create;
+  Auth.SetApiKey(key_firebase);
+  AResponse := Auth.SignInWithEmailAndPassword(sEmail, sSenha);
+  JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
+  if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
+  begin
+    if Assigned(JSONResp) then
+    begin
+      JSONResp.Free;
+    end;
+    Exit;
+  end;
+  Obj := JSONResp as TJSONObject;
+  Obj.Values['idToken'].Value;
+  token_firebase := Obj.Values['idToken'].Value;
+
+  ////////
+  //Enviar Dados para Firebase
+  StringWriter := TStringWriter.Create();
+  Writer := TJsonTextWriter.Create(StringWriter);
+  Writer.Formatting := TJsonFormatting.None;
+
+  JSONReq := TJSONObject.ParseJSONValue(StringWriter.ToString) as TJSONObject;
+
+  ADatabase := TFirebaseDatabase.Create;
+  ADatabase.SetBaseURI(domain_firebase);
+  ADatabase.SetToken(token_firebase);
+  try
+    if tipo = 1 then
+      AResponse := ADatabase.Delete([Node_Clube +'/'+ clube + '.json'])
+    else
+      AResponse := ADatabase.Delete([Node_Clube + '.json']);
+
+    JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
+    if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
+    begin
+      if Assigned(JSONResp) then
+      begin
+        JSONResp.Free;
+      end;
+      Exit;
+    end;
+  finally
+    ADatabase.Free;
+  end;
+end;
+
 procedure TFrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   fancy.DisposeOf;
@@ -1940,6 +2014,8 @@ begin
 
         ConsultarClube;
 
+        ExcluirClubeFirebase('',2);
+
     except on ex:exception do
         fancy.Show(TIconDialog.Error, '', 'Erro ao apagar avaliações!', 'OK');
     end;
@@ -1969,6 +2045,8 @@ begin
         dm.qryGeral.ExecSQL;
 
         ConsultarClube;
+
+        ExcluirClubeFirebase(lytMenuClube.TagString, 1);
     except on ex:exception do
         fancy.Show(TIconDialog.Error, '', 'Erro ao excluir clube!', 'OK');
     end;
