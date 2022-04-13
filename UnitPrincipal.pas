@@ -482,7 +482,7 @@ begin
            (AGrantResults[1] = TPermissionStatus.Granted) then
                 Imprimir
         else
-                TDialogService.ShowMessage('Você não tem permissão para acessar a library');
+                TDialogService.ShowMessage('VocÃª nÃ£o tem permissÃ£o para acessar a library');
 end;
 
 procedure TFrmPrincipal.DisplayMessageLibrary(Sender: TObject;
@@ -513,7 +513,7 @@ begin
     lytCadClube.Position.Y := FrmPrincipal.Height + 20;
     lytCadClube.Visible := True;
 
-    // Animação do menu - deslizar para cima
+    // AnimaÃ§Ã£o do menu - deslizar para cima
     AnimaCadClube.Inverse := False;
     AnimaCadClube.StartValue := FrmPrincipal.Height +20;
     AnimaCadClube.StopValue := 0;
@@ -526,7 +526,7 @@ end;
 
 procedure TFrmPrincipal.ImgSalvarClick(Sender: TObject);
 begin
-    fancy.Show(TIconDialog.Question, 'Atenção', 'Deseja finalizar avaliação?', 'Sim', ClickSalvar, 'Não');
+    fancy.Show(TIconDialog.Question, 'AtenÃ§Ã£o', 'Deseja finalizar avaliaÃ§Ã£o?', 'Sim', ClickSalvar, 'NÃ£o');
 
 end;
 
@@ -538,7 +538,7 @@ begin
     Exit;
   end;
 
-  fancy.Show(TIconDialog.Question, 'Atenção', 'Deseja realizar o sorteio?', 'Sim', ClickSorteio, 'Não');
+  fancy.Show(TIconDialog.Question, 'AtenÃ§Ã£o', 'Deseja realizar o sorteio?', 'Sim', ClickSorteio, 'NÃ£o');
 end;
 
 procedure TFrmPrincipal.ImgVoltarClick(Sender: TObject);
@@ -551,7 +551,7 @@ begin
       ConsultarClube;
       TabControl.GotoVisibleTab(1);
   end else
-      fancy.Show(TIconDialog.Question, 'Ops!', 'Deseja sair da avaliação?', 'Sim', ClickVoltar, 'Não');
+      fancy.Show(TIconDialog.Question, 'Ops!', 'Deseja sair da avaliaÃ§Ã£o?', 'Sim', ClickVoltar, 'NÃ£o');
 end;
 
 procedure TFrmPrincipal.ImgVotarClick(Sender: TObject);
@@ -585,7 +585,7 @@ begin
         relatorio :=             'CONCURSO DE ORDEM UNIDA' + sLineBreak;
         relatorio := relatorio + '(Resultado Detalhado Individual)' + sLineBreak;
         relatorio := relatorio + 'Avaliador: ' + Nome_Usuario + sLineBreak;
-        relatorio := relatorio + 'Avaliação: ' + Item_Avaliar + sLineBreak;
+        relatorio := relatorio + 'AvaliaÃ§Ã£o: ' + Item_Avaliar + sLineBreak;
         relatorio := relatorio + '--------------------------------------' + sLineBreak;
 
         relatorio := relatorio + 'Clube: ' + dm.qryConsOS.FieldByName('NOME').AsString + sLineBreak;
@@ -601,10 +601,10 @@ begin
         dm.qryGeral.ParamByName('COD_CLUBE').AsString:=dm.qryConsOS.FieldByName('COD_CLUBE').AsString;
         dm.qryGeral.Active := true;
 
-        if (Item_Avaliar = 'Básico') or (Item_Avaliar = 'Todas') then
+        if (Item_Avaliar = 'BÃ¡sico') or (Item_Avaliar = 'Todas') then
         begin
           relatorio := relatorio + sLineBreak;
-          relatorio := relatorio + '## Básico ##' + sLineBreak;
+          relatorio := relatorio + '## BÃ¡sico ##' + sLineBreak;
           relatorio := relatorio + 'Descansar = ' + dm.qryGeral.FieldByName('PTS_B1').AsString;
           relatorio := relatorio + ' |  Sentido = ' + dm.qryGeral.FieldByName('PTS_B2').AsString + sLineBreak;
           relatorio := relatorio + 'Cobrir = ' + dm.qryGeral.FieldByName('PTS_B3').AsString;
@@ -630,17 +630,17 @@ begin
           relatorio := relatorio + ' | Convers.Centro= ' + dm.qryGeral.FieldByName('PTS_M8').AsString + sLineBreak;
           relatorio := relatorio + 'MeiaVoltaVolver = ' + dm.qryGeral.FieldByName('PTS_M5').AsString + sLineBreak;
         end;
-        if (Item_Avaliar = 'Avançado') or (Item_Avaliar = 'Todas') then
+        if (Item_Avaliar = 'AvanÃ§ado') or (Item_Avaliar = 'Todas') then
         begin
           relatorio := relatorio + sLineBreak;
-          relatorio := relatorio + '## Avançado ##' + sLineBreak;
+          relatorio := relatorio + '## AvanÃ§ado ##' + sLineBreak;
           relatorio := relatorio + 'Alinhamento=' + dm.qryGeral.FieldByName('PTS_A1').AsString;
           relatorio := relatorio + ' | Cobertura = ' + dm.qryGeral.FieldByName('PTS_A2').AsString+ sLineBreak;
           relatorio := relatorio + 'Conjunto = ' + dm.qryGeral.FieldByName('PTS_A3').AsString;
           relatorio := relatorio + '     | EnergiaMovim. = ' + dm.qryGeral.FieldByName('PTS_A4').AsString + sLineBreak;
-          relatorio := relatorio + 'DificEvolução=' + dm.qryGeral.FieldByName('PTS_A5').AsString;
-          relatorio := relatorio + ' | Padronização = ' + dm.qryGeral.FieldByName('PTS_A6').AsString + sLineBreak;
-          relatorio := relatorio + 'Posição = ' + dm.qryGeral.FieldByName('PTS_A7').AsString;
+          relatorio := relatorio + 'DificEvoluÃ§Ã£o=' + dm.qryGeral.FieldByName('PTS_A5').AsString;
+          relatorio := relatorio + ' | PadronizaÃ§Ã£o = ' + dm.qryGeral.FieldByName('PTS_A6').AsString + sLineBreak;
+          relatorio := relatorio + 'PosiÃ§Ã£o = ' + dm.qryGeral.FieldByName('PTS_A7').AsString;
           relatorio := relatorio + '        | Postura = ' + dm.qryGeral.FieldByName('PTS_A8').AsString + sLineBreak;
           relatorio := relatorio + 'Garra = ' + dm.qryGeral.FieldByName('PTS_A9').AsString;
           relatorio := relatorio + '            | EvolucTema=' + dm.qryGeral.FieldByName('PTS_A10').AsString + sLineBreak;
@@ -657,7 +657,7 @@ begin
         relatorio := relatorio + '--------------------------------------' + sLineBreak;
     end else
     begin
-      fancy.Show(TIconDialog.Info, '', 'Clube sem pontuação. Avalie ou Exclua!', 'OK');
+      fancy.Show(TIconDialog.Info, '', 'Clube sem pontuaÃ§Ã£o. Avalie ou Exclua!', 'OK');
       Exit;
     end;
 
@@ -669,7 +669,7 @@ begin
   begin
     if posicao_final = 0 then
     begin
-      fancy.Show(TIconDialog.Info, '', 'Atualize a lista de classificação!', 'OK');
+      fancy.Show(TIconDialog.Info, '', 'Atualize a lista de classificaÃ§Ã£o!', 'OK');
       Exit;
     end;
 
@@ -682,7 +682,7 @@ begin
     TabResultado.First;
     while NOT TabResultado.Eof do
     begin
-        relatorio := relatorio + IntToStr(TabResultadoPosicao.Value) + 'º Lugar' + sLineBreak;
+        relatorio := relatorio + IntToStr(TabResultadoPosicao.Value) + 'Âº Lugar' + sLineBreak;
         relatorio := relatorio + 'Clube: ' + TabResultadoNom_Clube.AsString + sLineBreak;
         relatorio := relatorio + 'Total: ' + FloatToStr(TabResultadoTotal.Value) + sLineBreak;
         relatorio := relatorio + '--------------------------------------' + sLineBreak;
@@ -699,7 +699,7 @@ begin
   begin
     if not ValidaClubesPonto then
     begin
-      fancy.Show(TIconDialog.Info, '', 'Existe clube sem pontuação.'+sLineBreak+'Avalie ou Exclua!', 'OK');
+      fancy.Show(TIconDialog.Info, '', 'Existe clube sem pontuaÃ§Ã£o.'+sLineBreak+'Avalie ou Exclua!', 'OK');
       Exit;
     end;
 
@@ -707,7 +707,7 @@ begin
     relatorio :=             'CONCURSO DE ORDEM UNIDA' + sLineBreak;
     relatorio := relatorio + '(Resultado Parcial)' + sLineBreak;
     relatorio := relatorio + 'Avaliador: ' + Nome_Usuario + sLineBreak;
-    relatorio := relatorio + 'Avaliação: ' + Item_Avaliar + sLineBreak;
+    relatorio := relatorio + 'AvaliaÃ§Ã£o: ' + Item_Avaliar + sLineBreak;
     relatorio := relatorio + '==============================' + sLineBreak;
 
     dm.qryConsOS.Active := false;
@@ -732,8 +732,8 @@ begin
         dm.qryGeral.ParamByName('COD_CLUBE').AsString:=dm.qryConsOS.FieldByName('COD_CLUBE').AsString;
         dm.qryGeral.Active := true;
 
-        if (Item_Avaliar = 'Básico') or (Item_Avaliar = 'Todas') then
-            relatorio := relatorio + 'Total Básico: ' + FloatToStr(StrToFloat(dm.qryGeral.FieldByName('PTS_B1').Value) +
+        if (Item_Avaliar = 'BÃ¡sico') or (Item_Avaliar = 'Todas') then
+            relatorio := relatorio + 'Total BÃ¡sico: ' + FloatToStr(StrToFloat(dm.qryGeral.FieldByName('PTS_B1').Value) +
                                                      StrToFloat(dm.qryGeral.FieldByName('PTS_B2').Value) +
                                                      StrToFloat(dm.qryGeral.FieldByName('PTS_B3').Value) +
                                                      StrToFloat(dm.qryGeral.FieldByName('PTS_B4').Value) +
@@ -751,8 +751,8 @@ begin
                                                         StrToFloat(dm.qryGeral.FieldByName('PTS_M7').Value) +
                                                         StrToFloat(dm.qryGeral.FieldByName('PTS_M8').Value) +
                                                         StrToFloat(dm.qryGeral.FieldByName('PTS_M9').Value)) + sLineBreak;
-        if (Item_Avaliar = 'Avançado') or (Item_Avaliar = 'Todas') then
-            relatorio := relatorio + 'Total Avançado: ' +  FloatToStr(StrToFloat(dm.qryGeral.FieldByName('PTS_A1').Value) +
+        if (Item_Avaliar = 'AvanÃ§ado') or (Item_Avaliar = 'Todas') then
+            relatorio := relatorio + 'Total AvanÃ§ado: ' +  FloatToStr(StrToFloat(dm.qryGeral.FieldByName('PTS_A1').Value) +
                                                         StrToFloat(dm.qryGeral.FieldByName('PTS_A2').Value) +
                                                         StrToFloat(dm.qryGeral.FieldByName('PTS_A3').Value) +
                                                         StrToFloat(dm.qryGeral.FieldByName('PTS_A4').Value) +
@@ -780,7 +780,7 @@ begin
 
 //  if not ValidaClubesPonto then
 //  begin
-//    fancy.Show(TIconDialog.Info, '', 'Clube sem pontuação. Avalie ou Exclua!', 'OK');
+//    fancy.Show(TIconDialog.Info, '', 'Clube sem pontuaÃ§Ã£o. Avalie ou Exclua!', 'OK');
 //    Exit;
 //  end;
 //
@@ -792,7 +792,7 @@ begin
 //    lPdf.ImpL( 5, 40, 'CONCURSO DE ORDEM UNIDA', Normal, $FF000000, 16);
 //    lPdf.ImpL( 10, 50, '(Resultado Parcial)', Normal, $FF000000, 14);
 //    lPdf.ImpL( 20, 1, 'Avaliador: '+Nome_Usuario, Normal, $FF000000, 14);
-//    lPdf.ImpL( 20, 60, 'Avaliação: '+Item_Avaliar, Normal, $FF000000, 14);
+//    lPdf.ImpL( 20, 60, 'AvaliaÃ§Ã£o: '+Item_Avaliar, Normal, $FF000000, 14);
 //
 ////    ConsultarResultadoFinal;
 //
@@ -823,10 +823,10 @@ begin
 //        dm.qryGeral.ParamByName('COD_CLUBE').AsString:=dm.qryConsOS.FieldByName('COD_CLUBE').AsString;
 //        dm.qryGeral.Active := true;
 //
-//        if (Item_Avaliar = 'Básico') or (Item_Avaliar = 'Todas') then
+//        if (Item_Avaliar = 'BÃ¡sico') or (Item_Avaliar = 'Todas') then
 //        begin
 //          linha:=linha+4;
-//          lPdf.ImpL(linha, 1, '# Básico #', Normal, $FF000000, 14);
+//          lPdf.ImpL(linha, 1, '# BÃ¡sico #', Normal, $FF000000, 14);
 //          linha:=linha+3;
 //          lPdf.ImpL(linha, 1, 'Descansar     = '+dm.qryGeral.FieldByName('PTS_B1').AsString, Normal, $FF000000, 12);
 //          lPdf.ImpL(linha, 40, 'Sentido       = '+dm.qryGeral.FieldByName('PTS_B2').AsString, Normal, $FF000000, 12);
@@ -856,23 +856,23 @@ begin
 //          lPdf.ImpL(linha,40, 'Convers.Centro= '+dm.qryGeral.FieldByName('PTS_M8').AsString, Normal, $FF000000, 12);
 //          lPdf.ImpL(linha,80, 'Dir/Esq/Meia  = '+dm.qryGeral.FieldByName('PTS_M9').AsString, Normal, $FF000000, 12);
 //        end;
-//        if (Item_Avaliar = 'Avançado') or (Item_Avaliar = 'Todas') then
+//        if (Item_Avaliar = 'AvanÃ§ado') or (Item_Avaliar = 'Todas') then
 //        begin
 //          linha:=linha+4;
-//          lPdf.ImpL(linha, 1, '# Avançado #', Normal, $FF000000, 14);
+//          lPdf.ImpL(linha, 1, '# AvanÃ§ado #', Normal, $FF000000, 14);
 //          linha:=linha+3;
 //          lPdf.ImpL(linha, 1, 'Alinhamento   = '+dm.qryGeral.FieldByName('PTS_A1').AsString, Normal, $FF000000, 12);
 //          lPdf.ImpL(linha,40, 'Cobertura     = '+dm.qryGeral.FieldByName('PTS_A2').AsString, Normal, $FF000000, 12);
 //          lPdf.ImpL(linha,80, 'Conjunto      = '+dm.qryGeral.FieldByName('PTS_A3').AsString, Normal, $FF000000, 12);
 //          linha:=linha+3;
 //          lPdf.ImpL(linha, 1, 'Energia Movim.= '+dm.qryGeral.FieldByName('PTS_A4').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,40, 'Dific Evolução= '+dm.qryGeral.FieldByName('PTS_A5').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,80, 'Padronização  = '+dm.qryGeral.FieldByName('PTS_A6').AsString, Normal, $FF000000, 12);
+//          lPdf.ImpL(linha,40, 'Dific EvoluÃ§Ã£o= '+dm.qryGeral.FieldByName('PTS_A5').AsString, Normal, $FF000000, 12);
+//          lPdf.ImpL(linha,80, 'PadronizaÃ§Ã£o  = '+dm.qryGeral.FieldByName('PTS_A6').AsString, Normal, $FF000000, 12);
 //          linha:=linha+3;
-//          lPdf.ImpL(linha, 1, 'Posição       = '+dm.qryGeral.FieldByName('PTS_A7').AsString, Normal, $FF000000, 12);
+//          lPdf.ImpL(linha, 1, 'PosiÃ§Ã£o       = '+dm.qryGeral.FieldByName('PTS_A7').AsString, Normal, $FF000000, 12);
 //          lPdf.ImpL(linha,40, 'Postura       = '+dm.qryGeral.FieldByName('PTS_A8').AsString, Normal, $FF000000, 12);
 //          lPdf.ImpL(linha,80, 'Garra         = '+dm.qryGeral.FieldByName('PTS_A9').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,110, 'Evolução Tema = '+dm.qryGeral.FieldByName('PTS_A10').AsString, Normal, $FF000000, 12);
+//          lPdf.ImpL(linha,110, 'EvoluÃ§Ã£o Tema = '+dm.qryGeral.FieldByName('PTS_A10').AsString, Normal, $FF000000, 12);
 //        end;
 //        if (Item_Avaliar = 'Instrutor') or (Item_Avaliar = 'Todas') then
 //        begin
@@ -950,7 +950,7 @@ end;
 
 procedure TFrmPrincipal.lblMenuApagarClick(Sender: TObject);
 begin
-    fancy.Show(TIconDialog.Question, 'Atenção', 'Deseja apagar todas as avaliações?', 'Sim', ClickApagar, 'Não');
+    fancy.Show(TIconDialog.Question, 'AtenÃ§Ã£o', 'Deseja apagar todas as avaliaÃ§Ãµes?', 'Sim', ClickApagar, 'NÃ£o');
 
 end;
 
@@ -965,7 +965,7 @@ begin
     dm.qryGeral.Active := true;
     if dm.qryGeral.RecordCount > 0 then
     begin
-      fancy.Show(TIconDialog.Info, '', 'Avaliação encerrada para esse clube!', 'OK');
+      fancy.Show(TIconDialog.Info, '', 'AvaliaÃ§Ã£o encerrada para esse clube!', 'OK');
       Exit;
     end;
 
@@ -998,7 +998,7 @@ end;
 
 procedure TFrmPrincipal.lblMenuExcluirClick(Sender: TObject);
 begin
-  fancy.Show(TIconDialog.Question, 'Atenção', 'Deseja excluir o clube?', 'Sim', ClickExcluir, 'Não');
+  fancy.Show(TIconDialog.Question, 'AtenÃ§Ã£o', 'Deseja excluir o clube?', 'Sim', ClickExcluir, 'NÃ£o');
 
 end;
 
@@ -1013,7 +1013,7 @@ begin
     dm.qryGeral.Active := true;
     if dm.qryGeral.RecordCount = 0 then
     begin
-      fancy.Show(TIconDialog.Info, '', 'Clube sem avaliação!', 'OK');
+      fancy.Show(TIconDialog.Info, '', 'Clube sem avaliaÃ§Ã£o!', 'OK');
       Exit;
     end;
 
@@ -1082,7 +1082,7 @@ begin
             lytMenuClube.Position.Y := FrmPrincipal.Height + 20;
             lytMenuClube.Visible := true;
 
-            // Animação do menu - deslizar para cima
+            // AnimaÃ§Ã£o do menu - deslizar para cima
             AnimaMenuClube.Inverse := False;
             AnimaMenuClube.StartValue := FrmPrincipal.Height +20;
             AnimaMenuClube.StopValue := 0;
@@ -1112,7 +1112,7 @@ begin
             lytAddAvaliadores.Position.Y := FrmPrincipal.Height + 20;
             lytAddAvaliadores.Visible := true;
 
-            // Animação do menu - deslizar para cima
+            // AnimaÃ§Ã£o do menu - deslizar para cima
             AnimaAddAvaliadores.Inverse := False;
             AnimaAddAvaliadores.StartValue := FrmPrincipal.Height +20;
             AnimaAddAvaliadores.StopValue := 0;
@@ -1518,7 +1518,7 @@ begin
         Detail := Nome;
 
         TListItemText(Objects.FindDrawable('txtNome')).Text := Nome;
-        TListItemText(Objects.FindDrawable('txtRegiao')).Text := Regiao+'º apresentar';
+        TListItemText(Objects.FindDrawable('txtRegiao')).Text := Regiao+'Âº apresentar';
         TListItemText(Objects.FindDrawable('txtDiretor')).Text := 'Instrutor: '+Diretor;
         TListItemText(Objects.FindDrawable('txtPontos')).Text := Pontos;
         TListItemImage(Objects.FindDrawable('ImageMenu')).Bitmap := imgOpcao.Bitmap
@@ -1560,7 +1560,7 @@ begin
         Detail := Nome;
 
         TListItemText(Objects.FindDrawable('txtNome')).Text := Nome;
-        TListItemText(Objects.FindDrawable('txtPosicao')).Text := IntToStr(posicao_final)+'º';
+        TListItemText(Objects.FindDrawable('txtPosicao')).Text := IntToStr(posicao_final)+'Âº';
         TListItemText(Objects.FindDrawable('txtTitulo')).Text := 'Clube:';
         TListItemText(Objects.FindDrawable('txtPontos')).Text := Pontos;
         TListItemImage(Objects.FindDrawable('ImageAdd')).Bitmap := imgSomar.Bitmap;
@@ -1584,7 +1584,7 @@ end;
 
 procedure TFrmPrincipal.AjustarTabRequisitos;
 begin
-  if Item_Avaliar = 'Básico' then
+  if Item_Avaliar = 'BÃ¡sico' then
   begin
      TabBasico.Visible:= True;
      TabMovimento.Visible:= False;
@@ -1598,7 +1598,7 @@ begin
      TabAvancado.Visible:= False;
      TabInstrutor.Visible:= False;
      TabControlRequisitos.GotoVisibleTab(1);
-  end else if Item_Avaliar = 'Avançado' then
+  end else if Item_Avaliar = 'AvanÃ§ado' then
   begin
      TabBasico.Visible:= False;
      TabMovimento.Visible:= False;
@@ -1804,7 +1804,7 @@ begin
     end;
   end;
 
-  //Gerar Token de Autenticação
+  //Gerar Token de AutenticaÃ§Ã£o
   Auth := TFirebaseAuth.Create;
   Auth.SetApiKey(key_firebase);
   AResponse := Auth.SignInWithEmailAndPassword(sEmail, sSenha);
@@ -1897,7 +1897,7 @@ begin
       end else
       begin
         Key := 0;
-        fancy.Show(TIconDialog.Question, 'Logout', 'Deseja sair?', 'Sim', ClickLogout, 'Não');
+        fancy.Show(TIconDialog.Question, 'Logout', 'Deseja sair?', 'Sim', ClickLogout, 'NÃ£o');
       end;
     end;
   end;
@@ -1930,13 +1930,13 @@ procedure TFrmPrincipal.ImgCompartilharClick(Sender: TObject);
 begin
     if lvClube.Items.Count = 0 then
     begin
-      fancy.Show(TIconDialog.Info, '', 'Não há dados para compartilhar!', 'OK');
+      fancy.Show(TIconDialog.Info, '', 'NÃ£o hÃ¡ dados para compartilhar!', 'OK');
       Exit;
     end;
 
     if not ValidaClubesPonto then
     begin
-      fancy.Show(TIconDialog.Info, '', 'Existe clube sem pontuação.'+sLineBreak+'Avalie ou Exclua!', 'OK');
+      fancy.Show(TIconDialog.Info, '', 'Existe clube sem pontuaÃ§Ã£o.'+sLineBreak+'Avalie ou Exclua!', 'OK');
       Exit;
     end;
 
@@ -1977,7 +1977,7 @@ begin
 
     if not ValidaClubesPonto then
     begin
-      fancy.Show(TIconDialog.Info, '', 'Existe clube sem pontuação.'+sLineBreak+'Avalie ou Exclua!', 'OK');
+      fancy.Show(TIconDialog.Info, '', 'Existe clube sem pontuaÃ§Ã£o.'+sLineBreak+'Avalie ou Exclua!', 'OK');
       Exit;
     end;
 
@@ -2017,7 +2017,7 @@ begin
         ExcluirClubeFirebase('',2);
 
     except on ex:exception do
-        fancy.Show(TIconDialog.Error, '', 'Erro ao apagar avaliações!', 'OK');
+        fancy.Show(TIconDialog.Error, '', 'Erro ao apagar avaliaÃ§Ãµes!', 'OK');
     end;
 end;
 
@@ -2142,7 +2142,7 @@ begin
       TabControl.GotoVisibleTab(1);
 
     except on ex:exception do
-        fancy.Show(TIconDialog.Error, '', 'Erro ao gravar avaliação!', 'OK');
+        fancy.Show(TIconDialog.Error, '', 'Erro ao gravar avaliaÃ§Ã£o!', 'OK');
     end;
 end;
 
@@ -2484,7 +2484,7 @@ begin
     end;
   end;
 
-  //Gerar Token de Autenticação
+  //Gerar Token de AutenticaÃ§Ã£o
   Auth := TFirebaseAuth.Create;
   Auth.SetApiKey(key_firebase);
   AResponse := Auth.SignInWithEmailAndPassword(sEmail, sSenha);
@@ -2525,7 +2525,7 @@ begin
         Writer.WritePropertyName('cod');
         Writer.WriteValue(FieldByName('SEQUENCIA').AsString); //'1'
         Writer.WritePropertyName('clube');
-        Writer.WriteValue(FieldByName('NOME').AsString); //'Herois da Fé'
+        Writer.WriteValue(FieldByName('NOME').AsString); //'Herois da FÃ©'
         Writer.WriteEndObject;
 
         Writer.WriteEndObject;
@@ -2587,5 +2587,27 @@ begin
       dm.qryConsOS.Next;
     end;
 end;
+
+//procedure TForm1.Button1Click(Sender: TObject);
+//var
+//  json: string;
+//  Obj: TJsonObject;
+//  obj1: TJsonObject;
+//  i: integer;
+//begin
+//  json := '{"001":{"nome":"fulano1", "sexo":"M"},"002":{"nome":"fulano2", "sexo":"F"},"003":{"nome":"fulano3", "sexo":"M"}}';
+//
+//  Obj := TJsonObject.Parse(json) as TJsonObject;
+//  try
+//    for i := 0 to obj.count -1 do
+//    begin
+//      obj1 := Obj.Items[i].ObjectValue;
+//
+//      showmessage(obj.Names[i] + ' ' +obj1.s['nome']);
+//    end;
+//  finally
+//    Obj.Free;
+//  end;
+//en
 
 end.
