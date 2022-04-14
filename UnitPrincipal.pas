@@ -29,6 +29,8 @@ uses
   System.JSON,
   System.JSON.Writers,
   System.JSON.Types,
+  System.Net.HttpClient,
+  System.Generics.Collections,
   Firebase.Auth,
   Firebase.Interfaces,
   Firebase.Request,
@@ -433,8 +435,12 @@ type
     function ValidaClubesPonto: Boolean;
     function CMToPixel(const Acentimeter: Double): Double;
     procedure EscondeMenuClube;
+    procedure CadastrarClube;
+    procedure SalvarClube(nome_clube, ordem_clube, instrutor_clube: String);
+
     procedure SalvarClubeFirebase;
     procedure ExcluirClubeFirebase(clube: String; tipo: integer);
+    procedure BuscarClubeFirebase(clube: String);
     { Private declarations }
   public
     { Public declarations }
@@ -504,24 +510,15 @@ end;
 
 procedure TFrmPrincipal.imgAddClick(Sender: TObject);
 begin
-    EdtNome.Text:='';
-    EdtInstrutor.Text:='';
-    EdtOrdem.Text:='';
-    Status_Clube:='N';
-
-    // Posicionar Layout na parte de baixo da tela
-    lytCadClube.Position.Y := FrmPrincipal.Height + 20;
-    lytCadClube.Visible := True;
-
-    // Animação do menu - deslizar para cima
-    AnimaCadClube.Inverse := False;
-    AnimaCadClube.StartValue := FrmPrincipal.Height +20;
-    AnimaCadClube.StopValue := 0;
-    AnimaCadClube.Start;
-
-    // Animacao rotacao botao
-    imgAdd.RotationAngle:= 0;
-    imgAdd.AnimateFloat('RotationAngle', 180, 0.5, TAnimationType.InOut, TInterpolationType.Circular);
+    if Cod_Server = 'Local' then
+      CadastrarClube
+    else
+    begin
+      if Status_App = 'ON' then
+        CadastrarClube
+      else
+        BuscarClubeFirebase(lytMenuClube.TagString);
+    end;
 end;
 
 procedure TFrmPrincipal.ImgSalvarClick(Sender: TObject);
@@ -777,128 +774,6 @@ begin
     ActShare.TextMessage := relatorio;
     ActShare.Execute;
   end;
-
-//  if not ValidaClubesPonto then
-//  begin
-//    fancy.Show(TIconDialog.Info, '', 'Clube sem pontuação. Avalie ou Exclua!', 'OK');
-//    Exit;
-//  end;
-//
-//  linha:=20;
-//  lPdf:= tPdfPrint.Create('OrdemUnida-'+Nome_Usuario);
-//  try
-//    lPdf.Abrir;
-//    lPdf.FonteName:='Arial';
-//    lPdf.ImpL( 5, 40, 'CONCURSO DE ORDEM UNIDA', Normal, $FF000000, 16);
-//    lPdf.ImpL( 10, 50, '(Resultado Parcial)', Normal, $FF000000, 14);
-//    lPdf.ImpL( 20, 1, 'Avaliador: '+Nome_Usuario, Normal, $FF000000, 14);
-//    lPdf.ImpL( 20, 60, 'Avaliação: '+Item_Avaliar, Normal, $FF000000, 14);
-//
-////    ConsultarResultadoFinal;
-//
-//    dm.qryConsOS.Active := false;
-//    dm.qryConsOS.SQL.Clear;
-//    dm.qryConsOS.SQL.Add('SELECT COD_CLUBE, NOME, TOTAL FROM TAB_CLUBES');
-//    dm.qryConsOS.SQL.Add('ORDER BY NOME');
-//    dm.qryConsOS.Active := true;
-//    while NOT dm.qryConsOS.Eof do
-//    begin
-//        linha:=linha+5;
-//        lPdf.ImpLinhaH(linha, 1, 120, $FF000000);
-//        linha:=linha+5;
-//        lPdf.ImpL(linha, 1, 'Clube: ', Normal, $FF000000, 14);
-//        lPdf.ImpL(linha, 15, dm.qryConsOS.FieldByName('NOME').AsString, Normal, $FF000000, 14);
-//        lPdf.ImpL(linha, 70, 'Total: ', Normal, $FF000000, 14);
-//        lPdf.ImpL(linha, 85, dm.qryConsOS.FieldByName('TOTAL').Value, Normal, $FF000000, 14);
-//        linha:=linha+4;
-//        lPdf.ImpLinhaH(linha, 1, 120, $FF000000);
-//
-//        dm.qryGeral.Active := false;
-//        dm.qryGeral.SQL.Clear;
-//        dm.qryGeral.SQL.Add('SELECT PTS_B1,PTS_B2,PTS_B3,PTS_B4,PTS_B5,PTS_B6,PTS_B7,PTS_B8,');
-//        dm.qryGeral.SQL.Add('PTS_M1,PTS_M2,PTS_M3,PTS_M4,PTS_M5,PTS_M6,PTS_M7,PTS_M8,PTS_M9,');
-//        DM.qryGeral.SQL.Add('PTS_A1,PTS_A2,PTS_A3,PTS_A4,PTS_A5,PTS_A6,PTS_A7,PTS_A8,PTS_A9,PTS_A10,');
-//        DM.qryGeral.SQL.Add('PTS_T1,PTS_T2,PTS_T3,PTS_T4 FROM TAB_PONTOS');
-//        dm.qryGeral.SQL.Add('WHERE COD_CLUBE = :COD_CLUBE');
-//        dm.qryGeral.ParamByName('COD_CLUBE').AsString:=dm.qryConsOS.FieldByName('COD_CLUBE').AsString;
-//        dm.qryGeral.Active := true;
-//
-//        if (Item_Avaliar = 'Básico') or (Item_Avaliar = 'Todas') then
-//        begin
-//          linha:=linha+4;
-//          lPdf.ImpL(linha, 1, '# Básico #', Normal, $FF000000, 14);
-//          linha:=linha+3;
-//          lPdf.ImpL(linha, 1, 'Descansar     = '+dm.qryGeral.FieldByName('PTS_B1').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha, 40, 'Sentido       = '+dm.qryGeral.FieldByName('PTS_B2').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha, 80, 'Cobrir        = '+dm.qryGeral.FieldByName('PTS_B3').AsString, Normal, $FF000000, 12);
-//          linha:=linha+3;
-//          lPdf.ImpL(linha, 1, 'Firme         = '+dm.qryGeral.FieldByName('PTS_B4').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha, 40, 'Dir/Esq/MeiaVolta= '+dm.qryGeral.FieldByName('PTS_B5').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha, 80, 'Oitava Direita= '+dm.qryGeral.FieldByName('PTS_B6').AsString, Normal, $FF000000, 12);
-//          linha:=linha+3;
-//          lPdf.ImpL(linha, 1, 'Oitava Esquerd= '+dm.qryGeral.FieldByName('PTS_B7').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha, 40, 'Frente Ret/Dir/Esq= '+dm.qryGeral.FieldByName('PTS_B8').AsString, Normal, $FF000000, 12);
-//        end;
-//        if (Item_Avaliar = 'Movimento') or (Item_Avaliar = 'Todas') then
-//        begin
-//          linha:=linha+4;
-//          lPdf.ImpL(linha, 1, '# Movimento #', Normal, $FF000000, 14);
-//          linha:=linha+3;
-//          lPdf.ImpL(linha, 1, 'Ord. Marche   = '+dm.qryGeral.FieldByName('PTS_M1').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,40, 'Marcar Passo  = '+dm.qryGeral.FieldByName('PTS_M2').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,80, 'Direita Volver= '+dm.qryGeral.FieldByName('PTS_M3').AsString, Normal, $FF000000, 12);
-//          linha:=linha+3;
-//          lPdf.ImpL(linha, 1, 'Esquerda Volver= '+dm.qryGeral.FieldByName('PTS_M4').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,40, 'MeiaVolta Volver= '+dm.qryGeral.FieldByName('PTS_M5').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,80, 'Olhar Dir/Esq = '+dm.qryGeral.FieldByName('PTS_M6').AsString, Normal, $FF000000, 12);
-//          linha:=linha+3;
-//          lPdf.ImpL(linha, 1, 'Alto          = '+dm.qryGeral.FieldByName('PTS_M7').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,40, 'Convers.Centro= '+dm.qryGeral.FieldByName('PTS_M8').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,80, 'Dir/Esq/Meia  = '+dm.qryGeral.FieldByName('PTS_M9').AsString, Normal, $FF000000, 12);
-//        end;
-//        if (Item_Avaliar = 'Avançado') or (Item_Avaliar = 'Todas') then
-//        begin
-//          linha:=linha+4;
-//          lPdf.ImpL(linha, 1, '# Avançado #', Normal, $FF000000, 14);
-//          linha:=linha+3;
-//          lPdf.ImpL(linha, 1, 'Alinhamento   = '+dm.qryGeral.FieldByName('PTS_A1').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,40, 'Cobertura     = '+dm.qryGeral.FieldByName('PTS_A2').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,80, 'Conjunto      = '+dm.qryGeral.FieldByName('PTS_A3').AsString, Normal, $FF000000, 12);
-//          linha:=linha+3;
-//          lPdf.ImpL(linha, 1, 'Energia Movim.= '+dm.qryGeral.FieldByName('PTS_A4').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,40, 'Dific Evolução= '+dm.qryGeral.FieldByName('PTS_A5').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,80, 'Padronização  = '+dm.qryGeral.FieldByName('PTS_A6').AsString, Normal, $FF000000, 12);
-//          linha:=linha+3;
-//          lPdf.ImpL(linha, 1, 'Posição       = '+dm.qryGeral.FieldByName('PTS_A7').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,40, 'Postura       = '+dm.qryGeral.FieldByName('PTS_A8').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,80, 'Garra         = '+dm.qryGeral.FieldByName('PTS_A9').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,110, 'Evolução Tema = '+dm.qryGeral.FieldByName('PTS_A10').AsString, Normal, $FF000000, 12);
-//        end;
-//        if (Item_Avaliar = 'Instrutor') or (Item_Avaliar = 'Todas') then
-//        begin
-//          linha:=linha+4;
-//          lPdf.ImpL(linha, 1, '# Instrutor #', Normal, $FF000000, 14);
-//          linha:=linha+3;
-//          lPdf.ImpL(linha, 1, 'Altura Voz    = '+dm.qryGeral.FieldByName('PTS_T1').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,40, 'Voz Comanda   = '+dm.qryGeral.FieldByName('PTS_T2').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,80, 'Postura Instr = '+dm.qryGeral.FieldByName('PTS_T3').AsString, Normal, $FF000000, 12);
-//          lPdf.ImpL(linha,120, 'Tempo = '+dm.qryGeral.FieldByName('PTS_T4').AsString, Normal, $FF000000, 12);
-//        end;
-//        linha:=linha+3;
-//
-//        dm.qryConsOS.Next;
-//    end;
-//
-//    //lPdf.NovaPagina;
-//
-//    lPdf.Fechar;
-//
-////    lPdf.VisualizarPDF;
-//    lPdf.CompartilharPDF;
-//  finally
-//    lPdf.Free;
-//  end;
-//{$ENDIF}
 end;
 
 procedure TFrmPrincipal.Label9Click(Sender: TObject);
@@ -1525,6 +1400,28 @@ begin
     end;
 end;
 
+procedure TFrmPrincipal.CadastrarClube;
+begin
+  EdtNome.Text:='';
+  EdtInstrutor.Text:='';
+  EdtOrdem.Text:='';
+  Status_Clube:='N';
+
+  // Posicionar Layout na parte de baixo da tela
+  lytCadClube.Position.Y := FrmPrincipal.Height + 20;
+  lytCadClube.Visible := True;
+
+  // Animação do menu - deslizar para cima
+  AnimaCadClube.Inverse := False;
+  AnimaCadClube.StartValue := FrmPrincipal.Height +20;
+  AnimaCadClube.StopValue := 0;
+  AnimaCadClube.Start;
+
+  // Animacao rotacao botao
+  imgAdd.RotationAngle:= 0;
+  imgAdd.AnimateFloat('RotationAngle', 180, 0.5, TAnimationType.InOut, TInterpolationType.Circular);
+end;
+
 procedure TFrmPrincipal.AddResultado(codClube, Nome, Pontos: String);
 var
     item : TListViewItem;
@@ -1638,6 +1535,88 @@ procedure TFrmPrincipal.AnimaMenuClubeFinish(Sender: TObject);
 begin
   if AnimaMenuClube.Inverse = True then
     lytMenuClube.Visible:= False;
+end;
+
+procedure TFrmPrincipal.BuscarClubeFirebase(clube: String);
+var
+  Auth: IFirebaseAuth;
+  ADatabase: TFirebaseDatabase;
+  AResponse: IFirebaseResponse;
+  AParams: TDictionary<string, string>;
+  Obj: TJSONObject;
+  JSONResp: TJSONValue;
+  JsonClube: TJSONObject;
+  json: String;
+  sEmail, sSenha: String;
+  sClube, sOrdem: String;
+  x: Integer;
+begin
+  with DM.qryConsCliente do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Add('SELECT * FROM TAB_USUARIO');
+    Open;
+    if RowsAffected > 0 then
+    begin
+      sEmail:= FieldByName('EMAIL').AsString;
+      sSenha:= FieldByName('SENHA').AsString;
+    end;
+  end;
+
+  //Gerar Token de Autenticação
+  Auth := TFirebaseAuth.Create;
+  Auth.SetApiKey(key_firebase);
+  AResponse := Auth.SignInWithEmailAndPassword(sEmail, sSenha);
+  JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
+  if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
+  begin
+    if Assigned(JSONResp) then
+    begin
+      JSONResp.Free;
+    end;
+    Exit;
+  end;
+  Obj := JSONResp as TJSONObject;
+  Obj.Values['idToken'].Value;
+  token_firebase := Obj.Values['idToken'].Value;
+  ///////////////////////////////
+  /// Buscar Dados
+  ADatabase := TFirebaseDatabase.Create;
+  ADatabase.SetBaseURI(domain_firebase);
+  ADatabase.SetToken(token_firebase);
+  AParams := TDictionary<string, string>.Create;
+  try
+    //AParams.Add('orderBy', '"$key"');
+    //AParams.Add('orderBy', '"cod"');
+    //AParams.Add('limitToLast', '2');
+    //AParams.Add('equalTo', '2');
+    //AParams.Add('startAt', '"2"');
+    //AParams.Add('endAt', '"4"');
+    AResponse := ADatabase.Get([Node_Clube +'/'+ clube + '.json'], AParams);
+    JSONResp := TJSONObject.ParseJSONValue(AResponse.ContentAsString);
+
+    json:=AResponse.ContentAsString;
+    JsonClube := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(json),0) as TJSONObject;
+    for x := 0 to JsonClube.Size - 1 do
+    begin
+      ShowMessage(JsonClube.Get(x).ToString);
+    end;
+    JsonClube.DisposeOf;
+    //SalvarClube();
+
+    if (not Assigned(JSONResp)) or (not(JSONResp is TJSONObject)) then
+    begin
+      if Assigned(JSONResp) then
+      begin
+        JSONResp.Free;
+      end;
+      Exit;
+    end;
+  finally
+    AParams.Free;
+    ADatabase.Free;
+  end;
 end;
 
 procedure TFrmPrincipal.ConsultarClube;
@@ -2404,9 +2383,6 @@ begin
 end;
 
 procedure TFrmPrincipal.RtgSalvarClubeClick(Sender: TObject);
-var
-  sCod: Integer;
-  sNom: String;
 begin
     if EdtNome.Text = '' then
     begin
@@ -2414,37 +2390,7 @@ begin
       Exit;
     end;
 
-    with dm.qryGeral do
-    begin
-        // Salvar Clube...
-        Active := false;
-        SQL.Clear;
-
-        if Status_Clube = 'N' then
-        begin
-            SQL.Add('INSERT INTO TAB_CLUBES(COD_CLUBE, NOME, SEQUENCIA, DIRETOR, PONTOS)');
-            SQL.Add('VALUES(:COD_CLUBE, :NOME, :SEQUENCIA, :DIRETOR, :PONTOS)');
-
-            CodClube := GeraCodClube;
-        end
-        else
-        begin
-            SQL.Add('UPDATE TAB_CLUBES SET COD_CLUBE=:COD_CLUBE, NOME=:NOME, DIRETOR=:DIRETOR, PONTOS=:PONTOS');
-        end;
-
-        ParamByName('COD_CLUBE').Value := CodClube;
-        ParamByName('NOME').Value := EdtNome.Text;
-        sNom:=EdtNome.Text;
-        if EdtOrdem.Text<>'' then
-          sCod := StrToInt(EdtOrdem.Text)
-        else
-          sCod := 0;
-        ParamByName('SEQUENCIA').Value := sCod;
-        ParamByName('DIRETOR').Value := EdtInstrutor.Text;
-        ParamByName('PONTOS').Value := '0,0';
-
-        ExecSQL;
-    end;
+    SalvarClube(EdtNome.Text, EdtOrdem.Text, EdtInstrutor.Text);
 
     AnimaCadClube.Inverse := True;
     AnimaCadClube.Start;
@@ -2457,6 +2403,44 @@ begin
 
     SalvarClubeFirebase;
 //    lytCadClube.Visible:=False;
+end;
+
+procedure TFrmPrincipal.SalvarClube(nome_clube, ordem_clube, instrutor_clube: String);
+var
+  sCod: Integer;
+  sNom: String;
+begin
+  with dm.qryGeral do
+  begin
+    // Salvar Clube...
+    Active := false;
+    SQL.Clear;
+
+    if Status_Clube = 'N' then
+    begin
+        SQL.Add('INSERT INTO TAB_CLUBES(COD_CLUBE, NOME, SEQUENCIA, DIRETOR, PONTOS)');
+        SQL.Add('VALUES(:COD_CLUBE, :NOME, :SEQUENCIA, :DIRETOR, :PONTOS)');
+
+        CodClube := GeraCodClube;
+    end
+    else
+    begin
+        SQL.Add('UPDATE TAB_CLUBES SET COD_CLUBE=:COD_CLUBE, NOME=:NOME, DIRETOR=:DIRETOR, PONTOS=:PONTOS');
+    end;
+
+    ParamByName('COD_CLUBE').Value := CodClube;
+    ParamByName('NOME').Value := nome_clube;
+    sNom:=nome_clube;
+    if ordem_clube<>'' then
+      sCod := StrToInt(ordem_clube)
+    else
+      sCod := 0;
+    ParamByName('SEQUENCIA').Value := sCod;
+    ParamByName('DIRETOR').Value := instrutor_clube;
+    ParamByName('PONTOS').Value := '0,0';
+
+    ExecSQL;
+  end;
 end;
 
 procedure TFrmPrincipal.SalvarClubeFirebase;
