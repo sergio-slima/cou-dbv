@@ -18,7 +18,7 @@ Aplicativo para Avaliação de Ordem Unida.
 <br>
 
 <p align="center">
-  <img alt="Logo" src="./Images/ico-oficial/playstore.png" width="30%">
+  <img alt="Logo" src="./Images/ico-oficial/playstore.png" width="50%">
 </p>
 
 ## 🚀 Tecnologias
